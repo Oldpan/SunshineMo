@@ -86,8 +86,9 @@ half4 main(float2 fc){
   // optional split tint (left warm/red, right cool) for the "two perspectives" scenes
   float side = smoothstep(-0.05, 0.05, uv.x);
   col = mix(col, mix(col * c4 * 2.2, col, side), split);
-  col *= (0.55 + 0.9*f) * (0.8 + 0.5*energy);
-  float vig = 1.0 - 0.6*dot(uv*0.95, uv*0.95);
+  col *= (0.45 + 0.8*f) * (0.72 + 0.35*energy);
+  col = pow(max(col, float3(0.0)), float3(1.18)) * 1.2;
+  float vig = 1.0 - 0.7*dot(uv*0.95, uv*0.95);
   return half4(half3(col * vig), 1);
 }
 """
@@ -412,6 +413,7 @@ def drop_title(c, x, t, lt):
                    CY + math.sin(ang) * r1, paint(WHITE, 0.25 * k, stroke=3))
     text_pop(c, "好感差距", CX, CY + 60, font(230, bold=True), lt, stagger=BEAT, dur=0.45, tint=PINK,
              pulse=0.04 * k)
+    flare(c, CX, CY - 25, k, PINK)
     u = smooth((lt - BAR) / 0.8)
     f = font(64, "Inter-Black")
     lay, total = char_layout("THE LIKING GAP", f, 26)
@@ -810,6 +812,7 @@ def outro_title(c, x, t, lt):
     fade = 1 - smooth((t - (DUR - 3.0)) / 2.6)
     particle_text(c, "好感差距", CX, CY - 120, 190, clamp(lt / 2.0), t, col=WHITE, tint=GOLD, n=2400, seed=5,
                   a=fade)
+    flare(c, CX, CY - 180, smooth((lt - 1.6) / 0.4) * (1 - smooth((lt - 2.6) / 1.2)) * fade, GOLD)
     text_stroke_fill(c, "你比你以为的，更被喜欢。", CX, CY + 60, font(64), ease_io((lt - 1.8) / 1.6),
                      glow_col=PINK, a=fade, sw=1.2)
     f = font(30, "Inter-Light")
@@ -823,7 +826,6 @@ def outro_title(c, x, t, lt):
     ar = smooth((lt - BAR * 1.6) / 0.8) * fade
     for i, s in enumerate(refs):
         draw_text(c, s, CX, H - 210 + i * 40, font(22, "Inter-Regular"), paint(GREY, ar * 0.85))
-    draw_text(c, "画面与音乐均由代码逐帧生成 · 无素材 · 无采样", CX, H - 70, font(24), paint(WHITE, ar * 0.6))
 
 
 # ====================================================================== global layers
@@ -845,7 +847,7 @@ def init_worker():
     r = np.random.default_rng(7)
     STARS = np.stack([r.uniform(0, W, 420), r.uniform(0, H, 420), r.uniform(0.3, 1.0, 420),
                       r.uniform(0, 6.28, 420), r.uniform(0.2, 1.0, 420)], 1)
-    GRAIN = [(r.normal(0, 1, (H // 2, W // 2)) * 5).astype(np.int16) for _ in range(6)]
+    GRAIN = [(r.normal(0, 1, (H // 2, W // 2)) * 3).astype(np.int16) for _ in range(6)]
 
 
 GRAIN = None
@@ -887,6 +889,102 @@ def draw_background(c, t, x):
                 yy = rnd("st", i) * H
                 xx = (rnd("sx", i) * W - t * 2000 * (0.5 + rnd("sv", i))) % (W + 400) - 200
                 c.drawLine(xx, yy, xx + 260 * k, yy, paint(WHITE, 0.25 * k, stroke=2))
+
+
+def flare(c, x, y, k, col):
+    """Anamorphic light streak."""
+    if k <= 0.02:
+        return
+    c.drawRect(skia.Rect.MakeLTRB(x - 900, y - 2, x + 900, y + 2), paint(col, 0.5 * k, blur=6, blend=PLUS))
+    c.drawRect(skia.Rect.MakeLTRB(x - 500, y - 1, x + 500, y + 1), paint(WHITE, 0.7 * k, blend=PLUS))
+    c.drawCircle(x, y, 60, paint(col, 0.35 * k, blur=40, blend=PLUS))
+
+
+def kick_index(t):
+    a = S.ev["kick"]
+    return int(np.searchsorted(a, t, "right") - 1)
+
+
+def fx_back(c, t):
+    """Slow bokeh orbs behind the content, tinted by the section palette."""
+    lk = look_at(t)
+    cols = [lk["c2"], lk["c3"], lk["c1"]]
+    for i in range(16):
+        r = 60 + 140 * rnd("bk", i)
+        x = (rnd("bx", i) * (W + 2 * r) + t * (12 + 25 * rnd("bv", i))) % (W + 2 * r) - r
+        y = rnd("by", i) * H + math.sin(t * 0.3 + i) * 40
+        col = tuple(min(1.0, v * 2.2) for v in cols[i % 3])
+        a = 0.06 + 0.06 * math.sin(t * 0.7 + i * 1.7) ** 2
+        c.drawCircle(x, y, r, paint(col, a, blur=r * 0.35, blend=PLUS))
+        c.drawCircle(x, y, r, paint(col, a * 0.8, stroke=1.5, blur=1, blend=PLUS))
+
+
+def fx_front(c, t):
+    sec = section_at(t)
+    drop = sec in ("drop1", "drop2")
+    # shockwave rings on impacts
+    si = S.since("impact", t)
+    if si < 1.4:
+        u = si / 1.4
+        for j in range(2):
+            uu = clamp(u - j * 0.08)
+            r = 80 + 1300 * ease_out(uu, 2)
+            c.drawCircle(CX, CY, r, paint(WHITE, (1 - uu) ** 2 * (0.6 if drop else 0.3), stroke=10 * (1 - uu) + 1,
+                                          blur=3, blend=PLUS))
+    # smaller rings on claps during drops / builds
+    if sec in ("drop1", "drop2", "post"):
+        sc = S.since("clap", t)
+        if sc < 0.6:
+            u = sc / 0.6
+            c.drawCircle(CX, CY, 260 + 700 * ease_out(u), paint(CYAN if sec != "drop1" else PINK, (1 - u) ** 2 * 0.35,
+                                                                 stroke=4, blur=2, blend=PLUS))
+    # spark bursts on drop kicks
+    if drop:
+        ki = kick_index(t)
+        st = S.since("kick", t)
+        if 0 <= st < 0.5:
+            u = st / 0.5
+            for j in range(28):
+                ang = rnd("sp", ki, j) * 2 * math.pi
+                v = 500 + 900 * rnd("spv", ki, j)
+                d0 = 420 + v * ease_out(u) * 0.9
+                d1 = d0 + 40 + 120 * (1 - u)
+                col = [PINK, CYAN, GOLD][j % 3]
+                c.drawLine(CX + math.cos(ang) * d0, CY + math.sin(ang) * d0 * 0.6,
+                           CX + math.cos(ang) * d1, CY + math.sin(ang) * d1 * 0.6,
+                           paint(col, (1 - u) * 0.7, stroke=3, cap_round=True, blend=PLUS))
+    # audio-reactive bars along the bottom edge
+    m = S.e("master", t)
+    lo, hi, pd = S.e("low", t), S.e("hat", t), S.e("pad", t)
+    n = 72
+    bw = W / n
+    fade = 1 - smooth((t - (DUR - 6)) / 3)
+    for i in range(n):
+        f = i / (n - 1)
+        band = lo * (1 - f) ** 2 + pd * 4 * f * (1 - f) + hi * f ** 2
+        h = 6 + 70 * band * (0.6 + 0.4 * math.sin(t * 7 + i * 0.9) ** 2) * (0.5 + 0.5 * m)
+        col = mixc(CYAN, PINK, f)
+        c.drawRect(skia.Rect.MakeXYWH(i * bw + 3, H - h, bw - 6, h), paint(col, 0.22 * fade, blend=PLUS))
+
+
+GLITCH_AT = [B(8), B(16), B(32), B(40), B(56), B(64), B(30), B(30, 1), B(30, 2), B(30, 3), B(31)]
+
+
+def glitch_post(out, t, fi):
+    """Horizontal slice displacement for a few frames around section changes."""
+    d = min(abs(t - g) for g in GLITCH_AT)
+    if d > 0.12:
+        return out
+    amt = 1 - d / 0.12
+    for b in range(9):
+        if rnd("gl", fi, b) < 0.45:
+            continue
+        y0 = int(rnd("gy", fi, b) * H)
+        y1 = min(H, y0 + int(10 + 90 * rnd("gh", fi, b)))
+        off = int((rnd("go", fi, b) - 0.5) * 160 * amt)
+        out[y0:y1] = np.roll(out[y0:y1], off, axis=1)
+        out[y0:y1, :, 0] = np.roll(out[y0:y1, :, 0], int(12 * amt), axis=1)
+    return out
 
 
 def apply_transition(kind, u, entering):
@@ -947,6 +1045,7 @@ def render_frame(fi):
     pic = rec.finishRecordingAsPicture()
 
     draw_background(c, t, x)
+    fx_back(c, t)
     # camera: kick bump + shake
     c.save()
     zoom = x.zoom * (1 + 0.012 * kick(t, 0.15))
@@ -954,11 +1053,14 @@ def render_frame(fi):
     c.translate(CX + (rnd("shx", fi) - 0.5) * sh * 2, CY + (rnd("shy", fi) - 0.5) * sh * 2)
     c.scale(zoom, zoom)
     c.translate(-CX, -CY)
-    c.drawPicture(pic)
+    # soft dark halo under all content keeps text readable on bright backgrounds
+    shadow = skia.Paint(ImageFilter=skia.ImageFilters.DropShadow(0, 3, 9, 9, skia.Color4f(0, 0, 0, 0.8).toColor()))
+    c.drawPicture(pic, None, shadow)
     c.restore()
+    fx_front(c, t)
 
     # impacts flash
-    fl = S.pulse("impact", t, 0.25) * (0.55 if section_at(t) in ("drop1", "drop2") else 0.18)
+    fl = S.pulse("impact", t, 0.22) * (0.4 if section_at(t) in ("drop1", "drop2") else 0.12)
     if fl > 0.01:
         c.drawPaint(paint(WHITE, fl, blend=PLUS))
     # intro fade from black
@@ -969,16 +1071,16 @@ def render_frame(fi):
     bcv = _bloom_surf.getCanvas()
     bcv.clear(skia.ColorBLACK)
     thr = skia.Paint(ColorFilter=skia.ColorFilters.Matrix([
-        1.6, 0, 0, 0, -0.55, 0, 1.6, 0, 0, -0.55, 0, 0, 1.6, 0, -0.55, 0, 0, 0, 1, 0]))
+        2.2, 0, 0, 0, -1.25, 0, 2.2, 0, 0, -1.25, 0, 0, 2.2, 0, -1.25, 0, 0, 0, 1, 0]))
     bcv.drawImageRect(img, skia.Rect(0, 0, W, H), skia.Rect(0, 0, 480, 270), LIN, thr)
     bimg = _bloom_surf.makeImageSnapshot()
     bp = skia.Paint(ImageFilter=skia.ImageFilters.Blur(7, 7), BlendMode=PLUS,
-                    Alphaf=0.55 + 0.35 * kick(t, 0.2))
+                    Alphaf=0.35 + 0.3 * kick(t, 0.2))
     c.drawImageRect(bimg, skia.Rect(0, 0, 480, 270), skia.Rect(0, 0, W, H), LIN, bp)
 
     arr = surf.makeImageSnapshot().toarray(colorType=skia.kRGBA_8888_ColorType)[..., :3]
     # chromatic aberration
-    ch = int(round(2 + x.chroma * 4))
+    ch = min(8, int(round(x.chroma * 3)))
     out = arr.astype(np.int16)
     if ch > 0:
         out[:, ch:, 0] = arr[:, :-ch, 0]
@@ -987,6 +1089,7 @@ def render_frame(fi):
     g = np.repeat(np.repeat(g, 2, 0), 2, 1)
     out += g[..., None]
     np.clip(out, 0, 255, out=out)
+    out = glitch_post(out, t, fi)
     return out.astype(np.uint8).tobytes()
 
 
@@ -997,8 +1100,8 @@ def main():
     ap.add_argument("--range", nargs=2, type=float)
     ap.add_argument("--fps", type=int, default=FPS)
     ap.add_argument("--workers", type=int, default=os.cpu_count())
-    ap.add_argument("--out", default=os.path.join(OUT, "liking_gap.mp4"))
-    ap.add_argument("--crf", type=int, default=18)
+    ap.add_argument("--out", default=os.path.join(OUT, "好感差距_TheLikingGap.mp4"))
+    ap.add_argument("--bitrate", default="14M")
     args = ap.parse_args()
 
     if args.still:
@@ -1021,7 +1124,8 @@ def main():
     cmd = ["ffmpeg", "-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{W}x{H}",
            "-r", str(args.fps), "-i", "-", "-ss", str(t_start), "-t", str(t_end - t_start),
            "-i", os.path.join(OUT, "music.wav"),
-           "-c:v", "libx264", "-preset", "medium" if not args.range else "veryfast", "-crf", str(args.crf),
+           "-c:v", "libx264", "-preset", "medium" if not args.range else "veryfast",
+           "-b:v", args.bitrate, "-maxrate", "20M", "-bufsize", "28M",
            "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "256k", "-movflags", "+faststart", "-shortest", out]
     ff = subprocess.Popen(cmd, stdin=subprocess.PIPE)
     t0 = time.time()

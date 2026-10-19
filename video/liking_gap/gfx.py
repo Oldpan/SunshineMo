@@ -149,7 +149,7 @@ def draw_text(c, s, x, y, f, p, align="center"):
     return w
 
 
-def glow_text(c, s, x, y, f, col, a=1.0, glow=14, glow_a=0.7, align="center"):
+def glow_text(c, s, x, y, f, col, a=1.0, glow=14, glow_a=0.45, align="center"):
     if glow and a > 0.01:
         draw_text(c, s, x, y, f, paint(col, a * glow_a, blur=glow), align)
     draw_text(c, s, x, y, f, paint(WHITE if col != WHITE else col, a), align)
@@ -177,7 +177,7 @@ def text_rise(c, s, x, y, f, t, col=WHITE, a=1.0, stagger=0.045, dur=0.5, rise=3
             continue
         cx = x0 + dx
         if glow:
-            c.drawString(ch, cx, y + oy, f, paint(tint or col, aa * 0.55, blur=glow + bl))
+            c.drawString(ch, cx, y + oy, f, paint(tint or col, aa * 0.3, blur=glow + bl))
         c.drawString(ch, cx, y + oy, f, paint(col, aa, blur=bl))
     return total
 
@@ -189,7 +189,7 @@ def text_type(c, s, x, y, f, t, cps=12, col=WHITE, a=1.0, cursor=True, align="le
     total = text_width(s, f)
     x0 = x - total / 2 if align == "center" else x
     if glow:
-        c.drawString(shown, x0, y, f, paint(col, a * 0.5, blur=glow))
+        c.drawString(shown, x0, y, f, paint(col, a * 0.3, blur=glow))
     c.drawString(shown, x0, y, f, paint(col, a))
     if cursor:
         done = n >= len(s)
@@ -220,7 +220,7 @@ def text_pop(c, s, x, y, f, t, col=WHITE, a=1.0, stagger=0.1, dur=0.45, glow=18,
         c.rotate(wobble * math.sin(t * 3 + i) + (1 - clamp(u)) * 25 * (1 if i % 2 else -1))
         c.scale(sc, sc)
         if glow:
-            c.drawString(ch, -w / 2, sz * 0.38, f, paint(tint, aa * 0.8, blur=glow))
+            c.drawString(ch, -w / 2, sz * 0.38, f, paint(tint, aa * 0.5, blur=glow))
         c.drawString(ch, -w / 2, sz * 0.38, f, paint(col, aa))
         c.restore()
     return total
@@ -256,7 +256,7 @@ def text_stroke_fill(c, s, x, y, f, fill_u, col=WHITE, stroke_col=WHITE, a=1.0, 
     if fill_u > 0:
         c.save()
         c.clipRect(skia.Rect.MakeLTRB(x0 - 10, y - sz * 1.2, x0 + (total + 20) * fill_u, y + sz * 0.4))
-        c.drawString(s, x0, y, f, paint(glow_col, a * 0.8, blur=18))
+        c.drawString(s, x0, y, f, paint(glow_col, a * 0.5, blur=18))
         c.drawString(s, x0, y, f, paint(col, a))
         c.restore()
         # leading light edge
@@ -277,7 +277,7 @@ def text_vertical(c, s, x, y, f, t, col=WHITE, a=1.0, stagger=0.08, dur=0.6, gap
         w = f.measureText(ch)
         yy = y + i * sz * gap + (1 - u) * -20
         if glow:
-            c.drawString(ch, x - w / 2, yy, f, paint(tint, a * u * 0.6, blur=glow + (1 - u) * 10))
+            c.drawString(ch, x - w / 2, yy, f, paint(tint, a * u * 0.35, blur=glow + (1 - u) * 10))
         c.drawString(ch, x - w / 2, yy, f, paint(col, a * u, blur=(1 - u) * 8))
 
 
@@ -298,7 +298,7 @@ def rich_line(c, parts, x, y, size, t=None, a=1.0, align="center", bold=False, g
     for txt, col in parts:
         w = f.measureText(txt)
         if col != WHITE and glow:
-            c.drawString(txt, xx, y, f, paint(col, a * 0.7, blur=glow))
+            c.drawString(txt, xx, y, f, paint(col, a * 0.4, blur=glow))
         c.drawString(txt, xx, y, f, paint(col, a))
         xx += w
     return total

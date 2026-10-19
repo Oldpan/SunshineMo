@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl * https://oauth2.googleapis.com/token*)",
+      "Bash(curl * https://www.googleapis.com/upload/drive/v3/*)",
+      "Bash(curl * https://www.googleapis.com/drive/v3/*)"
+    ]
+  }
+}

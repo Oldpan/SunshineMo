@@ -4,21 +4,21 @@
 
 画面和音乐都由代码逐帧生成。没有下载任何图片、素材、采样或音频文件,也没有用虚拟乐器。
 
+neon_science 系列第 1 集，也是这个系列的参考实现。通用代码在 `video/core/`，系列的视觉和封面件在 `../../style.py`，这里只放本片的内容。
+
 | 文件 | 作用 |
 |---|---|
-| `music.py` | 用振荡器和噪声合成配乐:加法合成锯齿波 pad / supersaw、FM 钟声与电钢琴、合成鼓组、扫频 riser、卷积混响。输出 `out/music.wav`,以及给画面卡点用的事件表 `out/sync.npz` |
-| `gfx.py` | skia 绘图工具:多种字幕形态(打字机、逐字浮现、弹跳、故障、描边扫光、竖排、像素字、粒子成字)和图形 |
-| `cover.py` | 封面图:16:9(1920×1080)和 3:4(1080×1440),复用片中的星云背景、标题和 5.82 vs 5.17 柱状图 |
-| `render.py` | 分镜与渲染:SkSL 星云背景、镜头转场、光斑、冲击波、火花、频谱条、故障切片、bloom、颗粒,通过管道送进 ffmpeg 编码 |
+| `music.py` | 本片的和弦、旋律、编曲和混音参数；音色来自 `core/synth.py`。输出 `out/music.wav` 和卡点用的 `out/sync.npz` |
+| `render.py` | 分镜：每个镜头一个 `@shot` 函数；段落配色和特效参数交给 `NeonNebula` |
+| `cover.py` | 封面 16:9 和 3:4；柱状图和聊天气泡是本片专用的 |
 
 ```bash
-pip install numpy scipy skia-python   # skia 需要系统库 libegl1 libgl1
 python3 music.py                      # ≈100 s
 python3 render.py --still 60 125      # 抽帧检查 → out/stills/
 python3 render.py --range 56 64       # 片段预览
 python3 cover.py                      # 封面 → out/cover_16x9.png、out/cover_3x4.png
-python3 render.py                     # 整片 → out/好感差距_TheLikingGap.mp4(4 核约 37 分钟,14 Mbps)
-python3 ../../scripts/gdrive_upload.py out/好感差距_TheLikingGap.mp4 --folder video_from_opus
+python3 render.py                     # 整片 → out/好感差距_TheLikingGap.mp4（4 核约 40 分钟，14 Mbps）
+python3 ../../../../../scripts/gdrive_upload.py out/好感差距_TheLikingGap.mp4 --folder video_from_opus
 ```
 
 ## 结构(100 BPM,每小节 2.4 s,画面按小节和鼓点切换)
@@ -46,3 +46,10 @@ python3 ../../scripts/gdrive_upload.py out/好感差距_TheLikingGap.mp4 --folde
 - Tissera, Elsaadawy, Cooney, Human & Carlson (2025). JPSP, 128(4). 2,753 人,好感差距普遍存在。
 
 片中的生活场景(宿舍、相亲、午饭、微信)是帮助理解的举例,不是研究数据。
+
+## 发布记录
+
+- 成片 v2(2026-10):Google Drive `video_from_opus/好感差距_TheLikingGap_v2.mp4`,177.6 s,10656 帧,14 Mbps,317 MB。
+- 封面:`video_from_opus/好感差距_封面_16x9.png`、`好感差距_封面_3x4.png`。
+- v1 → v2 的修改:去掉常驻色差,降低 bloom 和字幕 glow,背景压暗、提高对比,内容层下垫暗晕;加了光斑、冲击波、火花、频谱条、标题光条、故障切片;片尾不展示制作方式。
+- 推荐标题:"聊完天总觉得自己很尬？心理学：对方比你以为的更喜欢你"。简介写法:先列出观众脑内的复盘台词,再给实验和数字,最后落到一句安慰,文末附参考文献。

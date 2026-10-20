@@ -2,58 +2,31 @@
 
   python3 cover.py      # → out/cover_16x9.png (1920x1080), out/cover_3x4.png (1080x1440)
 """
-import math
 import os
+import sys
 
-import numpy as np
 import skia
 
-from gfx import *  # noqa: F401,F403
-from render import BG_SKSL, LOOKS, OUT
-
-LIN = skia.SamplingOptions(skia.FilterMode.kLinear)
+HERE = os.path.dirname(os.path.abspath(__file__))
 
 
-def background(c, w, h, look, t=37.0):
-    eff = skia.RuntimeEffect.MakeForShader(BG_SKSL)
-    bw, bh = w // 3, h // 3
-    lk = LOOKS[look]
-    u = [bw, bh, t, 0.75, lk["warp"], *lk["c1"], *lk["c2"], *lk["c3"], *lk["bg"], 0.0, 1.0, 0.25, 0.3]
-    surf = skia.Surface(bw, bh)
-    surf.getCanvas().drawPaint(skia.Paint(Shader=eff.makeShader(
-        skia.Data.MakeWithCopy(np.array(u, np.float32).tobytes()))))
-    c.drawImageRect(surf.makeImageSnapshot(), skia.Rect(0, 0, bw, bh), skia.Rect(0, 0, w, h), LIN)
-    r = np.random.default_rng(3)
-    for _ in range(260):
-        x, y, d = r.uniform(0, w), r.uniform(0, h), r.uniform(0.2, 1)
-        c.drawCircle(x, y, 0.8 + 1.4 * d, paint(WHITE, 0.25 + 0.5 * d * r.uniform()))
-    cols = [lk["c2"], lk["c3"], lk["c1"]]
-    for i in range(10):
-        rr = 50 + 130 * r.uniform()
-        x, y = r.uniform(0, w), r.uniform(0, h)
-        col = tuple(min(1.0, v * 2.2) for v in cols[i % 3])
-        c.drawCircle(x, y, rr, paint(col, 0.08, blur=rr * 0.35, blend=PLUS))
-        c.drawCircle(x, y, rr, paint(col, 0.07, stroke=1.5, blend=PLUS))
+def _up(marker):
+    """Nearest ancestor directory containing `marker` (works from template/ or episodes/<name>/)."""
+    d = HERE
+    while not os.path.exists(os.path.join(d, marker)):
+        d = os.path.dirname(d)
+    return d
+
+
+sys.path[:0] = [_up("core"), _up("style.py")]  # video/ (core) and the series (style)
+from core.gfx import *  # noqa: E402,F401,F403
+from style import PALETTES, still_background as background, cover_title, spaced, save_cover as finish  # noqa: E402
+
+OUT = os.path.join(HERE, "out")
 
 
 def title(c, x, y, size, align="left"):
-    """Gradient-filled 好感差距 with a soft pink glow and a flare across it."""
-    f = font(size, bold=True)
-    tw = f.measureText("好感差距")
-    x0 = x - tw / 2 if align == "center" else x
-    c.drawString("好感差距", x0, y + 8, f, paint((0, 0, 0), 0.7, blur=18))
-    c.drawString("好感差距", x0, y, f, paint(PINK, 0.55, blur=28))
-    g = skia.GradientShader.MakeLinear([skia.Point(x0, y - size), skia.Point(x0 + tw, y)],
-                                       [argb(WHITE), argb((1.0, 0.86, 0.92)), argb((1.0, 0.62, 0.78))])
-    c.drawString("好感差距", x0, y, f, skia.Paint(AntiAlias=True, Shader=g))
-    return x0, tw
-
-
-def spaced(c, s, x, y, f, sp, col, a, align="left"):
-    lay, total = char_layout(s, f, sp)
-    x0 = x - total / 2 if align == "center" else x
-    for ch, dx, _ in lay:
-        c.drawString(ch, x0 + dx, y, f, paint(col, a))
+    return cover_title(c, "好感差距", x, y, size, align)
 
 
 def gap_chart(c, x, y, s=1.0):
@@ -90,25 +63,11 @@ def chat(c, x_left, x_right, y, s=1.0):
            txt=GREY, tail=False)
 
 
-def finish(surf, w, h, path):
-    """Light bloom on the brightest spots, then save."""
-    img = surf.makeImageSnapshot()
-    small = skia.Surface(w // 4, h // 4)
-    thr = skia.Paint(ColorFilter=skia.ColorFilters.Matrix([
-        2.2, 0, 0, 0, -1.25, 0, 2.2, 0, 0, -1.25, 0, 0, 2.2, 0, -1.25, 0, 0, 0, 1, 0]))
-    small.getCanvas().drawImageRect(img, skia.Rect(0, 0, w, h), skia.Rect(0, 0, w // 4, h // 4), LIN, thr)
-    bp = skia.Paint(ImageFilter=skia.ImageFilters.Blur(6, 6), BlendMode=PLUS, Alphaf=0.35)
-    surf.getCanvas().drawImageRect(small.makeImageSnapshot(), skia.Rect(0, 0, w // 4, h // 4),
-                                   skia.Rect(0, 0, w, h), LIN, bp)
-    surf.makeImageSnapshot().save(path, skia.kPNG)
-    print(path)
-
-
 def cover_16x9():
     w, h = 1920, 1080
     surf = skia.Surface(w, h)
     c = surf.getCanvas()
-    background(c, w, h, "drop2")
+    background(c, w, h, PALETTES["violet_drop"])
     # darken the left side so the title reads cleanly
     sh = skia.GradientShader.MakeLinear([skia.Point(0, 0), skia.Point(w * 0.62, 0)],
                                         [argb((0, 0, 0), 0.6), argb((0, 0, 0), 0.0)])
@@ -129,7 +88,7 @@ def cover_3x4():
     w, h = 1080, 1440
     surf = skia.Surface(w, h)
     c = surf.getCanvas()
-    background(c, w, h, "drop2")
+    background(c, w, h, PALETTES["violet_drop"])
     sh = skia.GradientShader.MakeLinear([skia.Point(0, 0), skia.Point(0, h * 0.6)],
                                         [argb((0, 0, 0), 0.55), argb((0, 0, 0), 0.0)])
     c.drawPaint(skia.Paint(Shader=sh))

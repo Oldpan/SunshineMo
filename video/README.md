@@ -8,9 +8,11 @@ video/
     gfx.py              字体（含霞鹜文楷）、缓动、paint、字幕样式（含墨迹晕开、滚动数字）、气泡/人物/圆环、粒子成字
     hand.py             手绘线条：会"抖"的下划线、圈注、箭头、勾叉、方框、星星、马克笔
     synth.py            合成器、鼓、lo-fi 套件（钢琴、弦乐、黑胶、磁带）、效果音、混音、导出 music.wav + sync.npz
-    timeline.py         小节网格、段落、镜头和转场、段落配色混合、Sync（音乐事件和包络）
+    timeline.py         小节网格、段落、镜头和转场、段落配色混合、磁带骤停的画面减速、Sync（音乐事件和包络）
     post.py             bloom（可染色）、暗角、色差、颗粒、故障切片
     pipeline.py         抽帧 / 片段预览 / 整片渲染，管道送进 ffmpeg
+    cover.py            封面通用件：字距拉开的英文标题、存 PNG（可加颗粒）
+    paths.py            脚本定位：从 template/ 或 episodes/<片名>/ 都能找到 core 和本系列的 style.py
   tools/                开发辅助
     sheet.py            把多张抽帧拼成总览图
     glyphs.py           缺字检查：脚本里的中文字体能不能画出来

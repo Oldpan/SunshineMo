@@ -9,28 +9,19 @@ Scenes only; the look comes from ../../style.py and the plumbing from video/core
 import math
 import os
 import sys
+from pathlib import Path
 
 import numpy as np
 import skia
 
-HERE = os.path.dirname(os.path.abspath(__file__))
-
-
-def _up(marker):
-    """Nearest ancestor directory containing `marker` (works from template/ or episodes/<name>/)."""
-    d = HERE
-    while not os.path.exists(os.path.join(d, marker)):
-        d = os.path.dirname(d)
-    return d
-
-
-sys.path[:0] = [_up("core"), _up("style.py")]  # video/ (core) and the series (style)
+sys.path.insert(0, str(next(p for p in Path(__file__).resolve().parents if (p / "core").is_dir())))  # video/
+from core.paths import episode  # noqa: E402
+HERE, OUT = episode(__file__)  # also puts the series dir (style.py) on sys.path
 from core.gfx import *  # noqa: E402,F401,F403
 from core.timeline import Timeline, Sync  # noqa: E402
 from core.pipeline import run  # noqa: E402
 from style import NeonNebula, PALETTES, flare  # noqa: E402
 
-OUT = os.path.join(HERE, "out")
 SECTIONS = [("intro", 0, 8), ("verse", 8, 16), ("build1", 16, 24), ("drop1", 24, 32),
             ("breakdown", 32, 40), ("build2", 40, 48), ("drop2", 48, 56), ("post", 56, 64),
             ("outro", 64, 74)]

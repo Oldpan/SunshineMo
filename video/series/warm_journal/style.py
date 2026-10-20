@@ -26,6 +26,7 @@ from core.gfx import *  # noqa: E402,F401,F403
 from core.hand import *  # noqa: E402,F401,F403
 from core.timeline import Ctx  # noqa: E402
 from core import post  # noqa: E402
+from core.cover import spaced, save_png  # noqa: E402,F401
 
 LIN = skia.SamplingOptions(skia.FilterMode.kLinear)
 MULTIPLY = skia.BlendMode.kMultiply
@@ -590,10 +591,4 @@ def cover_title(c, s, x, y, size, col, align="left", marker=None, marker_a=0.45)
 def save_cover(surf, w, h, path, look, vig=None):
     c = surf.getCanvas()
     post.vignette(c, w, h, look["vig"] if vig is None else vig, col=(0.12, 0.06, 0.02))
-    arr = post.to_array(surf).astype(np.int16)
-    g = np.random.default_rng(2).normal(0, 3.5, arr.shape[:2]).astype(np.int16)
-    arr += g[..., None]
-    post.finish(arr)
-    from PIL import Image
-    Image.fromarray(arr.astype(np.uint8)).save(path)
-    print(path)
+    save_png(surf, path, grain=3.5)

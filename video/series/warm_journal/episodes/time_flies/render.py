@@ -7,26 +7,17 @@
 import math
 import os
 import sys
+from pathlib import Path
 
-HERE = os.path.dirname(os.path.abspath(__file__))
-
-
-def _up(marker):
-    """Nearest ancestor directory containing `marker` (works from template/ or episodes/<name>/)."""
-    d = HERE
-    while not os.path.exists(os.path.join(d, marker)):
-        d = os.path.dirname(d)
-    return d
-
-
-sys.path[:0] = [_up("core"), _up("style.py")]  # video/ (core) and the series (style)
+sys.path.insert(0, str(next(p for p in Path(__file__).resolve().parents if (p / "core").is_dir())))  # video/
+from core.paths import episode  # noqa: E402
+HERE, OUT = episode(__file__)  # also puts the series dir (style.py) on sys.path
 from core.gfx import *  # noqa: E402,F401,F403
 from core.hand import *  # noqa: E402,F401,F403
-from core.timeline import Timeline, Sync  # noqa: E402
+from core.timeline import Timeline, Sync, tape_time  # noqa: E402
 from core.pipeline import run  # noqa: E402
 from style import *  # noqa: E402,F401,F403
 
-OUT = os.path.join(HERE, "out")
 SECTIONS = [  # must match music.py
     ("intro", 0, 4), ("verse", 4, 12), ("memory", 12, 16), ("build", 16, 24), ("drop1", 24, 32),
     ("evidence", 32, 40), ("mechanism", 40, 48), ("drop2", 48, 56), ("advice", 56, 62), ("outro", 62, 66),
@@ -63,10 +54,7 @@ def width(s, size, bold=False, kind="kai"):
 
 def slow(t):
     """Picture time through the tape stop: decelerates with the audio, then freezes."""
-    if t < TS:
-        return t
-    u = min((t - TS) / TD, 1.0)
-    return TS + TD * (1 - (1 - u) ** 2.6) / 2.6
+    return tape_time(t, TS, TD)
 
 
 # ================================================================ intro (dawn)
@@ -696,7 +684,7 @@ BUILDINGS = [(80, 520, 7, 10), (640, 600, 6, 9), (1130, 470, 8, 11), (1650, 640,
 @shot(B(48), B(50), tin=0.01, tout=0.35, kin="cut", kout="slide")
 def city(c, x, t, lt):
     L = x.look
-    nk = max(0, S.index("kick", t) - S.index("kick", B(48) - 0.01))
+    nk = S.count("kick", B(48), t)
     frac = clamp(nk / 9) * 0.92 + 0.05
     for b, (bx, by, cols, rows) in enumerate(BUILDINGS):
         windows(c, bx, by, cols, rows, 44, 34, 16, lambda i, j, b=b: smooth((frac - rnd("win", b, i, j)) * 6) *

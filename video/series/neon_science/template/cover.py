@@ -5,25 +5,16 @@ highlighted / letter-spaced English title.  Add a chart or chat bubbles on the f
 """
 import os
 import sys
+from pathlib import Path
 
 import skia
 
-HERE = os.path.dirname(os.path.abspath(__file__))
-
-
-def _up(marker):
-    """Nearest ancestor directory containing `marker` (works from template/ or episodes/<name>/)."""
-    d = HERE
-    while not os.path.exists(os.path.join(d, marker)):
-        d = os.path.dirname(d)
-    return d
-
-
-sys.path[:0] = [_up("core"), _up("style.py")]  # video/ (core) and the series (style)
+sys.path.insert(0, str(next(p for p in Path(__file__).resolve().parents if (p / "core").is_dir())))  # video/
+from core.paths import episode  # noqa: E402
+HERE, OUT = episode(__file__)  # also puts the series dir (style.py) on sys.path
 from core.gfx import *  # noqa: E402,F401,F403
 from style import PALETTES, still_background, cover_title, spaced, save_cover  # noqa: E402
 
-OUT = os.path.join(HERE, "out")
 HOOK, TITLE, EN = "一个让人好奇的问题？", "结论标题", "ENGLISH TITLE"
 ANSWER = [("一句话", WHITE), ("说清结论", PINK)]
 

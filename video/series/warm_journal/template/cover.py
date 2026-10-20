@@ -7,37 +7,20 @@ the free side.
 """
 import os
 import sys
+from pathlib import Path
 
 import skia
 
-HERE = os.path.dirname(os.path.abspath(__file__))
-
-
-def _up(marker):
-    """Nearest ancestor directory containing `marker` (works from template/ or episodes/<name>/)."""
-    d = HERE
-    while not os.path.exists(os.path.join(d, marker)):
-        d = os.path.dirname(d)
-    return d
-
-
-sys.path[:0] = [_up("core"), _up("style.py")]  # video/ (core) and the series (style)
+sys.path.insert(0, str(next(p for p in Path(__file__).resolve().parents if (p / "core").is_dir())))  # video/
+from core.paths import episode  # noqa: E402
+HERE, OUT = episode(__file__)  # also puts the series dir (style.py) on sys.path
 from core.gfx import *  # noqa: E402,F401,F403
 from core.hand import hand_underline  # noqa: E402
-from style import PALETTES, still_background, cover_title, save_cover, calendar_page, clock  # noqa: E402
+from style import PALETTES, still_background, cover_title, save_cover, calendar_page, clock, spaced  # noqa: E402
 
-OUT = os.path.join(HERE, "out")
 LOOK = PALETTES["morning"]
 HOOK, TITLE, EN = "一个让人好奇的问题？", "结论标题", "ENGLISH TITLE"
 ANSWER = [("一句话", LOOK["ink"]), ("说清结论", LOOK["a1"])]
-
-
-def spaced(c, s, x, y, size, col, sp, align="left"):
-    f = font(size, "Inter-SemiBold")
-    lay, total = char_layout(s, f, sp)
-    x0 = x - total / 2 if align == "center" else x
-    for ch, dx, _ in lay:
-        c.drawString(ch, x0 + dx, y, f, paint(col))
 
 
 def cover_16x9():
@@ -54,7 +37,7 @@ def cover_16x9():
     f = font(96, "kai", True)
     xb = x + f.measureText(ANSWER[0][0])
     hand_underline(c, xb, xb + f.measureText(ANSWER[1][0]), 752, 1.0, LOOK["a1"], w=7, seed="cov")
-    spaced(c, EN, x, 840, 34, LOOK["soft"], 18)
+    spaced(c, EN, x, 840, font(34, "Inter-SemiBold"), 18, LOOK["soft"])
     save_cover(surf, w, h, os.path.join(OUT, "cover_16x9.png"), LOOK)
 
 
@@ -67,7 +50,7 @@ def cover_3x4():
     draw_text(c, HOOK, cx, 190, font(60, "kai"), paint(LOOK["soft"]))
     cover_title(c, TITLE, cx, 400, 160, LOOK["ink"], align="center", marker=LOOK["a2"], marker_a=0.32)
     rich_line(c, ANSWER, cx, 545, 84, bold=True, glow=0, kind="kai")
-    spaced(c, EN, cx, 650, 30, LOOK["soft"], 16, align="center")
+    spaced(c, EN, cx, 650, font(30, "Inter-SemiBold"), 16, LOOK["soft"], align="center")
     clock(c, 870, 830, 110, 23.97, LOOK, sec=48, numbers=False)
     calendar_page(c, 470, 1030, 1.05, "2026 · 十二月", 31, "星期四", ("早睡", "熬夜"), LOOK)
     save_cover(surf, w, h, os.path.join(OUT, "cover_3x4.png"), LOOK)

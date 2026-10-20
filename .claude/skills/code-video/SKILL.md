@@ -15,6 +15,20 @@ Series so far (table in `video/README.md`):
 
 `video/tools/` has `sheet.py` (contact sheet of stills) and `glyphs.py` (tofu check).
 
+What belongs where:
+- `core/`: anything a second series could use. Drawing helpers, captions, hand-drawn strokes, instruments and mixing, the timeline and transitions, palette blending (`Timeline.look_at`), `tape_time`, post effects, cover helpers (`core/cover.py`), path discovery (`core/paths.py`).
+- The series `style.py`: the look itself. Background, palettes, objects, frame compositing, the headline treatment on covers.
+- The episode: the content only. Storyboard, harmony and melodies, copy.
+- When an episode grows a technique you would want again, move it down a level at the end of the episode, and prove the older films still render byte-identically.
+
+Every episode script starts with this header (see `core/paths.py`):
+
+```python
+sys.path.insert(0, str(next(p for p in Path(__file__).resolve().parents if (p / "core").is_dir())))
+from core.paths import episode
+HERE, OUT = episode(__file__)   # also puts the series dir (style.py) on sys.path
+```
+
 **Before starting, read the series README of the series you are working in.**
 
 ## Default constraints (unless the user says otherwise)
@@ -67,7 +81,8 @@ Shots push per-frame knobs through `Ctx`: `chroma`, `shake`, `split`, `zoom`.
    - Seeds must come from `stable_seed()`, never `hash()`.
 4. **`render.py`.**
    - Write one `@tl.shot(t0, t1, tin, tout, kin, kout)` per shot; transitions are zoom, fade, whip and cut.
-   - Read the music with `S.pulse("kick", t)`, `S.since(...)` and `S.e("pad", t)`.
+   - Read the music with `S.pulse("kick", t)`, `S.since(...)`, `S.count("kick", a, b)` and `S.e("pad", t)`.
+   - Picture time through a tape stop: `tape_time(t, t0, dur)`. It uses the same curve as `synth.tape_stop`.
    - Vary the caption styles between shots.
 5. **Check stills.**
    - Run `python3 video/tools/glyphs.py render.py cover.py <style.py>` first; it must report nothing missing.
@@ -127,6 +142,11 @@ Shots push per-frame knobs through `Ctx`: `chroma`, `shake`, `split`, `zoom`.
 **Verification and process**
 - When refactoring an episode onto shared code, render stills (including glitch and impact frames) and covers before and after, and require `max |diff| == 0`. Compare the music md5 under a fixed `PYTHONHASHSEED`.
 - Treat the user's mid-task messages as course corrections. Example: "more series later" led to the core/series split.
+- After episode 2 the user asked whether experience really carries over. Audit for duplication after every episode:
+  - copied helpers;
+  - logic a series re-implements that core already has;
+  - cover code written once per series.
+  Fold these into `core/` behind options that keep the old output, e.g. `look_at(lead_from_first=False)` for neon. Then diff old stills, covers and music md5s; they must be identical.
 
 **warm_journal (lo-fi paper) lessons**
 - On light paper never use additive (PLUS) glow or bloom; they wash the page out.

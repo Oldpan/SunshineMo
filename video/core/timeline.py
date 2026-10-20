@@ -36,10 +36,11 @@ class Timeline:
                 return name
         return self.sections[-1][0] if self.sections else ""
 
-    def look_at(self, looks, t, fast=(), width=1.6, lead=0.8, fast_width=0.12):
+    def look_at(self, looks, t, fast=(), width=1.6, lead=0.8, fast_width=0.12, lead_from_first=True):
         """Blend per-section palettes (dicts of floats / tuples) at time t.  Sections named in `fast`
         switch in fast_width seconds on their downbeat; the others glide over `width` seconds,
-        starting `lead` seconds early."""
+        starting `lead` seconds early.  lead_from_first=False keeps the first section unblended
+        until its end (how neon_science's first film was rendered)."""
         names = [s[0] for s in self.sections]
         starts = [self.B(s[1]) for s in self.sections]
         i = max([j for j, s in enumerate(starts) if s <= t + 1e-6] or [0])
@@ -49,6 +50,8 @@ class Timeline:
             prev = looks[names[i - 1]]
             wd, ld = (fast_width, 0.0) if names[i] in fast else (width, lead)
             u = smooth((t - starts[i] + ld) / wd)
+        if i == 0 and not lead_from_first:
+            return dict(cur)
         nxt_u = None
         if i + 1 < len(starts) and names[i + 1] not in fast and t > starts[i + 1] - lead:
             nxt_u = smooth((t - starts[i + 1] + lead) / width)
@@ -106,6 +109,15 @@ class Timeline:
                 s["fn"](pc, x, t, lt)
             pc.restore()
         return rec.finishRecordingAsPicture()
+
+
+def tape_time(t, t0, dur, curve=1.6):
+    """Picture time through a tape stop that starts at t0 and lasts dur (same curve as
+    core.synth.tape_stop): slows with the audio, then freezes."""
+    if t < t0:
+        return t
+    u = min((t - t0) / dur, 1.0)
+    return t0 + dur * (1 - (1 - u) ** (curve + 1)) / (curve + 1)
 
 
 def apply_transition(kind, u, entering, w=W, h=H):
@@ -178,6 +190,13 @@ class Sync:
         """Exponential decay 1 -> 0 after each event."""
         s = self.since(name, t)
         return math.exp(-s / decay) if s < 10 * decay else 0.0
+
+    def count(self, name, a, b):
+        """Number of events of this kind in [a, b]."""
+        ev = self.ev.get(name)
+        if ev is None:
+            return 0
+        return int(np.searchsorted(ev, b, "right") - np.searchsorted(ev, a, "left"))
 
     def index(self, name, t):
         """Index of the last event of this kind at or before t (-1 if none)."""

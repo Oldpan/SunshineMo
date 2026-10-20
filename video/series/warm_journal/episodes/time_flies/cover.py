@@ -1,27 +1,18 @@
 """Covers for 长大后时间越过越快？: 16:9 (1920x1080) and 3:4 (1080x1440)."""
 import os
 import sys
+from pathlib import Path
 
 import skia
 
-HERE = os.path.dirname(os.path.abspath(__file__))
-
-
-def _up(marker):
-    """Nearest ancestor directory containing `marker` (works from template/ or episodes/<name>/)."""
-    d = HERE
-    while not os.path.exists(os.path.join(d, marker)):
-        d = os.path.dirname(d)
-    return d
-
-
-sys.path[:0] = [_up("core"), _up("style.py")]  # video/ (core) and the series (style)
+sys.path.insert(0, str(next(p for p in Path(__file__).resolve().parents if (p / "core").is_dir())))  # video/
+from core.paths import episode  # noqa: E402
+HERE, OUT = episode(__file__)  # also puts the series dir (style.py) on sys.path
 from core.gfx import *  # noqa: E402,F401,F403
 from core.hand import hand_underline, hand_circle  # noqa: E402
 from style import (PALETTES, MULTIPLY, still_background, cover_title, save_cover, calendar_page, clock,  # noqa: E402
-                   stamp, sticky, NOTE_COLS)
+                   stamp, sticky, NOTE_COLS, spaced)
 
-OUT = os.path.join(HERE, "out")
 LOOK = PALETTES["morning"]
 HOOK, TITLE, EN = "长大后，时间越过越快？", "不是年龄的锅", "WHY TIME FLIES"
 ANSWER = [("是你", LOOK["ink"]), ("太忙了", LOOK["a1"])]
@@ -56,11 +47,7 @@ def cover_16x9():
     f = font(96, "kai", True)
     xb = x + f.measureText("是你")
     hand_underline(c, xb, xb + f.measureText("太忙了"), 752, 1.0, LOOK["a1"], w=7, seed="cov")
-    sp = 18
-    xx = x
-    for ch in EN:
-        c.drawString(ch, xx, 840, font(34, "Inter-SemiBold"), paint(LOOK["soft"]))
-        xx += font(34, "Inter-SemiBold").measureText(ch) + sp
+    spaced(c, EN, x, 840, font(34, "Inter-SemiBold"), 18, LOOK["soft"])
     save_cover(surf, w, h, os.path.join(OUT, "cover_16x9.png"), LOOK)
 
 
@@ -77,10 +64,7 @@ def cover_3x4():
     total = f.measureText("是你太忙了")
     xb = cx - total / 2 + f.measureText("是你")
     hand_underline(c, xb, xb + f.measureText("太忙了"), 573, 1.0, LOOK["a1"], w=7, seed="cov3")
-    fe = font(30, "Inter-SemiBold")
-    lay, tot = char_layout(EN, fe, 16)
-    for ch, dx, _ in lay:
-        c.drawString(ch, cx - tot / 2 + dx, 650, fe, paint(LOOK["soft"]))
+    spaced(c, EN, cx, 650, font(30, "Inter-SemiBold"), 16, LOOK["soft"], align="center")
     clock(c, 870, 830, 110, 23 + 58 / 60, LOOK, sec=48, numbers=False)
     calendar_page(c, 470, 1030, 1.05, "2026 · 十二月", 31, "星期四", ("早点睡", "瞎忙"), LOOK)
     bars_note(c, 850, 1190, 0.95, 6)

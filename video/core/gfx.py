@@ -1,5 +1,6 @@
 """Drawing helpers on top of skia-python: fonts, paints, text styles, shapes."""
 import math
+import os
 import zlib
 import numpy as np
 import skia
@@ -10,6 +11,7 @@ CX, CY = W / 2, H / 2
 FONT_CJK = "/usr/share/fonts/truetype/wqy/wqy-zenhei.ttc"
 FONT_PIXEL = "/usr/share/fonts/opentype/unifont/unifont.otf"
 INTER = "/usr/share/fonts/opentype/inter/{}.otf"
+KAI = "/usr/share/fonts/truetype/lxgw-wenkai/LXGWWenKai-{}.ttf"  # apt: fonts-lxgw-wenkai
 
 _tf = {}
 
@@ -21,7 +23,13 @@ def typeface(path):
 
 
 def font(size, kind="cjk", bold=False):
-    if kind == "cjk":
+    """kind: cjk (WenQuanYi) | kai / kai-light (LXGW WenKai, handwritten feel) | pixel | an Inter weight."""
+    if kind in ("kai", "kai-light"):
+        path = KAI.format("Bold" if bold else ("Light" if kind == "kai-light" else "Regular"))
+        if not os.path.exists(path):  # font not installed: fall back to the default CJK face
+            return font(size, "cjk", bold)
+        f = skia.Font(typeface(path), size)
+    elif kind == "cjk":
         f = skia.Font(typeface(FONT_CJK), size)
         f.setEmbolden(bold)
     elif kind == "pixel":
@@ -290,9 +298,62 @@ def text_pixel(c, s, x, y, size, col=CYAN, a=1.0, align="left", t=None, cps=30):
     return w
 
 
-def rich_line(c, parts, x, y, size, t=None, a=1.0, align="center", bold=False, glow=10):
+def text_ink(c, s, x, y, f, t, col=WHITE, a=1.0, stagger=0.06, dur=0.7, spread=7.0, align="center",
+             exit_t=None, exit_dur=0.5, spacing=0.0):
+    """Ink soaking into paper: each character sharpens out of a soft bleed, settling from 1.06x."""
+    lay, total = char_layout(s, f, spacing)
+    x0 = x - total / 2 if align == "center" else (x - total if align == "right" else x)
+    sz = f.getSize()
+    n = len(lay)
+    for i, (ch, dx, w) in enumerate(lay):
+        u = ease_out((t - i * stagger) / dur, 2)
+        if u <= 0:
+            continue
+        aa = a * clamp(u * 1.6)
+        if exit_t is not None and t > exit_t:
+            aa *= 1 - smooth((t - exit_t - (n - 1 - i) * stagger * 0.3) / exit_dur)
+        if aa <= 0.003:
+            continue
+        sc = 1 + 0.06 * (1 - u)
+        c.save()
+        c.translate(x0 + dx + w / 2, y - sz * 0.35)
+        c.scale(sc, sc)
+        if u < 0.999:
+            c.drawString(ch, -w / 2, sz * 0.35, f, paint(col, aa * 0.5 * (1 - u), blur=spread * (1 - u) + 1.5))
+        c.drawString(ch, -w / 2, sz * 0.35, f, paint(col, aa * (0.25 + 0.75 * u), blur=(1 - u) * spread * 0.6))
+        c.restore()
+    return total
+
+
+def text_roll(c, s, x, y, f, u, col=WHITE, a=1.0, align="center", spins=1, stagger=0.12):
+    """Odometer: every digit rolls up to its value as u goes 0 -> 1; other characters stay put."""
+    lay, total = char_layout(s, f, 0.0)
+    x0 = x - total / 2 if align == "center" else (x - total if align == "right" else x)
+    sz = f.getSize()
+    p = paint(col, a)
+    nd = sum(ch.isdigit() for ch in s)
+    k = 0
+    for ch, dx, w in lay:
+        if not ch.isdigit():
+            c.drawString(ch, x0 + dx, y, f, p)
+            continue
+        uu = ease_out(clamp((u - k * stagger / max(nd, 1)) / (1 - stagger + 1e-6)), 3)
+        k += 1
+        pos = uu * (int(ch) + 10 * spins)
+        d0 = int(math.floor(pos)) % 10
+        fr = pos - math.floor(pos)
+        c.save()
+        c.clipRect(skia.Rect.MakeLTRB(x0 + dx - 2, y - sz * 0.95, x0 + dx + w + 2, y + sz * 0.22))
+        c.drawString(str(d0), x0 + dx, y - fr * sz * 1.1, f, p)
+        if fr > 0.001:
+            c.drawString(str((d0 + 1) % 10), x0 + dx, y + (1 - fr) * sz * 1.1, f, p)
+        c.restore()
+    return total
+
+
+def rich_line(c, parts, x, y, size, t=None, a=1.0, align="center", bold=False, glow=10, kind="cjk"):
     """parts: list of (text, colour).  Highlighted words keep their colour + glow."""
-    f = font(size, bold=bold)
+    f = font(size, kind, bold=bold)
     total = sum(f.measureText(p[0]) for p in parts)
     xx = x - total / 2 if align == "center" else x
     for txt, col in parts:

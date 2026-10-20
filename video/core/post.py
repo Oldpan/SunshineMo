@@ -20,20 +20,36 @@ class Bloom:
         self.surf = skia.Surface.MakeRaster(skia.ImageInfo.Make(self.sw, self.sh, skia.kRGBA_8888_ColorType,
                                                                 skia.kPremul_AlphaType))
 
-    def apply(self, surf, alpha=0.35, gain=2.2, threshold=1.25, blur=7):
-        """out += blur(max(0, gain*x - threshold)) * alpha on the canvas of `surf`."""
+    def apply(self, surf, alpha=0.35, gain=2.2, threshold=1.25, blur=7, tint=None):
+        """out += blur(max(0, gain*x - threshold)) * alpha on the canvas of `surf`.
+        tint (r, g, b) colours the glow, e.g. warm film halation."""
         img = surf.makeImageSnapshot()
         bcv = self.surf.getCanvas()
         bcv.clear(skia.ColorBLACK)
         g, o = gain, -threshold
-        thr = skia.Paint(ColorFilter=skia.ColorFilters.Matrix([
-            g, 0, 0, 0, o, 0, g, 0, 0, o, 0, 0, g, 0, o, 0, 0, 0, 1, 0]))
+        if tint is None:
+            m = [g, 0, 0, 0, o, 0, g, 0, 0, o, 0, 0, g, 0, o, 0, 0, 0, 1, 0]
+        else:
+            r_, g_, b_ = tint
+            m = [g * r_, 0, 0, 0, o * r_, 0, g * g_, 0, 0, o * g_, 0, 0, g * b_, 0, o * b_, 0, 0, 0, 1, 0]
+        thr = skia.Paint(ColorFilter=skia.ColorFilters.Matrix(m))
         bcv.drawImageRect(img, skia.Rect(0, 0, self.w, self.h), skia.Rect(0, 0, self.sw, self.sh), LIN, thr)
         bimg = self.surf.makeImageSnapshot()
         bp = skia.Paint(ImageFilter=skia.ImageFilters.Blur(blur, blur), BlendMode=skia.BlendMode.kPlus,
                         Alphaf=alpha)
         surf.getCanvas().drawImageRect(bimg, skia.Rect(0, 0, self.sw, self.sh), skia.Rect(0, 0, self.w, self.h),
                                        LIN, bp)
+
+
+def vignette(c, w, h, strength=0.4, col=(0, 0, 0), inner=0.45):
+    """Darken towards the corners (strength = alpha at the corners)."""
+    if strength <= 0:
+        return
+    r = (w * w + h * h) ** 0.5 / 2
+    sh = skia.GradientShader.MakeRadial(skia.Point(w / 2, h / 2), r,
+                                        [skia.Color4f(*col, 0).toColor(), skia.Color4f(*col, 0).toColor(),
+                                         skia.Color4f(*col, strength).toColor()], [0.0, inner, 1.0])
+    c.drawPaint(skia.Paint(Shader=sh))
 
 
 def to_array(surf):

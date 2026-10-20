@@ -13,7 +13,7 @@ import math
 import numpy as np
 import skia
 
-from .gfx import W, H, CX, CY, smooth, lerp, ease_out
+from .gfx import W, H, CX, CY, smooth, lerp, ease_out, back_out
 
 
 class Timeline:
@@ -36,8 +36,34 @@ class Timeline:
                 return name
         return self.sections[-1][0] if self.sections else ""
 
+    def look_at(self, looks, t, fast=(), width=1.6, lead=0.8, fast_width=0.12):
+        """Blend per-section palettes (dicts of floats / tuples) at time t.  Sections named in `fast`
+        switch in fast_width seconds on their downbeat; the others glide over `width` seconds,
+        starting `lead` seconds early."""
+        names = [s[0] for s in self.sections]
+        starts = [self.B(s[1]) for s in self.sections]
+        i = max([j for j, s in enumerate(starts) if s <= t + 1e-6] or [0])
+        cur = looks[names[i]]
+        prev, u = cur, 1.0
+        if i > 0:
+            prev = looks[names[i - 1]]
+            wd, ld = (fast_width, 0.0) if names[i] in fast else (width, lead)
+            u = smooth((t - starts[i] + ld) / wd)
+        nxt_u = None
+        if i + 1 < len(starts) and names[i + 1] not in fast and t > starts[i + 1] - lead:
+            nxt_u = smooth((t - starts[i + 1] + lead) / width)
+        out = {}
+        for k in cur:
+            a, b = prev[k], cur[k]
+            v = tuple(lerp(p, q, u) for p, q in zip(a, b)) if isinstance(a, tuple) else lerp(a, b, u)
+            if nxt_u is not None:
+                n_ = looks[names[i + 1]][k]
+                v = tuple(lerp(p, q, nxt_u) for p, q in zip(v, n_)) if isinstance(v, tuple) else lerp(v, n_, nxt_u)
+            out[k] = v
+        return out
+
     def shot(self, t0, t1, tin=0.5, tout=0.5, kin="zoom", kout="zoom"):
-        """Register a shot visible on [t0, t1); kin/kout: zoom | fade | whip | cut."""
+        """Register a shot visible on [t0, t1); kin/kout: zoom | fade | whip | cut | slide | drop."""
         def deco(fn):
             self.shots.append(dict(t0=t0, t1=t1, tin=tin, tout=tout, kin=kin, kout=kout, fn=fn))
             return fn
@@ -53,16 +79,19 @@ class Timeline:
             if not (s["t0"] <= t < s["t1"] + s["tout"]):
                 continue
             lt = t - s["t0"]
-            a, sc, bl, dx = 1.0, 1.0, 0.0, 0.0
+            a, sc, bl, dx, dy, rot = 1.0, 1.0, 0.0, 0.0, 0.0, 0.0
             if lt < s["tin"]:
-                a, sc, bl, dx = apply_transition(s["kin"], lt / s["tin"], True, w)
+                a, sc, bl, dx, dy, rot = apply_transition(s["kin"], lt / s["tin"], True, w, h)
             if t >= s["t1"]:
-                a2, sc2, bl2, dx2 = apply_transition(s["kout"], 1 - (t - s["t1"]) / s["tout"], False, w)
-                a, sc, bl, dx = a * a2, sc * sc2, bl + bl2, dx + dx2
+                a2, sc2, bl2, dx2, dy2, rot2 = apply_transition(s["kout"], 1 - (t - s["t1"]) / s["tout"], False,
+                                                                w, h)
+                a, sc, bl, dx, dy, rot = a * a2, sc * sc2, bl + bl2, dx + dx2, dy + dy2, rot + rot2
             if a <= 0.002:
                 continue
             pc.save()
-            pc.translate(cx + dx, cy)
+            pc.translate(cx + dx, cy + dy)
+            if rot:
+                pc.rotate(rot)
             pc.scale(sc, sc)
             pc.translate(-cx, -cy)
             if a < 0.999 or bl > 0.3:
@@ -79,20 +108,29 @@ class Timeline:
         return rec.finishRecordingAsPicture()
 
 
-def apply_transition(kind, u, entering, w=W):
-    """u: 0 -> fully hidden, 1 -> fully visible. Returns (alpha, scale, blur, dx)."""
+def apply_transition(kind, u, entering, w=W, h=H):
+    """u: 0 -> fully hidden, 1 -> fully visible. Returns (alpha, scale, blur, dx, dy, rotation degrees)."""
     if kind == "cut":
-        return 1.0, 1.0, 0.0, 0.0
+        return 1.0, 1.0, 0.0, 0.0, 0.0, 0.0
     e = smooth(u)
     if kind == "fade":
-        return e, 1.0, 0.0, 0.0
+        return e, 1.0, 0.0, 0.0, 0.0, 0.0
     if kind == "zoom":
         s = lerp(1.12, 1.0, ease_out(u)) if entering else lerp(0.9, 1.0, ease_out(u))
-        return e, s, (1 - e) * 14, 0.0
+        return e, s, (1 - e) * 14, 0.0, 0.0, 0.0
     if kind == "whip":
         dx = (1 - ease_out(u, 4)) * (w * 0.6) * (1 if entering else -1)
-        return e, 1.0, (1 - e) * 22, dx
-    return e, 1.0, 0.0, 0.0
+        return e, 1.0, (1 - e) * 22, dx, 0.0, 0.0
+    if kind == "slide":  # a sheet of paper slid in from below / pushed away upwards
+        v = 1 - ease_out(u, 3)
+        if entering:
+            return smooth(u * 2.2), 1.0, 0.0, 0.0, v * h * 0.42, -4.0 * v
+        return smooth(u * 1.6), 1.0, 0.0, 0.0, -v * h * 0.3, 3.0 * v
+    if kind == "drop":  # falls onto the desk with a little bounce
+        if entering:
+            return smooth(u * 3), lerp(1.25, 1.0, back_out(u, 2.2)), 0.0, 0.0, 0.0, (1 - ease_out(u)) * 6
+        return e, lerp(0.94, 1.0, u), 0.0, 0.0, 0.0, 0.0
+    return e, 1.0, 0.0, 0.0, 0.0, 0.0
 
 
 class Ctx:
@@ -106,6 +144,7 @@ class Ctx:
         self.dim = 0.0
         self.flash = 0.0
         self.zoom = 1.0
+        self.look = None  # set by styles that blend palettes, so shots can pick their colours
 
 
 class Sync:

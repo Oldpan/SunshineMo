@@ -329,6 +329,148 @@ def reverse_swell(dur=1.2):
     return (nz * (t / dur) ** 3 * 0.35).astype(np.float32)
 
 
+# ---------------------------------------------------------------- lo-fi kit
+def lowpass(x, hz, order=2):
+    return signal.sosfilt(signal.butter(order, hz, fs=SR, output="sos"), x, axis=-1).astype(np.float32)
+
+
+def highpass(x, hz, order=2):
+    return signal.sosfilt(signal.butter(order, hz, btype="high", fs=SR, output="sos"), x,
+                          axis=-1).astype(np.float32)
+
+
+def swing_time(song, bar, step16, amt=0.58):
+    """Time of the step16-th sixteenth of a bar, with every odd sixteenth pushed late (0.5 = straight)."""
+    pair, odd = divmod(step16, 2)
+    return song.bt(bar) + (pair * 2 + (2 * amt if odd else 0)) * song.s16
+
+
+def piano_note(m, dur=1.5, vel=0.8, seed=0):
+    """Additive acoustic-piano tone: slightly stretched partials, two detuned strings, hammer noise."""
+    f = mtof(m)
+    n = int((dur + 1.2) * SR)
+    t = np.arange(n) / SR
+    r = np.random.default_rng(seed)
+    tau = 2.4 * (261.6 / f) ** 0.5  # low notes ring longer
+    out = np.zeros(n, np.float32)
+    for k in range(1, 25):
+        fk = k * f * np.sqrt(1 + 0.00035 * k * k)
+        if fk > 15000:
+            break
+        amp = k ** -1.1 * np.exp(-k / (3 + 7 * vel))
+        ph = r.uniform(0, 2 * np.pi)
+        tone = np.sin(2 * np.pi * fk * t + ph) + 0.6 * np.sin(2 * np.pi * fk * 1.0013 * t + ph * 1.3)
+        out += (amp * tone * np.exp(-t / (tau / (1 + 0.35 * (k - 1))))).astype(np.float32)
+    hammer = bandnoise(n, 800, 5000, seed=seed + 5) * np.exp(-t / 0.01) * 0.08 * vel
+    e = np.minimum(t / 0.002, 1) * np.clip(1 - (t - dur) / 0.35, 0, 1)
+    return ((out * 0.18 + hammer) * e * vel).astype(np.float32)
+
+
+def string_pad(notes, dur, attack=0.9, bright=0.5, seed=0):
+    """Slow-bowed string ensemble: four detuned saws per note with delayed vibrato, stereo."""
+    n = int((dur + 0.8) * SR)
+    t = np.arange(n) / SR
+    L = np.zeros(n, np.float32)
+    R = np.zeros(n, np.float32)
+    for j, m in enumerate(notes):
+        for v in range(4):
+            f = mtof(m) * 2 ** ((v - 1.5) * 5 / 1200)
+            vib = 1 + 0.003 * np.sin(2 * np.pi * (4.8 + 0.3 * v) * t + v) * np.clip((t - 0.4) / 0.8, 0, 1)
+            ph = 2 * np.pi * np.cumsum(f * vib) / SR
+            s = additive(ph, f, 900 + 1800 * bright, kmax=30, seed=seed * 100 + j * 10 + v)
+            p = v / 3 * 2 - 1
+            L += s * (1 - 0.5 * p)
+            R += s * (1 + 0.5 * p)
+    e = env_adsr(n, a=attack, d=1.5, s=0.85, r=0.8, hold=dur)
+    return np.stack([L * e, R * e]) * 0.04
+
+
+def kick_lofi():
+    """Round, low-click kick for boom-bap / lo-fi beats."""
+    n = int(0.45 * SR)
+    t = np.arange(n) / SR
+    f = 52 + 70 * np.exp(-t / 0.03)
+    body = np.sin(2 * np.pi * np.cumsum(f) / SR) * np.exp(-t / 0.19)
+    knock = bandnoise(n, 200, 1200, seed=12) * np.exp(-t / 0.008) * 0.15
+    s = np.tanh(1.3 * (body + knock)) * np.minimum(t / 0.002, 1)
+    return lowpass(s, 3000) * 0.9
+
+
+def rim(seed=14):
+    """Side-stick click."""
+    n = int(0.12 * SR)
+    t = np.arange(n) / SR
+    nz = bandnoise(n, 1500, 6000, seed=seed) * np.exp(-t / 0.004)
+    tone = np.sin(2 * np.pi * 1750 * t) * np.exp(-t / 0.012) * 0.5 + np.sin(2 * np.pi * 480 * t) * np.exp(
+        -t / 0.02) * 0.4
+    return ((nz * 0.6 + tone) * 0.45).astype(np.float32)
+
+
+def alarm_beep(groups=2, beeps=4, gap=0.11, on=0.065, group_gap=0.45, f=2000.0):
+    """Digital alarm clock: groups of short square-wave beeps."""
+    span = beeps * gap + group_gap
+    n = int((groups * span + 0.2) * SR)
+    t = np.arange(n) / SR
+    tone = additive(2 * np.pi * f * t, f, 6000.0, kmax=7, shape="square", seed=0)
+    gate = np.zeros(n, np.float32)
+    for g in range(groups):
+        for b in range(beeps):
+            a = int((g * span + b * gap) * SR)
+            m = int(on * SR)
+            gate[a:a + m] = np.minimum(1, np.minimum(np.arange(m), m - np.arange(m)) / (0.003 * SR))
+    return lowpass(tone * gate * 0.3, 5000)
+
+
+def rustle(dur=0.3, seed=0):
+    """Paper rustle / page flip: band noise with a jagged, quickly decaying envelope."""
+    n = int(dur * SR)
+    t = np.arange(n) / SR
+    r = np.random.default_rng(seed)
+    nz = bandnoise(n, 1200, 7000, seed=seed + 40)
+    grit = np.repeat(r.uniform(0.3, 1.0, n // 240 + 1), 240)[:n]
+    e = np.minimum(t / 0.01, 1) * np.exp(-t / (dur * 0.35)) * grit
+    return (nz * e * 0.4).astype(np.float32)
+
+
+def vinyl(n, seed=21, crackle=1.0, hiss=1.0):
+    """Record surface noise, stereo: hiss + rumble + sparse crackle (clicks with heavy-tailed sizes)."""
+    r = np.random.default_rng(seed)
+    out = np.zeros((2, n), np.float32)
+    for ch in range(2):
+        h = bandnoise(n, 2000, 9000, seed=seed + ch) * 0.006 * hiss
+        rumble = bandnoise(n, 30, 120, seed=seed + 10 + ch) * 0.008
+        k = int(n / SR * 14 * crackle)
+        imp = np.zeros(n, np.float32)
+        imp[r.integers(0, n, k)] += np.minimum(r.pareto(2.2, k) * 0.02, 0.1) * r.choice([-1, 1], k)
+        kern = np.exp(-np.arange(int(0.0015 * SR)) / (0.0003 * SR)).astype(np.float32)
+        crack = highpass(np.convolve(imp, kern)[:n], 900)
+        out[ch] = h + rumble + crack
+    return out
+
+
+def tape_wow(x, depth=0.001, rate=0.55, flutter=0.00012, frate=7.3):
+    """Tape wow & flutter: a slowly modulated delay (depth in seconds) gives a gentle pitch drift."""
+    n = x.shape[-1]
+    t = np.arange(n) / SR
+    d = depth * (1 + np.sin(2 * np.pi * rate * t)) + flutter * np.sin(2 * np.pi * frate * t + 1.0)
+    pos = np.arange(n) - d * SR
+    src = np.arange(n)
+    return np.stack([np.interp(pos, src, x[c]) for c in range(x.shape[0])]).astype(np.float32)
+
+
+def tape_stop(x, t0, dur, curve=1.6):
+    """Playback slows from full speed to a halt over [t0, t0 + dur]; silent afterwards until the caller
+    lets sound back in (e.g. with gate_silence)."""
+    y = x.copy()
+    i0, m = int(t0 * SR), int(dur * SR)
+    u = np.arange(m) / m
+    pos = i0 + np.cumsum((1 - u) ** curve)
+    src = np.arange(x.shape[-1])
+    for c in range(x.shape[0]):
+        y[c, i0:i0 + m] = np.interp(pos, src, x[c]) * (1 - u ** 6)
+    return y
+
+
 # ---------------------------------------------------------------- mixing
 def sidechain(kicks, length):
     """Gain curve ducking on each (time, depth) kick."""

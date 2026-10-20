@@ -18,6 +18,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."
 from core.gfx import *  # noqa: E402,F401,F403
 from core.timeline import Ctx  # noqa: E402
 from core import post  # noqa: E402
+from core.cover import spaced, save_png  # noqa: E402,F401
 
 BG_SKSL = """
 uniform float2 res; uniform float time; uniform float energy; uniform float warp;
@@ -110,29 +111,7 @@ class NeonNebula:
 
     def look_at(self, t):
         """Blend section looks: drops switch fast, everything else glides over ~1.5 s."""
-        tl = self.tl
-        names = [s[0] for s in tl.sections]
-        starts = [tl.B(s[1]) for s in tl.sections]
-        i = max(j for j, s in enumerate(starts) if s <= t + 1e-6)
-        cur = self.looks[names[i]]
-        if i == 0:
-            return dict(cur)
-        prev = self.looks[names[i - 1]]
-        width = 0.12 if names[i] in self.drops else 1.6
-        lead = 0.0 if names[i] in self.drops else 0.8
-        u = smooth((t - starts[i] + lead) / width)
-        nxt_u = None
-        if i + 1 < len(starts) and names[i + 1] not in self.drops and t > starts[i + 1] - 0.8:
-            nxt_u = smooth((t - starts[i + 1] + 0.8) / 1.6)
-        out = {}
-        for k in cur:
-            a, b = prev[k], cur[k]
-            v = tuple(lerp(x, y, u) for x, y in zip(a, b)) if isinstance(a, tuple) else lerp(a, b, u)
-            if nxt_u is not None:
-                n_ = self.looks[names[i + 1]][k]
-                v = tuple(lerp(x, y, nxt_u) for x, y in zip(v, n_)) if isinstance(v, tuple) else lerp(v, n_, nxt_u)
-            out[k] = v
-        return out
+        return self.tl.look_at(self.looks, t, fast=self.drops, lead_from_first=False)
 
     # ------------------------------------------------------------ layers
     def background(self, c, t, x):
@@ -315,14 +294,6 @@ def cover_title(c, s, x, y, size, align="left"):
     return x0, tw
 
 
-def spaced(c, s, x, y, f, sp, col, a, align="left"):
-    """Letter-spaced Latin line (e.g. the English title)."""
-    lay, total = char_layout(s, f, sp)
-    x0 = x - total / 2 if align == "center" else x
-    for ch, dx, _ in lay:
-        c.drawString(ch, x0 + dx, y, f, paint(col, a))
-
-
 def save_cover(surf, w, h, path):
     """Light bloom on the brightest spots, then save PNG."""
     img = surf.makeImageSnapshot()
@@ -333,5 +304,4 @@ def save_cover(surf, w, h, path):
     bp = skia.Paint(ImageFilter=skia.ImageFilters.Blur(6, 6), BlendMode=PLUS, Alphaf=0.35)
     surf.getCanvas().drawImageRect(small.makeImageSnapshot(), skia.Rect(0, 0, w // 4, h // 4),
                                    skia.Rect(0, 0, w, h), LIN, bp)
-    surf.makeImageSnapshot().save(path, skia.kPNG)
-    print(path)
+    save_png(surf, path)

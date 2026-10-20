@@ -9,6 +9,26 @@ Everything lives in `video/` (see `video/README.md`):
 - `core/` is style-agnostic and shared by every series.
 - `series/<name>/` holds one look plus its music recipe and narrative pattern. It contains `style.py`, `template/`, `episodes/` and a README with the rules.
 
+Series so far (table in `video/README.md`):
+- `neon_science`: neon nebula, EDM, energetic.
+- `warm_journal`: paper journal, lo-fi, emotional.
+
+`video/tools/` has `sheet.py` (contact sheet of stills) and `glyphs.py` (tofu check).
+
+What belongs where:
+- `core/`: anything a second series could use. Drawing helpers, captions, hand-drawn strokes, instruments and mixing, the timeline and transitions, palette blending (`Timeline.look_at`), `tape_time`, post effects, cover helpers (`core/cover.py`), path discovery (`core/paths.py`).
+- The series `style.py`: the look itself. Background, palettes, objects, frame compositing, the headline treatment on covers.
+- The episode: the content only. Storyboard, harmony and melodies, copy.
+- When an episode grows a technique you would want again, move it down a level at the end of the episode, and prove the older films still render byte-identically.
+
+Every episode script starts with this header (see `core/paths.py`):
+
+```python
+sys.path.insert(0, str(next(p for p in Path(__file__).resolve().parents if (p / "core").is_dir())))
+from core.paths import episode
+HERE, OUT = episode(__file__)   # also puts the series dir (style.py) on sys.path
+```
+
 **Before starting, read the series README of the series you are working in.**
 
 ## Default constraints (unless the user says otherwise)
@@ -35,6 +55,7 @@ Everything lives in `video/` (see `video/README.md`):
 | Another video in an existing series | `cp -r video/series/<s>/template video/series/<s>/episodes/<name>` and grow it. Scripts find `core/` and `style.py` themselves. |
 | A different look or genre | Create `video/series/<new>/` with its own `style.py`, `template/` and README, and add it to the table in `video/README.md`. Reuse `core/`; copy from an existing `style.py` only what fits. |
 | Unsure which series | Ask the user. Each series is a deliberate style; don't silently drift one into another. |
+| "Change the style" with no style given | Offer 2–3 concrete directions with AskUserQuestion previews (palette, fonts, motifs, music genre and BPM, mood) and recommend one. |
 
 ### Style contract
 
@@ -60,12 +81,18 @@ Shots push per-frame knobs through `Ctx`: `chroma`, `shake`, `split`, `zoom`.
    - Seeds must come from `stable_seed()`, never `hash()`.
 4. **`render.py`.**
    - Write one `@tl.shot(t0, t1, tin, tout, kin, kout)` per shot; transitions are zoom, fade, whip and cut.
-   - Read the music with `S.pulse("kick", t)`, `S.since(...)` and `S.e("pad", t)`.
+   - Read the music with `S.pulse("kick", t)`, `S.since(...)`, `S.count("kick", a, b)` and `S.e("pad", t)`.
+   - Picture time through a tape stop: `tape_time(t, t0, dur)`. It uses the same curve as `synth.tape_stop`.
    - Vary the caption styles between shots.
-5. **Check stills.** Run `python3 render.py --still 3 15 30 ...`, make a contact sheet and look at it: overlaps, tofu glyphs, readability.
+5. **Check stills.**
+   - Run `python3 video/tools/glyphs.py render.py cover.py <style.py>` first; it must report nothing missing.
+   - Run `python3 render.py --still 3 15 30 ...`, including transition moments (the first 0.1 s of a cut, tape stops, drops).
+   - Make a contact sheet with `video/tools/sheet.py` and look at it: overlaps, tofu glyphs, readability.
 6. **Preview a range.** Run `python3 render.py --range a b --fps 30` (veryfast preset).
 7. **Full render.**
-   - Run `python3 render.py` in the background; it takes about 40 min for 3 min on 4 cores, roughly 0.9 s per frame per core.
+   - Run `python3 render.py` in the background.
+   - neon_science takes about 40 min for 3 min on 4 cores (the shader costs about 0.9 s per frame per core).
+   - warm_journal has no shader and runs at about 7.6 fps, so 26 min for 198 s.
    - Monitor it; don't poll with sleep.
    - Verify with ffprobe that the frame count equals dur × 60 and that the duration is right.
 8. **Covers.** Run `python3 cover.py` to get 16:9 (1920×1080) and 3:4 (1080×1440), then look at both.
@@ -115,3 +142,26 @@ Shots push per-frame knobs through `Ctx`: `chroma`, `shake`, `split`, `zoom`.
 **Verification and process**
 - When refactoring an episode onto shared code, render stills (including glitch and impact frames) and covers before and after, and require `max |diff| == 0`. Compare the music md5 under a fixed `PYTHONHASHSEED`.
 - Treat the user's mid-task messages as course corrections. Example: "more series later" led to the core/series split.
+- After episode 2 the user asked whether experience really carries over. Audit for duplication after every episode:
+  - copied helpers;
+  - logic a series re-implements that core already has;
+  - cover code written once per series.
+  Fold these into `core/` behind options that keep the old output, e.g. `look_at(lead_from_first=False)` for neon. Then diff old stills, covers and music md5s; they must be identical.
+
+**warm_journal (lo-fi paper) lessons**
+- On light paper never use additive (PLUS) glow or bloom; they wash the page out.
+  - Give text `glow=0`.
+  - Turn bloom on only for dark looks, scaled by `look["dark"]`.
+  - Draw the paper texture with multiply *over* the content.
+- Never let a palette glide between a light and a dark look. Halfway through, ink and paper have the same brightness. Put those sections in `fast` and hide the switch with a crash or film burn.
+- A hard cut into a drop needs `kout="cut"` on the outgoing shot too. Otherwise it slides away under the new shot.
+- Odometer digits (`text_roll`) mid-roll read as garbage ("71:65"). Use `spins=0` for clock times, and keep the roll at or below 0.3 s.
+- Event sparkles go in the margin bands (top, bottom, far edges) only; a random ring around the centre lands on captions.
+- Tape stop plus a true silence:
+  - Apply `tape_stop` and then `gate_silence` to the mix *after* `mixdown`, so the reverb tail is cut too.
+  - Add the vinyl crackle afterwards so it survives the silence.
+  - A half-beat `reverse_swell` into the drop still leaves an audible gap.
+- Vinyl crackle pops must be capped (about 0.1). Uncapped heavy-tailed clicks hit -0.3 dBFS.
+- Covers: a half-torn calendar page reads as "330" when small. Use a clean page.
+- Verify official statistics on the original page. stats.gov.cn returned 503 once, then served the page on retry. Media reprints are not a citation.
+- Making a new style that a user picked from previews worked well. Show the reference contact sheet early if the user is around.

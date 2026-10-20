@@ -7,25 +7,16 @@ Copy this folder to episodes/<name>/ and grow SECTIONS / compose().
 """
 import os
 import sys
+from pathlib import Path
 import time
 
 import numpy as np
 
-HERE = os.path.dirname(os.path.abspath(__file__))
-
-
-def _up(marker):
-    """Nearest ancestor directory containing `marker` (works from template/ or episodes/<name>/)."""
-    d = HERE
-    while not os.path.exists(os.path.join(d, marker)):
-        d = os.path.dirname(d)
-    return d
-
-
-sys.path.insert(0, _up("core"))  # video/
+sys.path.insert(0, str(next(p for p in Path(__file__).resolve().parents if (p / "core").is_dir())))  # video/
+from core.paths import episode  # noqa: E402
+HERE, OUT = episode(__file__)  # also puts the series dir (style.py) on sys.path
 from core.synth import *  # noqa: E402,F401,F403
 
-OUT = os.path.join(HERE, "out")
 SECTIONS = [("intro", 0, 2), ("build", 2, 4), ("drop", 4, 8)]
 SONG = Song(bpm=100, bars=8, fps=60, sections=SECTIONS)
 bt = SONG.bt

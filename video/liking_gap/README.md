@@ -8,6 +8,7 @@
 |---|---|
 | `music.py` | 用振荡器和噪声合成配乐:加法合成锯齿波 pad / supersaw、FM 钟声与电钢琴、合成鼓组、扫频 riser、卷积混响。输出 `out/music.wav`,以及给画面卡点用的事件表 `out/sync.npz` |
 | `gfx.py` | skia 绘图工具:多种字幕形态(打字机、逐字浮现、弹跳、故障、描边扫光、竖排、像素字、粒子成字)和图形 |
+| `cover.py` | 封面图:16:9(1920×1080)和 3:4(1080×1440),复用片中的星云背景、标题和 5.82 vs 5.17 柱状图 |
 | `render.py` | 分镜与渲染:SkSL 星云背景、镜头转场、光斑、冲击波、火花、频谱条、故障切片、bloom、颗粒,通过管道送进 ffmpeg 编码 |
 
 ```bash
@@ -15,6 +16,7 @@ pip install numpy scipy skia-python   # skia 需要系统库 libegl1 libgl1
 python3 music.py                      # ≈100 s
 python3 render.py --still 60 125      # 抽帧检查 → out/stills/
 python3 render.py --range 56 64       # 片段预览
+python3 cover.py                      # 封面 → out/cover_16x9.png、out/cover_3x4.png
 python3 render.py                     # 整片 → out/好感差距_TheLikingGap.mp4(4 核约 37 分钟,14 Mbps)
 python3 ../../scripts/gdrive_upload.py out/好感差距_TheLikingGap.mp4 --folder video_from_opus
 ```

@@ -65,5 +65,5 @@ python3 ../../../../../scripts/gdrive_upload.py out/长大后时间越过越快_
 
 ## 发布记录
 
-- **成片 v1（2026-10）**：Google Drive `video_from_opus/长大后时间越过越快_TimeFlies.mp4`，198.0 s，11880 帧，14 Mbps。
+- **成片 v1（2026-10）**：Google Drive `video_from_opus/长大后时间越过越快_TimeFlies.mp4`，198.0 s，11880 帧，14 Mbps，337 MB。
 - **封面**：`video_from_opus/时间越过越快_封面_16x9.png`、`时间越过越快_封面_3x4.png`。

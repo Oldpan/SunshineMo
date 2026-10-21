@@ -7,7 +7,8 @@ video/
   core/                 跨系列通用，和风格无关
     gfx.py              字体（含霞鹜文楷）、缓动、paint、字幕样式（含墨迹晕开、滚动数字）、气泡/人物/圆环、粒子成字
     hand.py             手绘线条：会"抖"的下划线、圈注、箭头、勾叉、方框、星星、马克笔
-    synth.py            合成器、鼓、lo-fi 套件（钢琴、弦乐、黑胶、磁带）、效果音、混音、导出 music.wav + sync.npz
+    pixel.py            像素件：ASCII 精灵、Unifont 像素字、平滑文字碎成像素、CRT 开关机
+    synth.py            合成器、鼓、lo-fi 套件（钢琴、弦乐、黑胶、磁带）、芯片音色（脉冲波、三角波、LFSR 噪声、琶音）、效果音、混音、导出 music.wav + sync.npz
     timeline.py         小节网格、段落、镜头和转场、段落配色混合、磁带骤停的画面减速、Sync（音乐事件和包络）
     post.py             bloom（可染色）、暗角、色差、颗粒、故障切片
     pipeline.py         抽帧 / 片段预览 / 整片渲染，管道送进 ffmpeg
@@ -29,6 +30,7 @@ video/
 |---|---|---|
 | [neon_science](series/neon_science/README.md) | 霓虹星云科普 vibe：电子乐卡点、无配音、字幕驱动 | 1 |
 | [warm_journal](series/warm_journal/README.md) | 暖光手帐 lo-fi：纸张质感、手写字、钟表滴答卡点，偏情绪共鸣 | 1 |
+| [pixel_theater](series/pixel_theater/README.md) | 像素小剧场：平滑的星夜场景配像素小怪，芯片 lo-fi，用小故事讲 AI 知识（演绎七、讲解三） | 1 |
 
 ## 环境
 

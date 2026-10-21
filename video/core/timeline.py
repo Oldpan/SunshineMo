@@ -17,8 +17,11 @@ from .gfx import W, H, CX, CY, smooth, lerp, ease_out, back_out
 
 
 class Timeline:
-    def __init__(self, bpm, bars, sections=(), fps=60, w=W, h=H):
+    def __init__(self, bpm, bars, sections=(), fps=60, w=W, h=H, hard_cuts=False):
+        """hard_cuts=True: a "cut" in or out takes no time (tin / tout forced to 0).  Without it a shot
+        keeps drawing, opaque, for tout seconds after t1, under whatever comes next."""
         self.bpm, self.bars, self.fps = bpm, bars, fps
+        self.hard_cuts = hard_cuts
         self.beat = 60 / bpm
         self.bar = 4 * self.beat
         self.dur = bars * self.bar
@@ -67,6 +70,10 @@ class Timeline:
 
     def shot(self, t0, t1, tin=0.5, tout=0.5, kin="zoom", kout="zoom"):
         """Register a shot visible on [t0, t1); kin/kout: zoom | fade | whip | cut | slide | drop."""
+        if self.hard_cuts:
+            tin = 0.0 if kin == "cut" else tin
+            tout = 0.0 if kout == "cut" else tout
+
         def deco(fn):
             self.shots.append(dict(t0=t0, t1=t1, tin=tin, tout=tout, kin=kin, kout=kout, fn=fn))
             return fn

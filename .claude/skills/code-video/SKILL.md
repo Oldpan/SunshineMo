@@ -12,11 +12,12 @@ Everything lives in `video/` (see `video/README.md`):
 Series so far (table in `video/README.md`):
 - `neon_science`: neon nebula, EDM, energetic.
 - `warm_journal`: paper journal, lo-fi, emotional.
+- `pixel_theater`: smooth night scenes with pixel-art critters, chip lo-fi; a short story that teaches one AI concept (70% story, 30% explaining).
 
 `video/tools/` has `sheet.py` (contact sheet of stills) and `glyphs.py` (tofu check).
 
 What belongs where:
-- `core/`: anything a second series could use. Drawing helpers, captions, hand-drawn strokes, instruments and mixing, the timeline and transitions, palette blending (`Timeline.look_at`), `tape_time`, post effects, cover helpers (`core/cover.py`), path discovery (`core/paths.py`).
+- `core/`: anything a second series could use. Drawing helpers, captions, hand-drawn strokes, pixel-art sprites and pixel text (`core/pixel.py`), instruments (lo-fi and chip) and mixing, the timeline and transitions, palette blending (`Timeline.look_at`), `tape_time`, post effects, cover helpers (`core/cover.py`), path discovery (`core/paths.py`).
 - The series `style.py`: the look itself. Background, palettes, objects, frame compositing, the headline treatment on covers.
 - The episode: the content only. Storyboard, harmony and melodies, copy.
 - When an episode grows a technique you would want again, move it down a level at the end of the episode, and prove the older films still render byte-identically.
@@ -93,6 +94,7 @@ Shots push per-frame knobs through `Ctx`: `chroma`, `shake`, `split`, `zoom`.
    - Run `python3 render.py` in the background.
    - neon_science takes about 40 min for 3 min on 4 cores (the shader costs about 0.9 s per frame per core).
    - warm_journal has no shader and runs at about 7.6 fps, so 26 min for 198 s.
+   - pixel_theater costs about 0.6 s per frame per core, so about 35 min for 189 s.
    - Monitor it; don't poll with sleep.
    - Verify with ffprobe that the frame count equals dur × 60 and that the duration is right.
 8. **Covers.** Run `python3 cover.py` to get 16:9 (1920×1080) and 3:4 (1080×1440), then look at both.
@@ -165,3 +167,16 @@ Shots push per-frame knobs through `Ctx`: `chroma`, `shake`, `split`, `zoom`.
 - Covers: a half-torn calendar page reads as "330" when small. Use a clean page.
 - Verify official statistics on the original page. stats.gov.cn returned 503 once, then served the page on retry. Media reprints are not a citation.
 - Making a new style that a user picked from previews worked well. Show the reference contact sheet early if the user is around.
+
+**pixel_theater (story + AI concept) lessons**
+- The user's brief for the series: every episode explains one AI concept through a story, about 70% story and 30% explaining, and the AI's situation should mirror a human one. Keep human real-life case studies out; the human side happens inside the plot.
+- The user turned down an all-pixel look (low-res grid upscaled) before seeing it in motion. What they wanted: normal smooth scenes and UI, with only the characters and small props in pixel art. Ask early, with a still, when a style word ("pixel") can mean several things.
+- Characters the user supplies (here a 12 x 8 orange critter) stay recognisable: keep the silhouette and colour, add expressions at 2x sub-cells, and derive the second character from the same skeleton.
+- Explain with UI that *is* the concept: the chat window is the context window, a context bar fills and turns red, the oldest message breaks into pixels and flies out of the top, memory.md loads with a progress bar. Three tip cards at most, and one recap card.
+- Put the story timing in a `cues.py` that both `music.py` and `render.py` import, so chat pops, typing clicks, power-offs and silences stay in sync.
+- `Timeline.record` keeps drawing a shot for `tout` seconds after `t1`, and a "cut" out-phase stays opaque. Shots that do not paint the whole frame then show the previous shot underneath for half a second. Pass `Timeline(..., hard_cuts=True)` (new series do) so cuts get tin / tout = 0; the default stays off so older films render unchanged.
+- Chip UI sounds live in `core/synth.py`: `chip_jingle`, `chip_chime`, `chip_pop`, `key_click`, `chip_error`, `pixel_burst`, `crt_power_sound`. The story helpers live in pixel_theater's `style.py`: `chat_lines`, `power_schedule`, `blink`. Both were moved there in the duplication audit after episode 1, and the episode's music md5 stayed the same.
+- Do not use `x.dim` under a headline: the style applies it after the shot picture, so it dims the words too. Paint the dark layer inside the shot, before the text.
+- The whole-frame CRT power effect hides everything while the power is 0. A card shown between a power-off and the next power-on (a loading bar in the silence, "很久以后") needs its own short power-on.
+- Draw particles that leave a clipped window (pixels flying out of the chat) after restoring the clip.
+- Check glyphs against every font the episode uses (WenQuanYi, WenKai, Unifont), with `glyphs.py --font` once per font.

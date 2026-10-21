@@ -471,6 +471,176 @@ def tape_stop(x, t0, dur, curve=1.6):
     return y
 
 
+# ---------------------------------------------------------------- chip (8-bit console voices)
+def _blsaw(ph, fmax):
+    """Band-limited saw (Fourier series up to the Nyquist-safe harmonic of fmax); ph in radians."""
+    out = np.zeros_like(ph, dtype=np.float32)
+    for k in range(1, int(min(60, 18000 / fmax)) + 1):
+        out += (np.sin(k * ph) / k).astype(np.float32)
+    return out * (2 / np.pi)
+
+
+def _steps(e, levels=15):
+    """Console-style volume: the envelope moves in 1/15 steps."""
+    return (np.round(e * levels) / levels).astype(np.float32)
+
+
+def chip_pulse(m, dur, duty=0.25, vel=1.0, vib=0.0, vib_delay=0.25, slide=0.0, decay=None, release=0.03):
+    """Pulse wave (duty 0.125 / 0.25 / 0.5), band-limited as the difference of two saws.
+
+    vib: vibrato depth in semitones after vib_delay seconds; slide: start this many semitones away and
+    glide in; decay: exponential decay time for plucky notes (None = held)."""
+    n = int((dur + release) * SR)
+    t = np.arange(n) / SR
+    semis = vib * np.sin(2 * np.pi * 5.6 * t) * np.clip((t - vib_delay) / 0.15, 0, 1) + slide * np.exp(-t / 0.035)
+    f = mtof(m) * 2 ** (semis / 12)
+    ph = 2 * np.pi * np.cumsum(f) / SR
+    fmax = float(f.max())
+    s = _blsaw(ph, fmax) - _blsaw(ph - 2 * np.pi * duty, fmax)
+    s -= s.mean()
+    e = np.minimum(t / 0.002, 1) * (np.exp(-t / decay) if decay else 1.0)
+    e = e * np.clip(1 - (t - dur) / release, 0, 1)
+    return (s * _steps(e) * 0.25 * vel).astype(np.float32)
+
+
+def chip_arp(notes, dur, rate=0.045, duty=0.125, vel=1.0, decay=None):
+    """Fast console arpeggio: one pulse voice cycling through `notes` every `rate` seconds."""
+    n = int((dur + 0.02) * SR)
+    t = np.arange(n) / SR
+    idx = (t / rate).astype(int) % len(notes)
+    f = np.array([mtof(x) for x in notes])[idx]
+    ph = 2 * np.pi * np.cumsum(f) / SR
+    fmax = float(f.max())
+    s = _blsaw(ph, fmax) - _blsaw(ph - 2 * np.pi * duty, fmax)
+    s -= s.mean()
+    e = np.minimum(t / 0.002, 1) * (np.exp(-t / decay) if decay else 1.0) * np.clip(1 - (t - dur) / 0.02, 0, 1)
+    return (s * _steps(e) * 0.2 * vel).astype(np.float32)
+
+
+def chip_tri(m, dur, vel=1.0, release=0.02):
+    """4-bit stepped triangle (the console bass voice): no volume control, just a gate."""
+    n = int((dur + release) * SR)
+    t = np.arange(n) / SR
+    frac = (mtof(m) * t) % 1.0
+    tri = np.round((1 - 2 * np.abs(2 * frac - 1)) * 7.5) / 7.5
+    e = np.minimum(t / 0.003, 1) * np.clip(1 - (t - dur) / release, 0, 1)
+    return lowpass(tri * e * 0.32 * vel, 9000).astype(np.float32)
+
+
+_LFSR = {}
+
+
+def _lfsr(short):
+    """One period of the console noise register: 15-bit, taps 0^1 (hiss) or 0^6 (metallic, 93 steps)."""
+    if short not in _LFSR:
+        reg, out, tap = 1, [], 6 if short else 1
+        for _ in range(93 if short else 32767):
+            bit = (reg ^ (reg >> tap)) & 1
+            reg = (reg >> 1) | (bit << 14)
+            out.append(reg & 1)
+        _LFSR[short] = np.array(out, np.float32) * 2 - 1
+    return _LFSR[short]
+
+
+def chip_noise(dur, hold=6, decay=0.06, short=False, vel=1.0, offset=0):
+    """Noise-channel hit: LFSR bits held for `hold` samples (higher = darker), decaying in volume."""
+    n = int(dur * SR)
+    t = np.arange(n) / SR
+    seq = _lfsr(short)
+    s = seq[(offset + np.arange(n) // hold) % len(seq)]
+    e = np.minimum(t / 0.001, 1) * np.exp(-t / decay)
+    return (s * _steps(e) * 0.22 * vel).astype(np.float32)
+
+
+def chip_kick(vel=1.0):
+    """Console kick: stepped triangle swept from 180 Hz down to 45 Hz, plus a click of noise."""
+    n = int(0.28 * SR)
+    t = np.arange(n) / SR
+    f = 45 + 135 * np.exp(-t / 0.025)
+    frac = np.cumsum(f) / SR % 1.0
+    tri = np.round((1 - 2 * np.abs(2 * frac - 1)) * 7.5) / 7.5
+    click = chip_noise(0.02, hold=2, decay=0.004)
+    s = tri * np.exp(-t / 0.11)
+    s[:len(click)] += click
+    return (s * 0.7 * vel).astype(np.float32)
+
+
+def chip_jingle(notes, step, dur=1.0, duty=0.25, vel=0.9, last=3.0, last_decay=0.25):
+    """A quick console arpeggio (e.g. a "new window" jingle): notes every `step` seconds, the last held."""
+    out = np.zeros(int(dur * SR), np.float32)
+    for i, m in enumerate(notes):
+        final = i == len(notes) - 1
+        s = chip_pulse(m, step * (last if final else 0.9), duty=duty, vel=vel, decay=last_decay if final else None)
+        a = int(i * step * SR)
+        out[a:a + len(s)] += s[:len(out) - a]
+    return out
+
+
+def chip_chime(notes, step=0.09, duty=0.125):
+    """Short plucked console chime (save, idea, star...)."""
+    out = np.zeros(int((len(notes) * step + 0.5) * SR), np.float32)
+    for i, m in enumerate(notes):
+        s = chip_pulse(m, 0.35, duty=duty, vel=0.7, decay=0.12)
+        a = int(i * step * SR)
+        out[a:a + len(s)] += s[:len(out) - a]
+    return out
+
+
+def chip_pop(m):
+    """Chat-bubble pop: a tiny upward blip."""
+    return chip_pulse(m, 0.06, duty=0.5, vel=0.6, slide=5, decay=0.05)
+
+
+def key_click(seed):
+    """One keystroke: a few milliseconds of LFSR noise (seed varies the pitch)."""
+    return chip_noise(0.03, hold=2 + seed % 3, decay=0.006, vel=0.6, offset=seed * 97)
+
+
+def chip_error():
+    """Two-tone falling error beep."""
+    a = chip_pulse(70, 0.12, duty=0.5, vel=0.8)
+    b = chip_pulse(64, 0.26, duty=0.5, vel=0.8, decay=0.2)
+    out = np.zeros(int(0.5 * SR), np.float32)
+    out[:len(a)] += a
+    i = int(0.14 * SR)
+    out[i:i + len(b)] += b
+    return out
+
+
+def pixel_burst():
+    """Something breaking into pixels: a spray of tiny falling blips over a noise puff."""
+    n = int(0.6 * SR)
+    t = np.arange(n) / SR
+    out = np.zeros(n, np.float32)
+    r = np.random.default_rng(5)
+    for k in range(14):
+        m = 96 - k * 2 + r.integers(-2, 3)
+        s = chip_pulse(m, 0.03, duty=0.125, vel=0.5, decay=0.02)
+        a = int((k * 0.03 + r.uniform(0, 0.01)) * SR)
+        out[a:a + len(s)] += s[:n - a] * (1 - k / 16)
+    return out + chip_noise(0.6, hold=4, decay=0.12, vel=0.5)[:n] * np.exp(-t / 0.2)
+
+
+def crt_power_sound(on):
+    """Old TV switching on (rising whine + static) or off (falling zap)."""
+    n = int(0.6 * SR)
+    t = np.arange(n) / SR
+    f = (60 + 2400 * (t / 0.6) ** 2) if on else (2600 * np.exp(-t / 0.08) + 50)
+    s = np.sin(2 * np.pi * np.cumsum(f) / SR) * (np.exp(-t / 0.3) if on else np.exp(-t / 0.15))
+    hiss = bandnoise(n, 3000, 9000, seed=44) * np.exp(-t / 0.12) * 0.3
+    return ((s * 0.25 + hiss) * np.minimum(t / 0.004, 1)).astype(np.float32)
+
+
+def bitcrush(x, bits=8, hold=1):
+    """Quantize to 2**bits levels and sample-and-hold every `hold` samples (works on mono or stereo)."""
+    q = 2 ** (bits - 1)
+    y = np.round(np.asarray(x) * q) / q
+    if hold > 1:
+        idx = (np.arange(y.shape[-1]) // hold) * hold
+        y = y[..., idx]
+    return y.astype(np.float32)
+
+
 # ---------------------------------------------------------------- mixing
 def sidechain(kicks, length):
     """Gain curve ducking on each (time, depth) kick."""

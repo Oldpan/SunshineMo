@@ -18,7 +18,7 @@ python3 render.py --still 60 125      # 抽帧检查 → out/stills/
 python3 render.py --range 56 64       # 片段预览
 python3 cover.py                      # 封面 → out/cover_16x9.png、out/cover_3x4.png
 python3 render.py                     # 整片 → out/好感差距_TheLikingGap.mp4（4 核约 40 分钟，14 Mbps）
-python3 ../../../../../scripts/gdrive_upload.py out/好感差距_TheLikingGap.mp4 --folder video_from_opus
+python3 ../../../../../scripts/gdrive_upload.py out/好感差距_TheLikingGap.mp4 --folder video_from_opus/好感差距
 ```
 
 ## 结构(100 BPM,每小节 2.4 s,画面按小节和鼓点切换)
@@ -49,7 +49,7 @@ python3 ../../../../../scripts/gdrive_upload.py out/好感差距_TheLikingGap.mp
 
 ## 发布记录
 
-- 成片 v2(2026-10):Google Drive `video_from_opus/好感差距_TheLikingGap_v2.mp4`,177.6 s,10656 帧,14 Mbps,317 MB。
-- 封面:`video_from_opus/好感差距_封面_16x9.png`、`好感差距_封面_3x4.png`。
+- 成片 v2(2026-10):Google Drive `video_from_opus/好感差距/好感差距_TheLikingGap_v2.mp4`,177.6 s,10656 帧,14 Mbps,317 MB。
+- 封面:`video_from_opus/好感差距/好感差距_封面_16x9.png`、`好感差距_封面_3x4.png`，同一文件夹里还有 `介绍和文案.md`（标题、简介、话题）。
 - v1 → v2 的修改:去掉常驻色差,降低 bloom 和字幕 glow,背景压暗、提高对比,内容层下垫暗晕;加了光斑、冲击波、火花、频谱条、标题光条、故障切片;片尾不展示制作方式。
 - 推荐标题:"聊完天总觉得自己很尬？心理学：对方比你以为的更喜欢你"。简介写法:先列出观众脑内的复盘台词,再给实验和数字,最后落到一句安慰,文末附参考文献。

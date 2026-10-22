@@ -33,12 +33,12 @@ refresh token 不是一次性的,但会失效(见下方"踩坑")。重新生成�
 ## 上传文件
 
 ```bash
-python3 scripts/gdrive_upload.py 本地文件 [--name 云端名称] [--parent 文件夹ID | --folder 文件夹名]
+python3 scripts/gdrive_upload.py 本地文件 [--name 云端名称] [--parent 文件夹ID | --folder 文件夹名[/子文件夹]]
 ```
 
 用 resumable upload 流式上传,不会把文件读进内存。输出 JSON 含 `id`、`size`、`webViewLink`。上传后核对 `size` 与本地字节数一致。
 
-`--folder` 按名字找本应用建过的文件夹,找不到就在"我的云端硬盘"根目录新建。`drive.file` 看不到你手动或用 MCP 建的同名文件夹,所以那种情况下会另建一个。
+`--folder` 按名字找本应用建过的文件夹,找不到就在"我的云端硬盘"根目录新建。`drive.file` 看不到你手动或用 MCP 建的同名文件夹,所以那种情况下会另建一个。 `--folder` 也可以写路径，比如 `video_from_opus/你来啦`，会逐级查找或新建；每个视频一个文件夹，放成片、两张封面和 `介绍和文案.md`。
 
 ## 踩坑记录
 

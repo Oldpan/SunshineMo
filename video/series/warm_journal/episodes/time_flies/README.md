@@ -21,7 +21,7 @@ python3 render.py --still 25 72 150   # 抽帧检查，输出到 out/stills/
 python3 render.py --range 66 78       # 片段预览
 python3 cover.py                      # 封面：out/cover_16x9.png、out/cover_3x4.png
 python3 render.py                     # 整片：out/长大后时间越过越快_TimeFlies.mp4（4 核约 26 分钟，14 Mbps）
-python3 ../../../../../scripts/gdrive_upload.py out/长大后时间越过越快_TimeFlies.mp4 --folder video_from_opus
+python3 ../../../../../scripts/gdrive_upload.py out/长大后时间越过越快_TimeFlies.mp4 --folder video_from_opus/长大后时间越过越快
 ```
 
 ## 结构
@@ -65,5 +65,5 @@ python3 ../../../../../scripts/gdrive_upload.py out/长大后时间越过越快_
 
 ## 发布记录
 
-- **成片 v1（2026-10）**：Google Drive `video_from_opus/长大后时间越过越快_TimeFlies.mp4`，198.0 s，11880 帧，14 Mbps，337 MB。
-- **封面**：`video_from_opus/时间越过越快_封面_16x9.png`、`时间越过越快_封面_3x4.png`。
+- **成片 v1（2026-10）**：Google Drive `video_from_opus/长大后时间越过越快/长大后时间越过越快_TimeFlies.mp4`，198.0 s，11880 帧，14 Mbps，337 MB。
+- **封面**：`video_from_opus/长大后时间越过越快/时间越过越快_封面_16x9.png`、`时间越过越快_封面_3x4.png`，同一文件夹里还有 `介绍和文案.md`（标题、简介、话题）。

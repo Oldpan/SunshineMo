@@ -17,8 +17,11 @@ from .gfx import W, H, CX, CY, smooth, lerp, ease_out, back_out
 
 
 class Timeline:
-    def __init__(self, bpm, bars, sections=(), fps=60, w=W, h=H):
+    def __init__(self, bpm, bars, sections=(), fps=60, w=W, h=H, hard_cuts=False):
+        """hard_cuts=True: a "cut" in or out takes no time (tin / tout forced to 0).  Without it a shot
+        keeps drawing, opaque, for tout seconds after t1, under whatever comes next."""
         self.bpm, self.bars, self.fps = bpm, bars, fps
+        self.hard_cuts = hard_cuts
         self.beat = 60 / bpm
         self.bar = 4 * self.beat
         self.dur = bars * self.bar
@@ -65,10 +68,18 @@ class Timeline:
             out[k] = v
         return out
 
-    def shot(self, t0, t1, tin=0.5, tout=0.5, kin="zoom", kout="zoom"):
-        """Register a shot visible on [t0, t1); kin/kout: zoom | fade | whip | cut | slide | drop."""
+    def shot(self, t0, t1, tin=0.5, tout=0.5, kin="zoom", kout="zoom", origin=None, rim=None):
+        """Register a shot visible on [t0, t1); kin/kout: zoom | fade | whip | cut | slide | drop, or a
+        masked reveal: iris | lens | blinds | wipe (see MASKS).  kout="hold" keeps the shot opaque for tout
+        seconds after t1, under a masked reveal of the next shot.  origin: (x, y) centre of an iris / lens;
+        rim: (r, g, b) ring drawn on the iris edge (lens has a default one)."""
+        if self.hard_cuts:
+            tin = 0.0 if kin == "cut" else tin
+            tout = 0.0 if kout == "cut" else tout
+
         def deco(fn):
-            self.shots.append(dict(t0=t0, t1=t1, tin=tin, tout=tout, kin=kin, kout=kout, fn=fn))
+            self.shots.append(dict(t0=t0, t1=t1, tin=tin, tout=tout, kin=kin, kout=kout, fn=fn, origin=origin,
+                                   rim=rim))
             return fn
         return deco
 
@@ -91,6 +102,16 @@ class Timeline:
                 a, sc, bl, dx, dy, rot = a * a2, sc * sc2, bl + bl2, dx + dx2, dy + dy2, rot + rot2
             if a <= 0.002:
                 continue
+            mask = None
+            if lt < s["tin"] and s["kin"] in MASKS:
+                mask = (s["kin"], lt / s["tin"])
+            elif t >= s["t1"] and s["kout"] in MASKS:
+                mask = (s["kout"], 1 - (t - s["t1"]) / s["tout"])
+            if mask is not None:
+                if mask[1] <= 0.001:
+                    continue
+                pc.save()
+                pc.clipPath(mask_path(mask[0], mask[1], w, h, s["origin"]), skia.ClipOp.kIntersect, True)
             pc.save()
             pc.translate(cx + dx, cy + dy)
             if rot:
@@ -108,7 +129,51 @@ class Timeline:
             else:
                 s["fn"](pc, x, t, lt)
             pc.restore()
+            if mask is not None:
+                pc.restore()
+                rim = s["rim"] or ((0.85, 0.85, 0.92) if mask[0] == "lens" else None)
+                if rim is not None and mask[0] in ("iris", "lens"):
+                    ox, oy = s["origin"] or (cx, cy)
+                    r = iris_radius(mask[1], w, h, ox, oy)
+                    pc.drawCircle(ox, oy, r + 9, skia.Paint(Color4f=skia.Color4f(0, 0, 0, 0.45), AntiAlias=True,
+                                                            Style=skia.Paint.kStroke_Style, StrokeWidth=10,
+                                                            MaskFilter=skia.MaskFilter.MakeBlur(
+                                                                skia.kNormal_BlurStyle, 8)))
+                    pc.drawCircle(ox, oy, r + 7, skia.Paint(Color4f=skia.Color4f(*rim, 1.0), AntiAlias=True,
+                                                            Style=skia.Paint.kStroke_Style, StrokeWidth=14))
         return rec.finishRecordingAsPicture()
+
+
+MASKS = ("iris", "lens", "blinds", "wipe")
+
+
+def iris_radius(u, w, h, ox, oy):
+    far = max(math.hypot(ox - px, oy - py) for px in (0, w) for py in (0, h))
+    return far * smooth(u) ** 1.3
+
+
+def mask_path(kind, u, w=W, h=H, origin=None, slats=9):
+    """Clip path revealing a shot: u 0 -> nothing, 1 -> everything.
+    iris / lens: a circle grows from origin; blinds: horizontal slats open top to bottom;
+    wipe: a slanted edge sweeps left to right."""
+    p = skia.Path()
+    if kind in ("iris", "lens"):
+        ox, oy = origin or (w / 2, h / 2)
+        p.addCircle(ox, oy, max(0.5, iris_radius(u, w, h, ox, oy)))
+    elif kind == "blinds":
+        sh = h / slats
+        for i in range(slats):
+            k = smooth(min(1.0, max(0.0, (u - 0.4 * i / slats) / 0.6)))
+            if k > 0:
+                p.addRect(skia.Rect.MakeXYWH(0, i * sh, w, sh * k + 0.5))
+    elif kind == "wipe":
+        x0 = lerp(-0.25 * w, 1.25 * w, smooth(u))
+        p.moveTo(-10, -10)
+        p.lineTo(x0 + 0.18 * h, -10)
+        p.lineTo(x0 - 0.18 * h, h + 10)
+        p.lineTo(-10, h + 10)
+        p.close()
+    return p
 
 
 def tape_time(t, t0, dur, curve=1.6):
@@ -122,8 +187,10 @@ def tape_time(t, t0, dur, curve=1.6):
 
 def apply_transition(kind, u, entering, w=W, h=H):
     """u: 0 -> fully hidden, 1 -> fully visible. Returns (alpha, scale, blur, dx, dy, rotation degrees)."""
-    if kind == "cut":
+    if kind in ("cut", "hold", "iris", "blinds", "wipe"):
         return 1.0, 1.0, 0.0, 0.0, 0.0, 0.0
+    if kind == "lens":  # the next scene, seen through a magnifier, settles from a slight zoom
+        return 1.0, lerp(1.18, 1.0, ease_out(u, 3)), 0.0, 0.0, 0.0, 0.0
     e = smooth(u)
     if kind == "fade":
         return e, 1.0, 0.0, 0.0, 0.0, 0.0

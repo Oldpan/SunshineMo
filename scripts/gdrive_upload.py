@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 """Upload a file of any size to Google Drive via resumable upload (stdlib only).
 
-  gdrive_upload.py <local_file> [--name NAME] [--parent FOLDER_ID | --folder FOLDER_NAME]
+  gdrive_upload.py <local_file> [--name NAME] [--parent FOLDER_ID | --folder FOLDER[/SUB...]]
 
 --folder reuses a folder of that name created by this app (drive.file scope can
-only see those), or creates it in My Drive.
+only see those), or creates it in My Drive.  A path like "video_from_opus/你来啦"
+walks (and creates) one level per name.
 
 Credentials: GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET plus a refresh token from
 GOOGLE_REFRESH_TOKEN, or from $GDRIVE_TOKEN_FILE (written by gdrive_auth.py) if set
@@ -34,17 +35,25 @@ def access_token():
         sys.exit("token refresh failed (invalid_grant => regenerate the refresh token, see docs): " + e.read().decode())
 
 
-def ensure_folder(name, token):
+def ensure_folder(name, token, parent=None):
+    """Folder id for `name` (inside `parent` if given), created if missing.  name may be a/b/c."""
+    if "/" in name:
+        for part in name.strip("/").split("/"):
+            parent = ensure_folder(part, token, parent)
+        return parent
     auth = {"Authorization": "Bearer " + token}
     q = ("mimeType='application/vnd.google-apps.folder' and trashed=false and name='%s'"
          % name.replace("\\", "\\\\").replace("'", "\\'"))
+    if parent:
+        q += " and '%s' in parents" % parent
     url = "https://www.googleapis.com/drive/v3/files?" + urllib.parse.urlencode({"q": q, "fields": "files(id)"})
     found = json.load(urllib.request.urlopen(urllib.request.Request(url, headers=auth)))["files"]
     if found:
         return found[0]["id"]
     req = urllib.request.Request(
         "https://www.googleapis.com/drive/v3/files?fields=id",
-        json.dumps({"name": name, "mimeType": "application/vnd.google-apps.folder"}).encode(),
+        json.dumps({"name": name, "mimeType": "application/vnd.google-apps.folder",
+                    **({"parents": [parent]} if parent else {})}).encode(),
         method="POST", headers={**auth, "Content-Type": "application/json; charset=UTF-8"})
     return json.load(urllib.request.urlopen(req))["id"]
 

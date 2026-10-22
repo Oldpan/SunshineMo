@@ -83,5 +83,5 @@ python3 render.py                       # 整片：out/我不知道_Hallucinatio
 
 ## 发布记录
 
-- **成片 v1（2026-10）**：Google Drive `video_from_opus/我不知道_Hallucination.mp4`。172.2 s，10330 帧，14 Mbps，306 MB。
-- **封面**：`video_from_opus/我不知道_封面_16x9.png`、`我不知道_封面_3x4.png`。
+- **成片 v1（2026-10）**：Google Drive `video_from_opus/我不知道/我不知道_Hallucination.mp4`。172.2 s，10330 帧，14 Mbps，306 MB。
+- **封面**：`video_from_opus/我不知道/我不知道_封面_16x9.png`、`我不知道_封面_3x4.png`，同一文件夹里还有 `介绍和文案.md`（标题、简介、话题）。

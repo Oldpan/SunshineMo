@@ -46,7 +46,7 @@ HERE, OUT = episode(__file__)   # also puts the series dir (style.py) on sys.pat
 - **Never show the production brief** in the film (no "made with code / no samples" line); it belongs in the README only.
 - **Delivery:**
   - Send the mp4 in chat (SendUserFile).
-  - Upload to Google Drive folder `video_from_opus` with `python3 scripts/gdrive_upload.py <file> --folder video_from_opus`, then check that the returned `size` equals the local byte count. Details are in `docs/google-drive-api.md`.
+  - Upload to Google Drive, one folder per video named after it: `python3 scripts/gdrive_upload.py <file> --folder video_from_opus/<视频名>` (the path is created level by level). Put the mp4, both covers and a `介绍和文案.md` (titles, description with the disclaimer and references, hashtags) there; keep the same `介绍和文案.md` in the episode directory. Then check that each returned `size` equals the local byte count. Details are in `docs/google-drive-api.md`.
   - Commit the code, never the `out/` directory.
 
 ## Choosing where to work

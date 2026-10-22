@@ -59,5 +59,5 @@ python3 render.py                       # 整片：out/你来啦_ContextAndMemor
 
 ## 发布记录
 
-- **成片 v1（2026-10）**：Google Drive `video_from_opus/你来啦_ContextAndMemory.mp4`。188.6 s，11314 帧，14 Mbps，338 MB。
-- **封面**：`video_from_opus/你来啦_封面_16x9.png`、`你来啦_封面_3x4.png`。
+- **成片 v1（2026-10）**：Google Drive `video_from_opus/你来啦/你来啦_ContextAndMemory.mp4`。188.6 s，11314 帧，14 Mbps，338 MB。
+- **封面**：`video_from_opus/你来啦/你来啦_封面_16x9.png`、`你来啦_封面_3x4.png`，同一文件夹里还有 `介绍和文案.md`（标题、简介、话题）。

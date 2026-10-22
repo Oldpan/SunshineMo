@@ -55,6 +55,7 @@ HERE, OUT = episode(__file__)   # also puts the series dir (style.py) on sys.pat
 |---|---|
 | Another video in an existing series | `cp -r video/series/<s>/template video/series/<s>/episodes/<name>` and grow it. Scripts find `core/` and `style.py` themselves. |
 | A different look or genre | Create `video/series/<new>/` with its own `style.py`, `template/` and README, and add it to the table in `video/README.md`. Reuse `core/`; copy from an existing `style.py` only what fits. |
+| Turn an article, blog post or doc into a narrated explainer (voiceover, subtitles timed to speech) | Use the submodule `third_party/article-to-video` instead, following its own `SKILL.md` and `LESSONS.md`. If the directory is empty, add `Oldpan/article-to-video` to the session (add_repo), then run `git submodule update --init`. Its local TTS needs Apple Silicon (mlx). Code changes to it are committed in its own repo; here, only bump the submodule pointer. |
 | Unsure which series | Ask the user. Each series is a deliberate style; don't silently drift one into another. |
 | "Change the style" with no style given | Offer 2–3 concrete directions with AskUserQuestion previews (palette, fonts, motifs, music genre and BPM, mood) and recommend one. |
 

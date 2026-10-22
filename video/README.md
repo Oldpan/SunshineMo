@@ -32,6 +32,15 @@ video/
 | [warm_journal](series/warm_journal/README.md) | 暖光手帐 lo-fi：纸张质感、手写字、钟表滴答卡点，偏情绪共鸣 | 1 |
 | [pixel_theater](series/pixel_theater/README.md) | 像素小剧场：平滑的星夜场景配像素小怪，芯片 lo-fi，用小故事讲 AI 知识（演绎七、讲解三） | 1 |
 
+## 另一条管线：article-to-video
+
+`third_party/article-to-video` 是在另一个仓库维护的子模块（见 `third_party/README.md`）。做视频前先选管线：
+
+| 想做的 | 用 |
+|---|---|
+| vibe 短片、小剧场、卡点 MV：无配音，画面、音乐和字幕全由代码生成，60fps | 本目录 `video/` |
+| 把一篇文章、博客或文档讲清楚：要中文旁白、字幕跟着配音走，30fps | `third_party/article-to-video` |
+
 ## 环境
 
 ```bash

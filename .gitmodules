@@ -1,0 +1,5 @@
+[submodule "third_party/article-to-video"]
+	path = third_party/article-to-video
+	url = https://github.com/Oldpan/article-to-video.git
+	shallow = true
+	branch = main

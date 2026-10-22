@@ -53,7 +53,7 @@ def screen_(c, x, t, lt):
     x.sky = False
     wallpaper(c, x.look, t)
     ui(c, t, x.look)
-    tip_card(c, ["一句话的小知识。"], (t - B(3, 2)) / 0.6, x.look)
+    tip_card(c, ["一句话的小知识。"], tip_phase(t, B(3, 0), B(4) - 0.4), x.look)  # in, hold, out before the cut
     screen_frame(c, x.look)
 
 

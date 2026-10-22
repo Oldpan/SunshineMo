@@ -103,10 +103,11 @@ NIAN_ROWS = [
 class Critter:
     """A character from a 1x silhouette ('#' body, A/B arms, a-d legs), drawn at 2x sub-cells."""
 
-    def __init__(self, rows, col, eyes, mouth, blush=None, sprout=False):
+    def __init__(self, rows, col, eyes, mouth, blush=None, sprout=False, glasses=None):
         self.rows, self.col = rows, col
         self.h1, self.w1 = len(rows), len(rows[0])
         self.eyes, self.mouth, self.blush, self.sprout = eyes, mouth, blush, sprout
+        self.glasses = glasses  # frame colour: square lenses around both eyes
         self.parts = {}
         for y, row in enumerate(rows):
             for x, ch in enumerate(row):
@@ -119,11 +120,11 @@ class Critter:
         return self.w1 * 2, self.h1 * 2
 
     def cells(self, expr="normal", arms="down", legs="stand", t=0.0, talk=False, tear=0.0, blush=False,
-              flower=False):
+              flower=False, glint=False):
         """{colour: [(sx, sy), ...]} in sub-cells (y may be negative: sprout, raised arms).
 
         expr: normal blink happy sad surprise flat shine; arms: down up wave type cheer;
-        legs: stand walk; tear: 0..1 a tear rolling down."""
+        legs: stand walk; tear: 0..1 a tear rolling down; glint: a flash on the glasses."""
         out = {}
 
         def put(col, sx, sy):
@@ -178,6 +179,22 @@ class Critter:
         elif (talk and int(t / 0.12) % 2 == 0) or expr == "happy":
             put(BLACK, mx, my + 1)
             put(BLACK, mx + 1, my + 1)
+        if self.glasses is not None:
+            (lx, ly), (rx, _) = self.eyes
+            for ex in (lx, rx):
+                for ox in range(-1, 3):
+                    put(self.glasses, ex + ox, ly - 1)
+                    put(self.glasses, ex + ox, ly + 2)
+                put(self.glasses, ex - 1, ly)
+                put(self.glasses, ex - 1, ly + 1)
+                put(self.glasses, ex + 2, ly)
+                put(self.glasses, ex + 2, ly + 1)
+            for bx in range(lx + 3, rx - 1):
+                put(self.glasses, bx, ly)
+            if glint:
+                for ex in (lx, rx):
+                    put(WHITE, ex + 2, ly - 1)
+                    put(WHITE, ex + 1, ly - 1)
         if self.blush is not None:
             for bx, by in self.blush:
                 put(PINK, bx, by)
@@ -220,6 +237,19 @@ class Critter:
 
 JIN = Critter(JIN_ROWS, ORANGE, eyes=[(6, 2), (16, 2)], mouth=(11, 4))
 NIAN = Critter(NIAN_ROWS, MINT, eyes=[(6, 4), (16, 4)], mouth=(11, 6), blush=[(4, 7), (18, 7)], sprout=True)
+TEACHER_ROWS = [
+    "...########...",
+    "..##########..",
+    "..##########..",
+    "AA##########BB",
+    "AA##########BB",
+    "..##########..",
+    "..##########..",
+    "...a.b..c.d...",
+    "...a.b..c.d...",
+]
+SLATE = (0.52, 0.60, 0.76)
+TEACHER = Critter(TEACHER_ROWS, SLATE, eyes=[(8, 5), (18, 5)], mouth=(13, 9), glasses=(0.16, 0.16, 0.24))
 
 
 def hop(t, beat, h=1.0):
@@ -292,6 +322,30 @@ CHECK = Sprite.from_ascii("""
 .####...
 ..##....
 """, {"#": (0.40, 0.85, 0.50)})
+BOOK = Sprite.from_ascii("""
+#########.
+#ooooooo##
+#o#####o##
+#ooooooo##
+#o####oo##
+#ooooooo##
+#ooooooo##
+#ooooooo##
+#########.
+.########.
+""", {"#": (0.20, 0.26, 0.50), "o": (0.42, 0.56, 0.92)})
+MAG = Sprite.from_ascii("""
+..####....
+.#llll#...
+#lwllll#..
+#lwllll#..
+#llllll#..
+.#llll#...
+..####....
+......##..
+.......##.
+........##
+""", {"#": (0.86, 0.86, 0.94), "l": (0.55, 0.75, 1.0), "w": WHITE})
 BANG = Sprite.from_ascii("""
 #
 #
@@ -562,7 +616,7 @@ def window(c, x, y, w, h, title_, look, u=1.0, a=1.0, cap=None, mem=0.0, t=0.0, 
 
 
 BUBBLE = {"jin": ((1.0, 0.88, 0.80), ORANGE), "nian": ((0.86, 0.96, 0.90), (0.30, 0.62, 0.45)),
-          "sys": ((0.92, 0.92, 0.98), (0.45, 0.45, 0.70))}
+          "sys": ((0.92, 0.92, 0.98), (0.45, 0.45, 0.70)), "teacher": ((0.90, 0.92, 0.97), SLATE)}
 
 
 def bubble(c, x, y, s, who, look, a=1.0, t=None, cps=16.0, align="left", size=F_UI):
@@ -728,6 +782,16 @@ def tip_card(c, lines, u, look, y=None, a=1.0, tag="小知识", note="示意"):
         draw_text(c, L, x0 + 60, y0 + 136 + i * 70, f, paint(WHITE, al), align="left")
 
 
+def tip_phase(t, t0, t1, rise=0.5, fall=0.4):
+    """u for tip_card: rises in from t0 over `rise` s, stays up, sinks out from t1 over `fall` s.
+    (tip_card is fully in at u = 0.6 and fully out at u = 1.6.)"""
+    if t < t0:
+        return 0.0
+    if t < t1:
+        return min(1.0, 0.6 * (t - t0) / rise)
+    return 1.0 + 0.6 * (t - t1) / fall
+
+
 def popup(c, cx, cy, title_, body, look, u=1.0, a=1.0, col=RED):
     """System warning dialog: red title bar, a line or two, an OK button."""
     if u <= 0:
@@ -794,6 +858,147 @@ def hearts(c, t, events, a=1.0):
                 HEART.draw(c, xx, yy, px=6 + 3 * (j % 3 == 0), a=al, glow=0.4)
 
 
+PANEL = (0.08, 0.08, 0.17)
+
+
+def candidates(c, x, y, words, probs, look, u=1.0, pick=None, a=1.0, w=620, size=42, title_="下一个字？",
+               note="示意"):
+    """The model's next-word candidates as pixel bars (illustrative, no numbers).
+    u: 0 -> 1 the bars grow one by one; 1 -> 1.3 the `pick` row lights up.  Returns the panel rect and the
+    picked word's (x, baseline)."""
+    if u <= 0:
+        return (x, y, w, 0), None
+    f = font(size)
+    row_h = size * 1.5
+    h = 74 + row_h * len(words) + 20
+    al = a * clamp(u / 0.15)
+    c.drawRRect(rrect(x, y + 12, w, h, 20), paint((0, 0, 0), 0.45 * al, blur=20))
+    c.drawRRect(rrect(x, y, w, h, 20), paint(PANEL, 0.94 * al))
+    c.drawRRect(rrect(x, y, w, h, 20), paint(PURPLE, 0.8 * al, stroke=3))
+    pixel_text(c, title_, x + 26, y + 20, PURPLE, al, scale=2)
+    if note:
+        draw_text(c, note, x + w - 26, y + 46, font(26), paint((0.62, 0.62, 0.75), al), align="right")
+    word_w = max(f.measureText(s_) for s_ in words) + 30
+    seg, gap = 14, 4
+    bx0 = x + 30 + word_w
+    nmax = int((x + w - 30 - bx0) // (seg + gap))
+    pk = clamp((u - 1.0) / 0.3) if pick is not None else 0.0
+    picked = None
+    for i, (s_, p_) in enumerate(zip(words, probs)):
+        ry = y + 74 + i * row_h
+        k = smooth(clamp((u - i * 0.12) / 0.5))
+        on = i == pick
+        dim = 1 - 0.55 * pk * (not on)
+        if on and pk > 0:
+            c.drawRRect(rrect(x + 12, ry - 4, w - 24, row_h - 4, 12), paint(GOLD, 0.18 * pk * al))
+        base = ry + row_h * 0.5 + size * 0.34
+        draw_text(c, s_, x + 30, base, f, paint(GOLD if on and pk > 0.5 else WHITE, al * dim), align="left")
+        n = int(round(p_ * nmax * k))
+        if p_ > 0 and k > 0:
+            n = max(1, n)
+        col = mixc((0.55, 0.60, 0.88), GOLD, pk) if on else (0.55, 0.60, 0.88)
+        for j in range(n):
+            rect(c, bx0 + j * (seg + gap), ry + row_h * 0.5 - 12, seg, 22, col, al * dim)
+        if on:
+            picked = (x + 30, base)
+    return (x, y, w, h), picked
+
+
+def thinking(c, x, y, words, t, a=1.0, size=30, spread=150, period=1.3):
+    """Faint candidate words drifting up from (x, y) while the AI types."""
+    f = font(size)
+    for i, s_ in enumerate(words):
+        u = ((t / period) + i / len(words)) % 1.0
+        xx = x + (rnd("tk", i) - 0.5) * spread
+        al = a * 0.55 * math.sin(u * math.pi)
+        draw_text(c, s_, xx, y - 90 * u, f, paint((0.85, 0.85, 1.0), al))
+
+
+def cite(c, x, y, n, a=1.0, size=30, col=PURPLE):
+    """Source tag [n]: a small rounded chip with its top-left at (x, y).  Returns its width."""
+    f = font(size)
+    s_ = str(n)
+    w_ = f.measureText(s_) + size * 0.8
+    c.drawRRect(rrect(x, y, w_, size * 1.25, size * 0.3), paint(col, a))
+    draw_text(c, s_, x + w_ / 2, y + size * 0.98, f, paint(WHITE, a))
+    return w_
+
+
+def search_window(c, x, y, w, h, query, results, look, lt, t=0.0, a=1.0, u=1.0, type_d=0.6, wait=0.7,
+                  title_="搜索", empty="没有找到相关结果。"):
+    """Search window: the query types in, '搜索中…' fills, then results (title, source) with [n] tags.
+    lt: seconds since the window opened; results appear at type_d + wait."""
+    r = window(c, x, y, w, h, title_, look, u=u, a=a, t=t)
+    if u < 0.3:
+        return r
+    rx, ry, rw, rh = r
+    bx, by, bw, bh = rx + 40, ry + 30, rw - 80, 84
+    c.drawRRect(rrect(bx, by, bw, bh, 42), paint(WHITE, a))
+    c.drawRRect(rrect(bx, by, bw, bh, 42), paint(look["soft"], 0.7 * a, stroke=3))
+    MAG.draw(c, bx + 26, by + 18, px=5, a=a)
+    f = font(38)
+    n = int(len(query) * clamp(lt / type_d))
+    c.drawString(query[:n], bx + 100, by + 56, f, paint(look["ink"], a))
+    if lt < type_d and int(lt * 4) % 2 == 0:
+        cx_ = bx + 104 + f.measureText(query[:n])
+        c.drawRect(skia.Rect.MakeXYWH(cx_, by + 22, 3, 44), paint(look["ink"], a))
+    ts = lt - type_d
+    if 0 <= ts < wait:
+        loading(c, bx + 20, by + 140, bw - 40, ts / wait, look, label="搜索中…", col=ORANGE, a=a)
+    elif ts >= wait:
+        tr = ts - wait
+        if not results:
+            draw_text(c, empty, rx + rw / 2, by + 200, font(42), paint(look["soft"], a * clamp(tr / 0.2)))
+        for i, (title, src) in enumerate(results):
+            k = ease_out(clamp((tr - i * 0.18) / 0.3), 3)
+            if k <= 0:
+                continue
+            cy = by + 130 + i * 150 + (1 - k) * 30
+            c.drawRRect(rrect(bx, cy, bw, 130, 18), paint((0.93, 0.93, 0.98), a * k))
+            cite(c, bx + 24, cy + 26, i + 1, a * k)
+            c.drawString(title, bx + 90, cy + 58, font(38), paint(look["ink"], a * k))
+            c.drawString(src, bx + 90, cy + 104, font(28), paint(look["soft"], a * k))
+    return r
+
+
+def meeting(c, x, y, w, h, look, t, tiles, a=1.0, u=1.0, title_="组会", speaking=None):
+    """Video-call window with side-by-side tiles: tiles = [(name, draw(c, cx, feet_y, px))].
+    speaking: index of the tile with a green 'talking' border.  Returns the tile rects."""
+    rx, ry, rw, rh = window(c, x, y, w, h, title_, look, u=u, a=a, t=t)
+    if u < 0.3:
+        return []
+    pad, n = 24, len(tiles)
+    tw = (rw - pad * (n + 1)) / n
+    out = []
+    for i, (name, fn) in enumerate(tiles):
+        tx, ty, th = rx + pad + i * (tw + pad), ry + pad, rh - 2 * pad
+        c.drawRRect(rrect(tx, ty, tw, th, 18), paint((0.12, 0.13, 0.22), a))
+        c.save()
+        c.clipRRect(rrect(tx, ty, tw, th, 18), skia.ClipOp.kIntersect, True)
+        c.drawCircle(tx + tw / 2, ty + th * 0.55, th * 0.55, paint(SCREEN_GLOW, 0.10 * a, blur=60))
+        fn(c, tx + tw / 2, ty + th - 40, max(4, int(th / 40)))
+        c.restore()
+        if speaking == i:
+            c.drawRRect(rrect(tx, ty, tw, th, 18), paint((0.40, 0.85, 0.50), a, stroke=5))
+        f = font(30)
+        lw = f.measureText(name) + 36
+        c.drawRRect(rrect(tx + 16, ty + th - 62, lw, 46, 12), paint((0, 0, 0), 0.5 * a))
+        draw_text(c, name, tx + 34, ty + th - 28, f, paint(WHITE, a), align="left")
+        out.append((tx, ty, tw, th))
+    return out
+
+
+def rain(c, t, a=1.0, n=160, seed=2, speed=1400, col=(0.70, 0.80, 1.0)):
+    """Thin slanted rain over the scene."""
+    r = np.random.default_rng(seed)
+    xs, ys, ls, vs = r.uniform(0, W + 300, n), r.uniform(0, H, n), r.uniform(30, 70, n), r.uniform(0.7, 1.3, n)
+    p = paint(col, 0.22 * a, stroke=2, cap_round=True)
+    for xx, yy, L, v in zip(xs, ys, ls, vs):
+        y_ = (yy + t * speed * v) % (H + 100) - 50
+        x_ = xx - y_ * 0.18
+        c.drawLine(x_, y_, x_ - L * 0.18, y_ + L, p)
+
+
 # ================================================================ story helpers
 def chat_lines(lines, at, size=F_UI, gone=None, jin_cps=30.0, cps=18.0):
     """Cue tuples (bar, beat, who, text[, cps]) -> [Msg].  at(bar, beat) gives seconds;
@@ -830,11 +1035,17 @@ def power_schedule(on, off):
 
 # ================================================================ the style
 class PixelTheater:
-    def __init__(self, tl, sync, looks, fast=(), drops=("drop1", "drop2"), outro_fade=2.0, w=W, h=H):
+    """The frame compositor.  Each episode has its own look: by default the starry night of episode 1;
+    backdrop(c, look, t, x) replaces the sky, post_fx(c, t, fi, x, look) draws after the vignette
+    (film scratches, light leaks...), grain sets the film grain."""
+
+    def __init__(self, tl, sync, looks, fast=(), drops=("drop1", "drop2"), outro_fade=2.0, w=W, h=H,
+                 backdrop=None, post_fx=None, grain=3.0):
         self.tl, self.S, self.looks = tl, sync, looks
         self.fast, self.drops = tuple(fast), tuple(drops)
         self.outro_fade = outro_fade
         self.w, self.h = w, h
+        self.backdrop, self.post_fx, self.grain_amt = backdrop, post_fx, grain
 
     def setup(self):
         info = skia.ImageInfo.Make(self.w, self.h, skia.kRGBA_8888_ColorType, skia.kPremul_AlphaType)
@@ -842,7 +1053,7 @@ class PixelTheater:
         self.surf2 = skia.Surface.MakeRaster(info)
         self.sky = Sky()
         self.bloom = post.Bloom(self.w, self.h)
-        self.grain = post.make_grain(np.random.default_rng(7), self.w, self.h, 3.0)
+        self.grain = post.make_grain(np.random.default_rng(7), self.w, self.h, self.grain_amt)
 
     def kick(self, t, d=0.12):
         return self.S.pulse("kick", t, d)
@@ -872,7 +1083,9 @@ class PixelTheater:
 
         c = self.surf.getCanvas()
         c.clear(skia.ColorBLACK)
-        if x.sky:
+        if x.sky and self.backdrop is not None:
+            self.backdrop(c, look, t, x)
+        elif x.sky:
             tw = x.twinkle + 4 * self.S.pulse("hat", t, 0.08) + 8 * self.S.pulse("bell", t, 0.25)
             self.sky.draw(c, look, t, twinkle=tw)
             for i, dt in self.recent("crash", t, 1.3):
@@ -910,6 +1123,8 @@ class PixelTheater:
         boost = 0.10 * self.kick(t, 0.15) * x.hearts
         self.bloom.apply(surf, alpha=look["bloom"] + boost, gain=1.8, threshold=1.2, blur=10, tint=look["glow"])
         post.vignette(bc, self.w, self.h, look["vig"], col=(0.0, 0.0, 0.04))
+        if self.post_fx is not None:
+            self.post_fx(bc, t, fi, x, look)
         if x.flash > 0.01:
             bc.drawPaint(paint((1.0, 1.0, 1.0), min(1, x.flash)))
         if t > self.tl.dur - self.outro_fade:

@@ -12,7 +12,7 @@ Everything lives in `video/` (see `video/README.md`):
 Series so far (table in `video/README.md`):
 - `neon_science`: neon nebula, EDM, energetic.
 - `warm_journal`: paper journal, lo-fi, emotional.
-- `pixel_theater`: smooth night scenes with pixel-art critters, chip lo-fi; a short story that teaches one AI concept (70% story, 30% explaining).
+- `pixel_theater`: pixel-art critters in smooth scenes; a short story that teaches one AI concept (70% story, 30% explaining). Each episode has its own look and music (episode 1 starry night + chip lo-fi, episode 2 rainy noir + chip jazz); the cast, UI and teaching devices stay.
 
 `video/tools/` has `sheet.py` (contact sheet of stills) and `glyphs.py` (tofu check).
 
@@ -82,7 +82,7 @@ Shots push per-frame knobs through `Ctx`: `chroma`, `shake`, `split`, `zoom`.
    - This writes `out/music.wav` plus `out/sync.npz` (event times and per-frame envelopes).
    - Seeds must come from `stable_seed()`, never `hash()`.
 4. **`render.py`.**
-   - Write one `@tl.shot(t0, t1, tin, tout, kin, kout)` per shot; transitions are zoom, fade, whip and cut.
+   - Write one `@tl.shot(t0, t1, tin, tout, kin, kout)` per shot; transitions are zoom, fade, whip, slide, drop and cut, plus masked reveals iris / lens / blinds / wipe (`origin=` for iris and lens). Under a masked reveal the outgoing shot needs `kout="hold"` with `tout` = the reveal time.
    - Read the music with `S.pulse("kick", t)`, `S.since(...)`, `S.count("kick", a, b)` and `S.e("pad", t)`.
    - Picture time through a tape stop: `tape_time(t, t0, dur)`. It uses the same curve as `synth.tape_stop`.
    - Vary the caption styles between shots.
@@ -95,7 +95,7 @@ Shots push per-frame knobs through `Ctx`: `chroma`, `shake`, `split`, `zoom`.
    - Run `python3 render.py` in the background.
    - neon_science takes about 40 min for 3 min on 4 cores (the shader costs about 0.9 s per frame per core).
    - warm_journal has no shader and runs at about 7.6 fps, so 26 min for 198 s.
-   - pixel_theater costs about 0.6 s per frame per core, so about 35 min for 189 s.
+   - pixel_theater costs about 0.6 s per frame per core, so about 35 min for 189 s (episode 2, noir: about 1.4 s, about an hour for 172 s).
    - Monitor it; don't poll with sleep.
    - Verify with ffprobe that the frame count equals dur × 60 and that the duration is right.
 8. **Covers.** Run `python3 cover.py` to get 16:9 (1920×1080) and 3:4 (1080×1440), then look at both.
@@ -181,3 +181,9 @@ Shots push per-frame knobs through `Ctx`: `chroma`, `shake`, `split`, `zoom`.
 - The whole-frame CRT power effect hides everything while the power is 0. A card shown between a power-off and the next power-on (a loading bar in the silence, "很久以后") needs its own short power-on.
 - Draw particles that leave a clipped window (pixels flying out of the chat) after restoring the clip.
 - Check glyphs against every font the episode uses (WenQuanYi, WenKai, Unifont), with `glyphs.py --font` once per font.
+- Each episode should look and sound different (the user asked for this at episode 2). Keep the cast, the UI and the teaching devices in `style.py`; put the episode's world in its own `scene.py` (palettes, backdrop, sets, props, post) and hand it to `PixelTheater(backdrop=, post_fx=, grain=)`. The defaults keep episode 1 byte-identical.
+- The user also asked for better transitions, motion and hit-synced sound than the previous episode. What worked: list every transition in `cues.TRANS` so `render.py` (how the shot enters) and `music.py` (its sound, peaking on the cut) read the same table; give each kind its own sound (whip -> `whoosh`, blinds -> `shutter_ratchet`, iris -> `aperture`, lens -> swish + chime + shutter); put typewriter captions on the sixteenth-note grid with a bell at the end; land stamps, falling cards and pins on beats; punch in on hard cuts and bump the camera on drop kicks with a last full-length shot that multiplies `x.zoom`.
+- A masked reveal at t = 0 shows the style's sky around the circle. Draw an opening iris inside the shot instead (`iris_close(c, 1 - u, ...)`), which covers everything.
+- `tip_card(u)` is fully in at u = 0.6 and starts sinking at u > 1. Episode 1 fed it `(t - t0) / 0.9`, so its three cards dropped away after about 1.4 s instead of staying up. Use `tip_phase(t, t0, t1)`.
+- Light through blinds (`blind_light`) drawn over the finished screen UI, with a slight darkening between the bands, is what made the screen shots read as noir and not as episode 1 again.
+- A typewriter caption on a paper strip must sit above the letterbox bars (y <= 960 with 74 px bars).

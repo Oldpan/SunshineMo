@@ -16,15 +16,24 @@ KAI = "/usr/share/fonts/truetype/lxgw-wenkai/LXGWWenKai-{}.ttf"  # apt: fonts-lx
 _tf = {}
 
 
-def typeface(path):
-    if path not in _tf:
-        _tf[path] = skia.Typeface.MakeFromFile(path)
-    return _tf[path]
+FONT_TYPE = "/usr/share/fonts/truetype/freefont/FreeMonoBold.ttf"  # labels with a typewriter feel
+
+
+def typeface(path, index=0):
+    if (path, index) not in _tf:
+        _tf[(path, index)] = skia.Typeface.MakeFromFile(path, index)
+    return _tf[(path, index)]
 
 
 def font(size, kind="cjk", bold=False):
-    """kind: cjk (WenQuanYi) | kai / kai-light (LXGW WenKai, handwritten feel) | pixel | an Inter weight."""
-    if kind in ("kai", "kai-light"):
+    """kind: cjk (WenQuanYi) | kai / kai-light (LXGW WenKai, handwritten feel) | pixel | mono (WenQuanYi
+    Zen Hei Mono) | type (FreeMono Bold, typewriter, Latin only) | an Inter weight."""
+    if kind == "mono":
+        f = skia.Font(typeface(FONT_CJK, 2), size)
+        f.setEmbolden(bold)
+    elif kind == "type":
+        f = skia.Font(typeface(FONT_TYPE), size)
+    elif kind in ("kai", "kai-light"):
         path = KAI.format("Bold" if bold else ("Light" if kind == "kai-light" else "Regular"))
         if not os.path.exists(path):  # font not installed: fall back to the default CJK face
             return font(size, "cjk", bold)

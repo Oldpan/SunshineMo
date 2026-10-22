@@ -631,6 +631,188 @@ def crt_power_sound(on):
     return ((s * 0.25 + hiss) * np.minimum(t / 0.004, 1)).astype(np.float32)
 
 
+def chip_roll(n=10, step=0.035, lo=79, hi=96, seed=0):
+    """Slot-machine roll: n quick blips at random pitches, climbing from lo towards hi."""
+    out = np.zeros(int((n * step + 0.2) * SR), np.float32)
+    r = np.random.default_rng(seed)
+    for k in range(n):
+        m = int(lo + (hi - lo) * k / max(1, n - 1) + r.integers(-3, 4))
+        s = chip_pulse(m, step * 0.8, duty=0.125, vel=0.5, decay=0.03)
+        a = int(k * step * SR)
+        out[a:a + len(s)] += s[:len(out) - a]
+    return out
+
+
+def sonar_ping(f=1760.0, echoes=3, gap=0.16):
+    """Search ping: a soft sine blip with a few fading echoes."""
+    n = int((0.4 + echoes * gap) * SR)
+    t = np.arange(int(0.35 * SR)) / SR
+    p = np.sin(2 * np.pi * f * t) * np.exp(-t / 0.07) * np.minimum(t / 0.003, 1)
+    out = np.zeros(n, np.float32)
+    for k in range(echoes + 1):
+        a = int(k * gap * SR)
+        out[a:a + len(p)] += (p * 0.3 * 0.45 ** k)[:n - a]
+    return out
+
+
+# ---------------------------------------------------------------- foley for cuts and story beats
+def _sweep_noise(n, f0, f1, q=1.2, seed=0):
+    """Noise through a band-pass whose centre glides from f0 to f1 (block-wise, 256-sample steps)."""
+    x = np.random.default_rng(seed).standard_normal(n).astype(np.float32)
+    out = np.zeros(n, np.float32)
+    zi = None
+    blk = 256
+    for i in range(0, n, blk):
+        fc = f0 * (f1 / f0) ** (i / max(1, n - 1))
+        lo, hi = fc / (1 + 1 / q), min(fc * (1 + 1 / q), SR * 0.45)
+        sos = signal.butter(1, [lo, hi], btype="band", fs=SR, output="sos")
+        if zi is None:
+            zi = signal.sosfilt_zi(sos) * 0
+        out[i:i + blk], zi = signal.sosfilt(sos, x[i:i + blk], zi=zi)
+    return out
+
+
+def whoosh(dur=0.45, peak=0.8, lo=300.0, hi=5000.0, seed=0):
+    """Air swish that swells into its loudest point at `peak` (fraction of dur), for whip pans and cuts.
+    Place it at cut_time - peak * dur."""
+    n = int(dur * SR)
+    t = np.arange(n) / SR
+    tp = peak * dur
+    e = np.where(t < tp, (t / tp) ** 2.2, np.exp(-(t - tp) / 0.06))
+    s = _sweep_noise(n, lo, hi, 1.5, seed)
+    return (s * e * 0.75).astype(np.float32)
+
+
+def shutter_ratchet(n=9, step=0.028, seed=0):
+    """Venetian blinds turning: a quick run of dry plastic clicks (one per slat)."""
+    out = np.zeros(int((n * step + 0.15) * SR), np.float32)
+    for k in range(n):
+        c = bandnoise(int(0.02 * SR), 1800 + 300 * (k % 3), 7000, seed=seed + k)
+        c *= np.exp(-np.arange(len(c)) / SR / 0.004)
+        a = int(k * step * SR)
+        out[a:a + len(c)] += c * (0.8 - 0.3 * k / n)
+    return out * 0.6
+
+
+def aperture(dur=0.35, seed=0):
+    """Camera iris: a short mechanical whirr ending on a click."""
+    n = int(dur * SR)
+    t = np.arange(n) / SR
+    whirr = bandnoise(n, 1500, 5000, seed=seed + 3) * (0.5 + 0.5 * np.sign(np.sin(2 * np.pi * 70 * t)))
+    whirr *= np.minimum(t / 0.03, 1) * np.clip((dur - t) / 0.05, 0, 1) * 0.25
+    click = bandnoise(int(0.03 * SR), 2000, 9000, seed=seed + 4) * np.exp(-np.arange(int(0.03 * SR)) / SR / 0.004)
+    out = np.zeros(n + len(click), np.float32)
+    out[:n] += whirr
+    out[n - len(click) // 2:n - len(click) // 2 + len(click)] += click * 0.9
+    return out
+
+
+def stamp_thud(seed=0):
+    """Rubber stamp slammed on a desk: a low thump, a paper slap and the wood knocking back."""
+    n = int(0.6 * SR)
+    t = np.arange(n) / SR
+    f = 55 + 70 * np.exp(-t / 0.02)
+    body = np.sin(2 * np.pi * np.cumsum(f) / SR) * np.exp(-t / 0.12)
+    slap = bandnoise(n, 600, 5000, seed=seed + 20) * np.exp(-t / 0.018)
+    knock = np.sin(2 * np.pi * 310 * t) * np.exp(-t / 0.05) * 0.3
+    return (np.tanh(1.8 * (body * 0.9 + slap * 0.7 + knock)) * 0.6 * np.minimum(t / 0.0015, 1)).astype(np.float32)
+
+
+def type_key(seed=0):
+    """Typewriter key: the type bar hitting the platen (a click with a short woody body)."""
+    n = int(0.09 * SR)
+    t = np.arange(n) / SR
+    r = np.random.default_rng(seed)
+    click = bandnoise(n, 2500, 9000, seed=seed + 50) * np.exp(-t / 0.003)
+    body = np.sin(2 * np.pi * r.uniform(900, 1400) * t) * np.exp(-t / 0.012) * 0.5
+    thock = np.sin(2 * np.pi * 160 * t) * np.exp(-t / 0.02) * 0.4
+    return ((click + body + thock) * 0.45).astype(np.float32)
+
+
+def type_bell():
+    """Typewriter carriage bell."""
+    n = int(1.2 * SR)
+    t = np.arange(n) / SR
+    s = np.sin(2 * np.pi * 2650 * t) + 0.5 * np.sin(2 * np.pi * 2650 * 2.76 * t) * np.exp(-t / 0.1)
+    return (s * np.exp(-t / 0.35) * np.minimum(t / 0.001, 1) * 0.22).astype(np.float32)
+
+
+def thunder(dur=4.0, seed=0):
+    """Lightning crack followed by a rolling rumble."""
+    n = int(dur * SR)
+    t = np.arange(n) / SR
+    r = np.random.default_rng(seed)
+    crack = bandnoise(n, 1500, None, seed=seed + 60) * np.exp(-t / 0.05) * 0.6
+    rumble = lowpass(bandnoise(n, 20, 400, seed=seed + 61), 250) * 3.0
+    roll = np.zeros(n, np.float32)
+    for _ in range(7):
+        t0 = r.uniform(0.05, dur * 0.6)
+        roll += (t >= t0) * np.exp(-np.maximum(t - t0, 0) / r.uniform(0.3, 0.9)) * r.uniform(0.3, 1.0)
+    e = np.minimum(t / 0.004, 1) * np.clip(roll, 0, 1.4) * np.clip((dur - t) / 0.8, 0, 1)
+    return ((crack + rumble * e * 0.5) * 0.6).astype(np.float32)
+
+
+def pin_tick(seed=0):
+    """A push-pin going into cork: a tiny metallic tick and a soft thud."""
+    n = int(0.12 * SR)
+    t = np.arange(n) / SR
+    tick_ = (np.sin(2 * np.pi * 4200 * t) + np.sin(2 * np.pi * 6100 * t)) * np.exp(-t / 0.006) * 0.25
+    thud = bandnoise(n, 150, 900, seed=seed + 70) * np.exp(-t / 0.02) * 0.6
+    return (tick_ + thud).astype(np.float32)
+
+
+def string_snap(seed=0):
+    """A taut thread snapping: a high pluck that slides down, with a flick of noise."""
+    n = int(0.35 * SR)
+    t = np.arange(n) / SR
+    f = 900 * np.exp(-t / 0.06) + 200
+    s = np.sin(2 * np.pi * np.cumsum(f) / SR) * np.exp(-t / 0.08)
+    flick = bandnoise(n, 3000, 9000, seed=seed + 80) * np.exp(-t / 0.01)
+    return ((s * 0.4 + flick * 0.5) * 0.6).astype(np.float32)
+
+
+# ---------------------------------------------------------------- jazz kit
+def upright(m, dur=0.6, vel=1.0):
+    """Plucked upright bass: a thumpy attack and a woody, quickly darkening tone."""
+    n = int((dur + 0.1) * SR)
+    t = np.arange(n) / SR
+    f = mtof(m)
+    cut = 180 + 1400 * vel * np.exp(-t / 0.05)
+    s = additive(2 * np.pi * f * t, f, cut, kmax=24, reso=0.3, seed=m)
+    s += 0.6 * np.sin(2 * np.pi * f * t)
+    thump = bandnoise(n, 60, 400, seed=m + 5) * np.exp(-t / 0.015) * 0.5
+    e = np.minimum(t / 0.004, 1) * np.exp(-t / 0.45) * np.clip(1 - (t - dur) / 0.1, 0, 1)
+    return ((s * e + thump) * 0.45 * vel).astype(np.float32)
+
+
+def brush_tap(vel=1.0, seed=0):
+    """Brush on the snare: a soft wash of noise with a slow tail."""
+    n = int(0.3 * SR)
+    t = np.arange(n) / SR
+    s = bandnoise(n, 1500, 9000, seed=seed + 90) * np.exp(-t / 0.07) * np.minimum(t / 0.004, 1)
+    return (s * 0.5 * vel).astype(np.float32)
+
+
+def brush_sweep(dur, seed=0):
+    """Brush stirred in circles: band noise breathing twice per beat-ish (dur = its length)."""
+    n = int(dur * SR)
+    t = np.arange(n) / SR
+    s = bandnoise(n, 2500, 8000, seed=seed + 91)
+    e = 0.35 + 0.65 * np.sin(np.pi * t / dur) ** 2
+    return (s * e * 0.12 * np.minimum(t / 0.05, 1) * np.clip((dur - t) / 0.05, 0, 1)).astype(np.float32)
+
+
+def ride(vel=1.0, seed=0):
+    """Ride cymbal ping: inharmonic partials over a bright noise tail."""
+    n = int(1.6 * SR)
+    t = np.arange(n) / SR
+    s = sum(np.sin(2 * np.pi * f * t + i) for i, f in enumerate((3120, 4240, 5310, 6870, 8050))) * 0.05
+    s = s * np.exp(-t / 0.5)
+    nz = bandnoise(n, 6000, None, seed=seed + 92) * np.exp(-t / 0.35) * 0.18
+    ping = np.sin(2 * np.pi * 2480 * t) * np.exp(-t / 0.08) * 0.12
+    return ((s + nz + ping) * vel * np.minimum(t / 0.001, 1)).astype(np.float32)
+
+
 def bitcrush(x, bits=8, hold=1):
     """Quantize to 2**bits levels and sample-and-hold every `hold` samples (works on mono or stereo)."""
     q = 2 ** (bits - 1)

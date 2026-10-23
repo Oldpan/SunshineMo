@@ -19,6 +19,7 @@
 | 带角色表演的卡通短片、音乐 MV、歌词 MV（卡拉 OK 字幕） | `painted-animation` | `animate`（cut-paper） |
 | 作品集 showreel、产品发布片头、动感大字排版 | `kinetic-reel` | `xilo-opus-video`（界面动效方案） |
 | 还没想好风格，想先看几个方案再定 | `xilo-opus-video`（三个方案 + 预览帧，确认后再做） | `lemo-opuscar`（帮你挑风格） |
+| 无配音的「Vibe 知识」概念短片（深色底、字幕 + 电子乐，像比特新语） | 我们自己的 `video/core`（同 `neon_science`），风格说明见 `docs/reference/vibe-knowledge-style.md` | `huashu-art-motion`（动态排版语法） |
 | 照着一条参考视频复刻手法 | `xilo-opus-video` / `huashu-art-motion`（拆解复刻） | `animate`（从参考图提炼新风格） |
 | 已有 AI 生成的绿幕人物，要用代码搭场景 | `xilo-opus-video` | — |
 

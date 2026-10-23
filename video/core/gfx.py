@@ -12,6 +12,7 @@ FONT_CJK = "/usr/share/fonts/truetype/wqy/wqy-zenhei.ttc"
 FONT_PIXEL = "/usr/share/fonts/opentype/unifont/unifont.otf"
 INTER = "/usr/share/fonts/opentype/inter/{}.otf"
 KAI = "/usr/share/fonts/truetype/lxgw-wenkai/LXGWWenKai-{}.ttf"  # apt: fonts-lxgw-wenkai
+SERIF = "/usr/share/fonts/opentype/noto/NotoSerifCJK-{}.ttc"  # apt: fonts-noto-cjk; face 2 = Simplified Chinese
 
 _tf = {}
 
@@ -26,8 +27,8 @@ def typeface(path, index=0):
 
 
 def font(size, kind="cjk", bold=False):
-    """kind: cjk (WenQuanYi) | kai / kai-light (LXGW WenKai, handwritten feel) | pixel | mono (WenQuanYi
-    Zen Hei Mono) | type (FreeMono Bold, typewriter, Latin only) | an Inter weight."""
+    """kind: cjk (WenQuanYi) | kai / kai-light (LXGW WenKai, handwritten feel) | serif (Noto Serif CJK SC) |
+    pixel | mono (WenQuanYi Zen Hei Mono) | type (FreeMono Bold, typewriter, Latin only) | an Inter weight."""
     if kind == "mono":
         f = skia.Font(typeface(FONT_CJK, 2), size)
         f.setEmbolden(bold)
@@ -38,6 +39,11 @@ def font(size, kind="cjk", bold=False):
         if not os.path.exists(path):  # font not installed: fall back to the default CJK face
             return font(size, "cjk", bold)
         f = skia.Font(typeface(path), size)
+    elif kind == "serif":
+        path = SERIF.format("Bold" if bold else "Regular")
+        if not os.path.exists(path):
+            return font(size, "cjk", bold)
+        f = skia.Font(typeface(path, 2), size)
     elif kind == "cjk":
         f = skia.Font(typeface(FONT_CJK), size)
         f.setEmbolden(bold)

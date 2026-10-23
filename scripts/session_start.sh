@@ -16,8 +16,8 @@ sh scripts/fetch_skills.sh >/dev/null 2>&1 || step "skill fetch failed (needs gi
 step "code engine"
 if ! python3 -c "import numpy, scipy, skia, PIL, yaml" 2>/dev/null; then
   # system packages from video/README.md (skia needs libEGL), then the Python ones
-  (apt-get install -y -q libegl1 libgl1 ffmpeg fonts-wqy-zenhei fonts-inter fonts-unifont fonts-lxgw-wenkai >/dev/null 2>&1 \
-    || { apt-get update -q >/dev/null 2>&1 && apt-get install -y -q libegl1 libgl1 ffmpeg fonts-wqy-zenhei fonts-inter fonts-unifont fonts-lxgw-wenkai >/dev/null 2>&1; }) \
+  (apt-get install -y -q libegl1 libgl1 ffmpeg fonts-wqy-zenhei fonts-inter fonts-unifont fonts-lxgw-wenkai fonts-noto-cjk >/dev/null 2>&1 \
+    || { apt-get update -q >/dev/null 2>&1 && apt-get install -y -q libegl1 libgl1 ffmpeg fonts-wqy-zenhei fonts-inter fonts-unifont fonts-lxgw-wenkai fonts-noto-cjk >/dev/null 2>&1; }) \
     || step "apt-get failed: install libegl1 libgl1 ffmpeg and the fonts in video/README.md"
   pip install -q numpy scipy skia-python pillow pyyaml 2>&1 | grep -v WARNING | tail -1
 fi

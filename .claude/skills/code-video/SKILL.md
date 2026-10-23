@@ -46,16 +46,16 @@ HERE, OUT = episode(__file__)   # also puts the series dir (style.py) on sys.pat
 - **Never show the production brief** in the film (no "made with code / no samples" line); it belongs in the README only.
 - **Delivery:**
   - Send the mp4 in chat (SendUserFile).
-  - Upload to Google Drive, one folder per video named after it: `python3 scripts/gdrive_upload.py <file> --folder video_from_opus/<视频名>` (the path is created level by level). Put the mp4, both covers and a `介绍和文案.md` (titles, description with the disclaimer and references, hashtags) there; keep the same `介绍和文案.md` in the episode directory. Then check that each returned `size` equals the local byte count. Details are in `docs/google-drive-api.md`.
-  - Commit the code, never the `out/` directory.
+  - Upload to Google Drive with `./sm publish <name>`: it sends every file in the episode's `video.yaml` `deliver.files` (the mp4, both covers and `介绍和文案.md` with titles, description with the disclaimer and references, hashtags) to `video_from_opus/<视频名>/`, checks each size, and writes the Drive record back into `video.yaml`. Keep `介绍和文案.md` in the episode directory. Details are in `docs/google-drive-api.md`; the make-video skill has the whole `./sm` flow.
+  - Commit the code and `video.yaml`, never the `out/` directory or any media (`.gitignore` and `.githooks/pre-commit` enforce it).
 
 ## Choosing where to work
 
 | Request | Do |
 |---|---|
-| Another video in an existing series | `cp -r video/series/<s>/template video/series/<s>/episodes/<name>` and grow it. Scripts find `core/` and `style.py` themselves. |
+| Another video in an existing series | `./sm new <name> --series <s> --title <标题>` (copies `template/` and writes `video.yaml`), then grow it. Scripts find `core/` and `style.py` themselves. `./sm build <name>` runs music.py, render.py and cover.py. |
 | A different look or genre | Create `video/series/<new>/` with its own `style.py`, `template/` and README, and add it to the table in `video/README.md`. Reuse `core/`; copy from an existing `style.py` only what fits. |
-| Turn an article, blog post or doc into a narrated explainer (voiceover, subtitles timed to speech) | Use the submodule `third_party/article-to-video` instead, following its own `SKILL.md` and `LESSONS.md`. If the directory is empty, add `Oldpan/article-to-video` to the session (add_repo), then run `git submodule update --init`. Its local TTS needs Apple Silicon (mlx). Code changes to it are committed in its own repo; here, only bump the submodule pointer. |
+| Turn an article, blog post or doc into a narrated explainer (voiceover, subtitles timed to speech) | Use the `explainer` series instead (`video/series/explainer/README.md`): the episode lives here, the narrated engine is the submodule `third_party/article-to-video` with its own `SKILL.md` and `LESSONS.md`. If the directory is empty, add `Oldpan/article-to-video` to the session (add_repo), then run `git submodule update --init`. Engine changes are committed in its own repo; here, only bump the submodule pointer. |
 | Unsure which series | Ask the user. Each series is a deliberate style; don't silently drift one into another. |
 | "Change the style" with no style given | Offer 2–3 concrete directions with AskUserQuestion previews (palette, fonts, motifs, music genre and BPM, mood) and recommend one. |
 

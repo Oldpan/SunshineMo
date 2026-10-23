@@ -1,0 +1,9 @@
+# Third-party video-style skills, fetched into .claude/skills/<name>/ by scripts/fetch_skills.sh (not committed).
+# Index of what each is good for: .claude/skills/README.md. All MIT.
+# name|repo|commit|path inside repo (empty = repo root)|paths to drop (space separated, globs ok)
+huashu-art-motion|alchaincyf/huashu-art-motion|8a0d7d72ca65fcce6f8ba82c4a6c8dfe35b8422c||.github assets/showcase assets/新风格v2_证据 tests README.en.md CONTRIBUTING.md
+lemo-opuscar|lemomo-ai/lemo-opuscar|3961ddb3d24d8876e0e2754f7790d66908acee51|plugin/skills/lemo-opuscar|
+animate|cth9191/animate|7e5eb56feb2dd573f890e1b7b34748af43d58263|plugins/animate/skills/animate|
+painted-animation|tuzhechen2005/opus-video-skills|59744a69c7b916cfbe4c4ec84006b0c2f5e2fde1|skills/painted-animation|docs/*.gif
+kinetic-reel|tuzhechen2005/opus-video-skills|59744a69c7b916cfbe4c4ec84006b0c2f5e2fde1|skills/kinetic-reel|docs/*.gif
+xilo-opus-video|Kianzzz/xilo-opus-video|f2cd828e2692e7186186408ee01a936707c2c38d|skills/xilo-opus-video|

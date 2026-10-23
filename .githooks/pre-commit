@@ -1,0 +1,17 @@
+#!/bin/sh
+# Keep videos and big binaries out of git: they belong on Google Drive (./sm publish).
+# Enable once per clone: git config core.hooksPath .githooks   (the cloud SessionStart hook does it)
+# Bypass for a deliberate exception: git commit --no-verify
+LIMIT=1048576
+git -c core.quotepath=off diff --cached --name-only --diff-filter=AM | {
+bad=0
+while IFS= read -r f; do
+  [ -f "$f" ] || continue
+  case "$f" in
+    *.mp4|*.mov|*.webm|*.wav|*.m4a|*.mp3) echo "pre-commit: $f is media; upload it to Drive instead"; bad=1; continue ;;
+  esac
+  size=$(git cat-file -s ":$f")
+  if [ "$size" -gt "$LIMIT" ]; then echo "pre-commit: $f is $size bytes (> 1 MB); put it on Drive"; bad=1; fi
+done
+exit $bad
+}

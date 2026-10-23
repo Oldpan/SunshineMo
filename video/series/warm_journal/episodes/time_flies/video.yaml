@@ -1,0 +1,12 @@
+# 长大后时间越过越快 — see `sm --help` for the fields
+title: 长大后时间越过越快
+engine: code
+style: warm_journal
+deliver:
+  drive: video_from_opus/长大后时间越过越快
+  files:
+    - {from: out/长大后时间越过越快_TimeFlies.mp4, as: 长大后时间越过越快_TimeFlies.mp4}
+    - {from: out/cover_16x9.png, as: 时间越过越快_封面_16x9.png}
+    - {from: out/cover_3x4.png, as: 时间越过越快_封面_3x4.png}
+    - {from: 介绍和文案.md}
+drive: {folder: video_from_opus/长大后时间越过越快, note: uploaded by hand before sm existed}

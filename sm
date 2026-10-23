@@ -1,0 +1,332 @@
+#!/usr/bin/env python3
+"""sm: one entry point for every video in this repo, whichever engine draws it.
+
+Each episode is a directory video/series/<series>/episodes/<slug>/ with a video.yaml:
+
+    title: 你来啦
+    engine: code              # code: video/core (Python) | narrated: third_party/article-to-video | skill:<name>
+    style: glow               # free text: the series look / palette, or the narrated renderer's style
+    deliver:
+      drive: video_from_opus/你来啦
+      files:                  # local path (relative to the episode) -> name on Drive
+        - {from: out/你来啦_ContextAndMemory.mp4, as: 你来啦_ContextAndMemory.mp4}
+        - {from: out/cover_16x9.png, as: 你来啦_封面_16x9.png}
+        - {from: 介绍和文案.md}
+    drive: ...                # written by `sm publish`; keep it last in the file
+
+Commands:
+    sm new <slug> --series S --title T [--source URL] [--article md]   start an episode
+    sm build <slug> [--dry] [--preview] [--no-synth] [-- engine args]  synthesize and render
+    sm verify <slug>                                                   check the render
+    sm publish <slug> [--dry-run]                                      upload to Drive, record it in video.yaml
+    sm list                                                            every episode and its engine
+    sm doctor                                                          what this machine can run
+
+Videos never go into git: out/ is ignored and `sm publish` puts the files on Drive.
+Source `env.sh` first (it picks the cloud or Mac profile).
+"""
+from __future__ import annotations
+
+import argparse
+import os
+import re
+import shutil
+import subprocess
+import sys
+from pathlib import Path
+
+import yaml
+
+ROOT = Path(__file__).resolve().parent
+SERIES = ROOT / "video" / "series"
+ATV = ROOT / "third_party" / "article-to-video"
+PY = sys.executable  # the code engine's python
+
+
+def atv_py():
+    """The narrated engine's own venv (setup.sh / scripts/session_start.sh make it), else this python."""
+    venv = ATV / ".venv" / "bin" / "python"
+    return str(venv) if venv.exists() else PY
+
+
+def die(msg):
+    sys.exit(f"sm: {msg}")
+
+
+def run(cmd, cwd=None, env=None):
+    print("$", " ".join(str(c) for c in cmd), flush=True)
+    r = subprocess.run([str(c) for c in cmd], cwd=cwd, env=env)
+    if r.returncode:
+        die(f"step failed ({r.returncode}): {cmd[0] if len(cmd) == 1 else cmd[1]}")
+
+
+# ---------------------------------------------------------------- episodes
+
+def episodes():
+    return sorted(SERIES.glob("*/episodes/*/video.yaml"))
+
+
+def find(slug):
+    hits = [p.parent for p in episodes() if p.parent.name == slug]
+    if not hits:
+        die(f"no episode {slug!r} (sm list shows them)")
+    if len(hits) > 1:
+        die(f"{slug!r} is in several series: {', '.join(str(h.relative_to(ROOT)) for h in hits)}")
+    return hits[0]
+
+
+def load(ep):
+    return yaml.safe_load((ep / "video.yaml").read_text(encoding="utf-8")) or {}
+
+
+def series_engine(series):
+    """A series README declares `engine: narrated` on a line of its own; everything else is code."""
+    readme = SERIES / series / "README.md"
+    m = re.search(r"^engine:\s*(\w+)", readme.read_text(encoding="utf-8"), re.M) if readme.exists() else None
+    return m.group(1) if m else "code"
+
+
+def need_atv():
+    if not (ATV / "scripts" / "synth.py").exists():
+        die("third_party/article-to-video is empty: git submodule update --init (see third_party/README.md)")
+
+
+# ---------------------------------------------------------------- new
+
+def cmd_new(a):
+    if not re.fullmatch(r"[a-z0-9][a-z0-9_-]*", a.slug):
+        die("slug: lowercase letters, digits, - and _")
+    sdir = SERIES / a.series
+    if not sdir.is_dir():
+        die(f"no series {a.series!r}: {', '.join(p.name for p in SERIES.iterdir() if p.is_dir())}")
+    ep = sdir / "episodes" / a.slug
+    if ep.exists():
+        die(f"{ep.relative_to(ROOT)} already exists")
+    engine = series_engine(a.series)
+    if engine == "narrated":
+        need_atv()
+        if not re.fullmatch(r"[a-z0-9][a-z0-9-]*", a.slug):
+            die("narrated slugs are composition ids: lowercase letters, digits and dashes")
+        cmd = [atv_py(), ATV / "scripts" / "new_project.py", a.slug, "--title", a.title, "--dir", ep]
+        cmd += ["--source", a.source] if a.source else []
+        cmd += ["--article", a.article] if a.article else []
+        run(cmd)
+        files = [{"from": f"out/{a.slug}.mp4", "as": f"{a.title}.mp4"},
+                 {"from": "out/封面_16x9.png", "as": f"{a.title}_封面_16x9.png"},
+                 {"from": "out/封面_3x4.png", "as": f"{a.title}_封面_3x4.png"},
+                 {"from": "介绍和文案.md"}]
+        style = "flat"
+    else:
+        tpl = sdir / "template"
+        if not tpl.is_dir():
+            die(f"{tpl.relative_to(ROOT)} is missing")
+        shutil.copytree(tpl, ep, ignore=shutil.ignore_patterns("out", "__pycache__"))
+        files = [{"from": "out/episode.mp4", "as": f"{a.title}.mp4"},  # the templates' render.py output
+                 {"from": "out/cover_16x9.png", "as": f"{a.title}_封面_16x9.png"},
+                 {"from": "out/cover_3x4.png", "as": f"{a.title}_封面_3x4.png"},
+                 {"from": "介绍和文案.md"}]
+        style = a.series
+    meta = {"title": a.title, "engine": engine, "style": style}
+    if a.source:
+        meta["source"] = a.source
+    meta["deliver"] = {"drive": f"video_from_opus/{a.title}", "files": files}
+    text = yaml.safe_dump(meta, allow_unicode=True, sort_keys=False, default_flow_style=None, width=120)
+    (ep / "video.yaml").write_text(f"# {a.title} — see `sm --help` for the fields\n" + text, encoding="utf-8")
+    print(f"episode: {ep.relative_to(ROOT)}")
+
+
+# ---------------------------------------------------------------- build / verify
+
+def skill_engine(v):
+    eng = str(v.get("engine", ""))
+    if eng.startswith("skill:"):
+        name = eng.split(":", 1)[1]
+        die(f"engine {eng}: follow .claude/skills/{name}/SKILL.md by hand, leave the files listed in deliver.files, "
+            "then sm publish")
+
+
+def cmd_build(a):
+    ep = find(a.slug)
+    v = load(ep)
+    skill_engine(v)
+    if v.get("engine") == "narrated":
+        need_atv()
+        s, py = ATV / "scripts", atv_py()
+        if a.dry:
+            run([py, s / "build_timeline.py", ep, "--dry", *a.rest])
+            return
+        if not a.no_synth:
+            run([py, s / "synth.py", ep])
+        run([py, s / "build_timeline.py", ep])
+        run(["bash", s / "render.sh", ep, *(["--preview"] if a.preview else []), *a.rest])
+        if not a.preview:
+            run(["node", "covers.mjs", ep], cwd=ATV / "renderer")
+    else:
+        # music first (render.py reads out/music.wav and out/sync.npz), then frames, then covers
+        if (ep / "music.py").exists() and not (a.no_synth and (ep / "out" / "music.wav").exists()):
+            run([PY, "music.py"], cwd=ep)
+        extra = list(a.rest)
+        if a.preview and not extra:
+            extra = ["--still", "5", "30", "60", "90"]
+        if not a.dry:
+            run([PY, "render.py", *extra], cwd=ep)
+        if (ep / "cover.py").exists() and not a.preview:
+            run([PY, "cover.py"], cwd=ep)
+
+
+def cmd_verify(a):
+    ep = find(a.slug)
+    v = load(ep)
+    skill_engine(v)
+    if v.get("engine") == "narrated":
+        need_atv()
+        run([atv_py(), ATV / "scripts" / "check_beats.py", ep])
+        run([atv_py(), ATV / "scripts" / "verify_video.py", ep])
+        return
+    times = [str(t) for t in (a.at or [5, 30, 60, 90, 120, 150])]
+    run([PY, "render.py", "--still", *times], cwd=ep)
+    stills = [ep / "out" / "stills" / f"t{float(t):07.2f}.png" for t in times]  # core/pipeline.py names them so
+    run([PY, ROOT / "video" / "tools" / "sheet.py", ep / "out" / "sheet.jpg", "3", *stills])
+    scripts = [p for p in ep.glob("*.py")]
+    run([PY, ROOT / "video" / "tools" / "glyphs.py", *scripts])
+
+
+# ---------------------------------------------------------------- publish
+
+def deliverables(ep, v):
+    files = (v.get("deliver") or {}).get("files") or []
+    if not files:
+        die("video.yaml has no deliver.files")
+    out = []
+    for f in files:
+        src = ep / f["from"]
+        if not src.is_file():
+            die(f"missing {src.relative_to(ROOT)} (build first?)")
+        out.append((src, f.get("as") or src.name))
+    return out
+
+
+def write_drive(ep, record):
+    """Replace the trailing `drive:` block of video.yaml, keeping everything above it byte for byte."""
+    path = ep / "video.yaml"
+    text = path.read_text(encoding="utf-8")
+    m = re.search(r"^drive:.*\Z", text, re.M | re.S)
+    head = text[:m.start()] if m else text.rstrip("\n") + "\n"
+    block = yaml.safe_dump({"drive": record}, allow_unicode=True, sort_keys=False, default_flow_style=None, width=200)
+    path.write_text(head + block, encoding="utf-8")
+
+
+def cmd_publish(a):
+    ep = find(a.slug)
+    v = load(ep)
+    folder = (v.get("deliver") or {}).get("drive")
+    if not folder:
+        die("video.yaml has no deliver.drive")
+    items = deliverables(ep, v)
+    for src, name in items:
+        print(f"{src.relative_to(ROOT)} -> {folder}/{name} ({src.stat().st_size} bytes)")
+    if a.dry_run:
+        return
+    os.environ.setdefault("GDRIVE_TOKEN_FILE", str(ROOT / ".gdrive_tokens.json"))
+    sys.path.insert(0, str(ROOT / "scripts"))
+    import gdrive_upload as gd  # noqa: E402
+
+    token = gd.access_token()
+    parent = gd.ensure_folder(folder, token)
+    record = {"folder": folder, "url": f"https://drive.google.com/drive/folders/{parent}", "files": []}
+    for src, name in items:
+        meta = gd.upload(str(src), name, parent, token)
+        size = int(meta.get("size", -1))
+        if size != src.stat().st_size:
+            die(f"{name}: Drive has {size} bytes, local file has {src.stat().st_size}")
+        record["files"].append({"name": name, "id": meta["id"], "bytes": size})
+        print(f"  ok {name} ({size} bytes)")
+    write_drive(ep, record)
+    shared = Path("/mnt/project-files")
+    if shared.is_dir():  # cloud threads: also hand the files to the project folder
+        dest = shared / v.get("title", a.slug)
+        dest.mkdir(parents=True, exist_ok=True)
+        for src, name in items:
+            shutil.copy2(src, dest / name)
+        print(f"copied to {dest}/")
+    print(f"recorded in {(ep / 'video.yaml').relative_to(ROOT)}; commit it")
+
+
+# ---------------------------------------------------------------- list / doctor
+
+def cmd_list(a):
+    for p in episodes():
+        v = yaml.safe_load(p.read_text(encoding="utf-8")) or {}
+        done = "published" if v.get("drive") else ""
+        print(f"{p.parent.name:28s} {v.get('engine', '?'):9s} {p.parent.parent.parent.name:14s} {v.get('title', '')}  {done}")
+
+
+def cmd_doctor(a):
+    def check(name, ok, hint=""):
+        print(f"  [{'ok' if ok else '--'}] {name}{'' if ok else '  ' + hint}")
+
+    def has_py(mod):
+        return subprocess.run([PY, "-c", f"import {mod}"], capture_output=True).returncode == 0
+
+    profile = os.environ.get("SM_PROFILE", "(env.sh not sourced)")
+    print(f"profile: {profile}")
+    print("code engine (video/core):")
+    check("ffmpeg", shutil.which("ffmpeg"), "apt-get install ffmpeg / brew install ffmpeg")
+    for mod in ("numpy", "scipy", "skia", "PIL", "yaml"):
+        check(f"python {mod}", has_py(mod), "pip install numpy scipy skia-python pillow pyyaml")
+    print("narrated engine (third_party/article-to-video):")
+    check("submodule checked out", (ATV / "scripts" / "synth.py").exists(), "git submodule update --init")
+    check("node", shutil.which("node"), "node 20+")
+    check("renderer/node_modules", (ATV / "renderer" / "node_modules").is_dir(), "cd third_party/article-to-video/renderer && npm ci")
+    check("article-to-video venv", (ATV / ".venv" / "bin" / "python").exists(), "scripts/session_start.sh or its setup.sh")
+    cloud = os.environ.get("DASHSCOPE_VIA_PROXY") == "1"
+    check("DashScope key", cloud or os.environ.get("DASHSCOPE_API_KEY"),
+          "Mac: secrets.nosync/dashscope.env in the submodule; cloud: source env.sh")
+    print("delivery:")
+    token = os.path.exists(os.environ.get("GDRIVE_TOKEN_FILE", ROOT / ".gdrive_tokens.json")) or os.environ.get("GOOGLE_REFRESH_TOKEN")
+    check("Google Drive credentials", os.environ.get("GOOGLE_CLIENT_ID") and token,
+          "GOOGLE_CLIENT_ID/SECRET + GOOGLE_REFRESH_TOKEN, or scripts/gdrive_auth.py (docs/google-drive-api.md)")
+    print("style skills:")
+    lock = ROOT / "skills" / "styles.lock"
+    names = [line.split("|")[0] for line in lock.read_text().splitlines() if line and not line.startswith("#")]
+    missing = [n for n in names if not (ROOT / ".claude" / "skills" / n / "SKILL.md").exists()]
+    check(f"{len(names) - len(missing)}/{len(names)} fetched", not missing, "sh scripts/fetch_skills.sh")
+
+
+# ---------------------------------------------------------------- main
+
+def main():
+    argv = sys.argv[1:]
+    rest = []
+    if "--" in argv:
+        i = argv.index("--")
+        argv, rest = argv[:i], argv[i + 1:]
+    ap = argparse.ArgumentParser(prog="sm", description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    sub = ap.add_subparsers(dest="cmd", required=True)
+    p = sub.add_parser("new")
+    p.add_argument("slug")
+    p.add_argument("--series", required=True)
+    p.add_argument("--title", required=True)
+    p.add_argument("--source", default="")
+    p.add_argument("--article")
+    p = sub.add_parser("build")
+    p.add_argument("slug")
+    p.add_argument("--dry", action="store_true", help="narrated: timeline from text length, no TTS; code: music only")
+    p.add_argument("--preview", action="store_true", help="narrated: half-size render; code: a few stills")
+    p.add_argument("--no-synth", action="store_true", help="reuse the narration / music already made")
+    p = sub.add_parser("verify")
+    p.add_argument("slug")
+    p.add_argument("--at", nargs="*", type=float, help="code: still times in seconds")
+    p = sub.add_parser("publish")
+    p.add_argument("slug")
+    p.add_argument("--dry-run", action="store_true")
+    sub.add_parser("list")
+    sub.add_parser("doctor")
+    a = ap.parse_args(argv)
+    a.rest = rest
+    {"new": cmd_new, "build": cmd_build, "verify": cmd_verify, "publish": cmd_publish,
+     "list": cmd_list, "doctor": cmd_doctor}[a.cmd](a)
+
+
+if __name__ == "__main__":
+    main()

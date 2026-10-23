@@ -34,15 +34,18 @@ video/
 | [neon_science](series/neon_science/README.md) | 霓虹星云科普 vibe：电子乐卡点、无配音、字幕驱动 | 1 |
 | [warm_journal](series/warm_journal/README.md) | 暖光手帐 lo-fi：纸张质感、手写字、钟表滴答卡点，偏情绪共鸣 | 1 |
 | [pixel_theater](series/pixel_theater/README.md) | 像素小剧场：平滑场景配像素小怪，用小故事讲 AI 知识（演绎七、讲解三），每集换画风：星夜小屏、雨夜侦探…… | 2 |
+| [explainer](series/explainer/README.md) | 讲透：把文章、论文讲清楚的中文讲解片，Qwen 配音，Remotion 画面（引擎是 article-to-video） | 0 |
 
-## 另一条管线：article-to-video
+每一集目录里都有 `video.yaml`（引擎、风格、交付清单），用根目录的 `./sm` 建、渲染、校验、上传 Drive，流程见 `.claude/skills/make-video/SKILL.md`。
 
-`third_party/article-to-video` 是在另一个仓库维护的子模块（见 `third_party/README.md`）。做视频前先选管线：
+## 两个引擎
 
-| 想做的 | 用 |
-|---|---|
-| vibe 短片、小剧场、卡点 MV：无配音，画面、音乐和字幕全由代码生成，60fps | 本目录 `video/` |
-| 把一篇文章、博客或文档讲清楚：要中文旁白、字幕跟着配音走，30fps | `third_party/article-to-video` |
+| 想做的 | 系列 | 引擎 |
+|---|---|---|
+| vibe 短片、小剧场、卡点 MV：无配音，画面、音乐和字幕全由代码生成，60fps | neon_science、warm_journal、pixel_theater 或新系列 | `video/core/`（`engine: code`） |
+| 把一篇文章、博客或文档讲清楚：要中文旁白、字幕跟着配音走，30fps | explainer | 子模块 `third_party/article-to-video`（`engine: narrated`，见 `third_party/README.md`） |
+
+两种都由 `./sm` 驱动。想换第三方画风，看 `.claude/skills/README.md`。
 
 ## 环境
 

@@ -1,3 +1,22 @@
 .gdrive_tokens.json
 __pycache__/
 video/**/out/
+video/**/build/
+
+# Git holds code, configs and lessons; finished videos, covers, audio and big assets live on Google Drive
+# (./sm publish). .githooks/pre-commit also refuses media and files over 1 MB.
+*.mp4
+*.mov
+*.webm
+*.wav
+*.m4a
+*.mp3
+assets.nosync/
+
+# third-party style skills: pinned in skills/styles.lock, fetched by scripts/fetch_skills.sh
+.claude/skills/huashu-art-motion/
+.claude/skills/lemo-opuscar/
+.claude/skills/animate/
+.claude/skills/painted-animation/
+.claude/skills/kinetic-reel/
+.claude/skills/xilo-opus-video/

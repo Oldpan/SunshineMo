@@ -1,0 +1,12 @@
+# 故意调弱的开源旗舰：Kimi K3.1 Pro — see `sm --help` for the fields
+title: 故意调弱的开源旗舰：Kimi K3.1 Pro
+engine: narrated
+style: kimi        # episode theme registered in scenes/common.tsx (dark data-chart look)
+source: https://www.kimi.com/blog/kimi-k3-1-pro
+deliver:
+  drive: video_from_opus/Kimi K3.1 Pro 拆解
+  files:
+  - {from: out/kimi-k31-pro.mp4, as: Kimi K3.1 Pro 拆解_KimiK31Pro.mp4}
+  - {from: out/封面_16x9.png, as: Kimi K3.1 Pro 拆解_封面_16x9.png}
+  - {from: out/封面_3x4.png, as: Kimi K3.1 Pro 拆解_封面_3x4.png}
+  - {from: 介绍和文案.md}

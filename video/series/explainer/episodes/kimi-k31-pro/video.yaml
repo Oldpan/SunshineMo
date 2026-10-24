@@ -1,7 +1,7 @@
-# 故意调弱的开源旗舰：Kimi K3.1 Pro — see `sm --help` for the fields
-title: 故意调弱的开源旗舰：Kimi K3.1 Pro
+# 开源旗舰逼近 Opus：Kimi K3.1 Pro 全拆解 — see `sm --help` for the fields
+title: 开源旗舰逼近 Opus：Kimi K3.1 Pro 全拆解
 engine: narrated
-style: kimi        # episode theme registered in scenes/common.tsx (dark data-chart look)
+style: kimi        # episode theme registered in scenes/common.tsx (light look after Kimi's release page)
 source: https://www.kimi.com/blog/kimi-k3-1-pro
 deliver:
   drive: video_from_opus/Kimi K3.1 Pro 拆解

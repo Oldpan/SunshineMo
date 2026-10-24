@@ -929,3 +929,8 @@ speculative sampling, where p and q denote the next-token distributions of the t
 - custom ublk driver implementation, storage-layer sharing, and P2P transport, achieving sub-second launch latency at
 - a memory overcommit ratio of up to 6.5× in real workloads.
 - prefix cache packs the fixed-size recurrent state into the same paged pool as the MLA KV cache and keeps long prefixes
+- where S is the sequence length and K is the number of experts selected per token, so that all ranks perform identical
+- amounts of computation. ... We prove that a balanced plan always exists with at most E/R redundant
+- experts per rank and that this bound is essentially tight (§ E).
+- Throughout Kimi K3's training and evaluation, a total of 51,219,741 sandboxes across 1,505,678 images were created.
+- At the engine level, a KDA-aware prefix cache packs the fixed-size recurrent state into the same paged pool as the MLA KV cache

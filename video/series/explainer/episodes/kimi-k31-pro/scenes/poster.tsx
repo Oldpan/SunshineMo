@@ -1,21 +1,8 @@
-// Publishing covers (16:9 and 3:4), rendered by renderer/covers.mjs. Same dark ground and cyan hero colour as the video.
+// Publishing covers (16:9 and 3:4), rendered by renderer/covers.mjs. Same misty landscape and Kimi blue as the video.
 import React from 'react';
 import {AbsoluteFill} from 'remotion';
 import {useFonts} from '@atv/lib/Video';
-import {K, Num, Zh} from './common';
-
-const Ground: React.FC = () => (
-  <AbsoluteFill style={{background: K.bg, overflow: 'hidden'}}>
-    <div style={{position: 'absolute', width: 1400, height: 1400, borderRadius: 700, background: 'radial-gradient(circle, rgba(63,208,255,0.18), rgba(63,208,255,0) 65%)', right: -500, top: -600}} />
-    <AbsoluteFill
-      style={{
-        backgroundImage: `linear-gradient(${K.line} 1px, transparent 1px), linear-gradient(90deg, ${K.line} 1px, transparent 1px)`,
-        backgroundSize: '96px 96px',
-        opacity: 0.6,
-      }}
-    />
-  </AbsoluteFill>
-);
+import {FONT_SERIF, K, Mountains, Num, useSerifFonts, Zh} from './common';
 
 /** The knob turned down from 90.5 to 81.0 — the hook of the video. */
 const Knob: React.FC<{size: number}> = ({size}) => {
@@ -42,51 +29,63 @@ const Knob: React.FC<{size: number}> = ({size}) => {
 
 export const Poster: React.FC<{w: number; h: number}> = ({w, h}) => {
   useFonts();
+  useSerifFonts();
   const tall = h > w;
-  const s = tall ? 1 : 1;
   return (
     <AbsoluteFill>
-      <Ground />
-      <div style={{position: 'absolute', left: tall ? 80 : 110, top: tall ? 110 : 120, right: tall ? 80 : 760}}>
-        <Zh size={tall ? 40 : 40} w={800} color={K.hero} style={{letterSpacing: 2}}>
+      <div style={{position: 'absolute', inset: 0, transform: tall ? 'scale(1.42)' : undefined, transformOrigin: '50% 100%'}}>
+        <Mountains t={4} />
+      </div>
+      <div style={{position: 'absolute', left: tall ? 80 : 110, top: tall ? 100 : 110, right: tall ? 80 : 760}}>
+        <Zh size={tall ? 30 : 30} w={700} color={K.hero} style={{letterSpacing: 2, fontFamily: '"Noto Sans SC", sans-serif'}}>
           Kimi K3.1 Pro · 全拆解
         </Zh>
-        <div style={{marginTop: 26, lineHeight: 1.12}}>
-          <Zh size={(tall ? 112 : 124) * s} w={900} style={{display: 'block', letterSpacing: -3}}>
-            故意调弱的
-          </Zh>
-          <Zh size={(tall ? 112 : 124) * s} w={900} color={K.hero} style={{display: 'block', letterSpacing: -3, textShadow: `0 0 40px ${K.hero}66`}}>
-            开源旗舰
-          </Zh>
+        <div style={{marginTop: 22, lineHeight: 1.12}}>
+          <div style={{fontFamily: FONT_SERIF, fontWeight: 700, fontSize: tall ? 116 : 128, color: K.ink, letterSpacing: -2}}>故意调弱的</div>
+          <div style={{fontFamily: FONT_SERIF, fontWeight: 700, fontSize: tall ? 116 : 128, color: K.hero, letterSpacing: -2}}>开源旗舰</div>
         </div>
-        <div style={{marginTop: 34, display: 'flex', gap: 40, flexWrap: 'wrap'}}>
+        <div style={{marginTop: 34, display: 'flex', gap: 46, flexWrap: 'wrap'}}>
           {[
             {n: '65.7', l: 'Terminal-Bench 4.0'},
             {n: '2.78万亿', l: '总参数（K3 底座）'},
           ].map((x) => (
             <div key={x.l}>
-              <Num size={tall ? 72 : 76} color={K.ink}>
+              <Num size={tall ? 70 : 74} color={K.ink}>
                 {x.n}
               </Num>
-              <div>
-                <Zh size={26} w={700} color={K.dim}>
-                  {x.l}
-                </Zh>
+              <div style={{marginTop: 6}}>
+                <span style={{fontFamily: '"Noto Sans SC", sans-serif', fontSize: 24, fontWeight: 600, color: '#3E4A54'}}>{x.l}</span>
               </div>
             </div>
           ))}
         </div>
       </div>
-      <div style={tall ? {position: 'absolute', left: 80, right: 80, top: 760, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, textAlign: 'center'} : {position: 'absolute', right: 80, top: 200, width: 680, textAlign: 'center'}}>
-        <Knob size={tall ? 400 : 500} />
-        <div>
-          <Num size={tall ? 96 : 92} color={K.warn} style={{whiteSpace: 'nowrap'}}>
+      <div
+        style={
+          tall
+            ? {position: 'absolute', left: 80, right: 80, top: 800, display: 'flex', justifyContent: 'center'}
+            : {position: 'absolute', right: 90, top: 210, width: 660, display: 'flex', justifyContent: 'center'}
+        }
+      >
+        <div
+          style={{
+            background: 'rgba(255,255,255,0.92)',
+            border: `1.5px solid ${K.warn}55`,
+            borderRadius: 24,
+            boxShadow: '0 18px 50px rgba(30,50,65,0.18)',
+            padding: tall ? '26px 40px 32px' : '30px 40px 36px',
+            textAlign: 'center',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+          }}
+        >
+          <Knob size={tall ? 300 : 380} />
+          <Num size={tall ? 84 : 88} color={K.warn} style={{whiteSpace: 'nowrap'}}>
             90.5 → 81.0
           </Num>
-          <div style={{marginTop: 8}}>
-            <Zh size={tall ? 32 : 34} w={800} color={K.dim}>
-              删掉网络安全数据后的漏洞利用分
-            </Zh>
+          <div style={{marginTop: 12}}>
+            <span style={{fontFamily: '"Noto Sans SC", sans-serif', fontSize: 28, fontWeight: 700, color: K.dim, whiteSpace: 'nowrap'}}>内部漏洞利用 pass@3：删数据前 → 后</span>
           </div>
         </div>
       </div>

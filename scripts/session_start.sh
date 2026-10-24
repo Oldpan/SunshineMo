@@ -36,7 +36,8 @@ if [ -f "$ATV/scripts/synth.py" ]; then
   F="$ATV/renderer/public/fonts"; mkdir -p "$F"; G=https://raw.githubusercontent.com/google/fonts/main/ofl
   for pair in "notosanssc/NotoSansSC%5Bwght%5D.ttf NotoSansSC-VF.ttf" "outfit/Outfit%5Bwght%5D.ttf Outfit-VF.ttf" \
               "montserrat/Montserrat%5Bwght%5D.ttf Montserrat-VF.ttf" "jetbrainsmono/JetBrainsMono%5Bwght%5D.ttf JetBrainsMono-VF.ttf" \
-              "zcoolkuaile/ZCOOLKuaiLe-Regular.ttf ZCOOLKuaiLe.ttf"; do
+              "zcoolkuaile/ZCOOLKuaiLe-Regular.ttf ZCOOLKuaiLe.ttf" \
+              "lora/Lora%5Bwght%5D.ttf Lora-VF.ttf" "notoserifsc/NotoSerifSC%5Bwght%5D.ttf NotoSerifSC-VF.ttf"; do
     set -- $pair; [ -s "$F/$2" ] || curl -sL --fail -o "$F/$2" "$G/$1" || step "font $2 failed"
   done
   [ -d "$ATV/assets/bgm" ] || "$ATV/.venv/bin/python" "$ATV/scripts/make_audio_assets.py" >/dev/null 2>&1

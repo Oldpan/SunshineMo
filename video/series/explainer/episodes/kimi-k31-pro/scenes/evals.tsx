@@ -2,6 +2,7 @@
 import React from 'react';
 import {useCurrentFrame} from 'remotion';
 import {useBeats} from '@atv/lib/timing';
+import {Arrow} from './base';
 import {Chip, clamp01, count, fmt, Head, Illus, K, lerp, Mo, Num, Panel, prog, rise, Shell, SrcLine, Top1, usePopIn, Zh} from './common';
 
 const PART = '03 · 跑分';
@@ -18,9 +19,9 @@ const SETS = [
 export const Coding: React.FC = () => {
   const b = useBeats();
   const frame = useCurrentFrame();
-  // which dataset: 0 until beat 2, morph to 1 at beat 2, to 2 at beat 3
-  const m1 = prog(b[2], 22);
-  const m2 = prog(b[3], 22);
+  // which dataset: Terminal-Bench on beat 0, morph to SWE Marathon at beat 1, to DeepSWE at beat 2
+  const m1 = prog(b[1], 22);
+  const m2 = prog(b[2], 22);
   const vals = SETS[0].v.map((v0, i) => lerp(lerp(v0, SETS[1].v[i], m1), SETS[2].v[i], m2));
   const cur = m2 > 0.5 ? 2 : m1 > 0.5 ? 1 : 0;
   const best = vals.indexOf(Math.max(...vals));
@@ -29,8 +30,8 @@ export const Coding: React.FC = () => {
   const nameW = 430;
   const plotW = 1050;
   const rowH = 76;
-  const rowIn = (i: number) => (i === 0 ? b[0] - 20 : b[1] - (i - 1) * 6);
-  const titleSwap = Math.min(prog(b[2], 8) * (1 - prog(b[2], 8, 10)) + prog(b[3], 8) * (1 - prog(b[3], 8, 10)), 1);
+  const rowIn = (i: number) => (i === 0 ? b[0] - 40 : b[0] - 80 - (i - 1) * 6);
+  const titleSwap = Math.min(prog(b[1], 8) * (1 - prog(b[1], 8, 10)) + prog(b[2], 8) * (1 - prog(b[2], 8, 10)), 1);
   return (
     <Shell part={PART}>
       <Head kicker="CODING" title="编程" sub="越高越好 · 思考强度 max · 闭源模型 with fallback" />
@@ -61,7 +62,7 @@ export const Coding: React.FC = () => {
         return (
           <div key={mname} style={{position: 'absolute', left: x, top: y + i * rowH, height: rowH, width: 1750, opacity: prog(f, 10)}}>
             <div style={{position: 'absolute', left: 0, width: nameW - 24, height: rowH, display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 10}}>
-              <Zh size={hero ? 30 : 25} w={hero ? 900 : 700} color={hero ? K.ink : K.dim} style={{whiteSpace: 'nowrap'}}>
+              <Zh size={hero ? 28 : 25} w={hero ? 800 : 500} color={K.ink} style={{whiteSpace: 'nowrap'}}>
                 {mname}
               </Zh>
               <Mo size={14} color={OPEN[i] ? K.green : K.faint} style={{border: `1px solid ${OPEN[i] ? K.green : K.faint}`, borderRadius: 4, padding: '0 5px'}}>
@@ -75,13 +76,12 @@ export const Coding: React.FC = () => {
                 top: rowH * 0.18,
                 height: rowH * 0.64,
                 width: w,
-                borderRadius: '0 6px 6px 0',
-                background: hero ? `linear-gradient(90deg, ${K.hero}99, ${K.hero})` : K.grey,
-                boxShadow: hero ? `0 0 26px ${K.hero}55` : undefined,
+                borderRadius: 6,
+                background: hero ? K.hero : K.grey,
               }}
             />
             <div style={{position: 'absolute', left: nameW + w + 16, height: rowH, display: 'flex', alignItems: 'center', gap: 14}}>
-              <Num size={hero ? 44 : 34} color={hero ? K.hero : K.ink} w={hero ? 900 : 700}>
+              <Num size={hero ? 38 : 32} color={hero ? K.hero : K.ink} w={hero ? 700 : 500}>
                 {fmt(m1 > 0 || m2 > 0 ? v : count(f, v, 26), 1)}
               </Num>
               {best === i && g > 0.9 && (
@@ -94,11 +94,11 @@ export const Coding: React.FC = () => {
         );
       })}
       {/* callouts */}
-      <div style={{position: 'absolute', left: 1500, top: 300, opacity: prog(b[1], 12, 30) * (1 - m1)}}>
+      <div style={{position: 'absolute', left: 1500, top: 300, opacity: prog(b[0], 12, 110) * (1 - m1)}}>
         <Chip color={K.ink}>与 Opus 5.5 差 0.7</Chip>
       </div>
       <div style={{position: 'absolute', left: 1500, top: 300, opacity: m1 * (1 - m2)}}>
-        <Top1 f={b[2] - 20} />
+        <Top1 f={b[1] - 20} />
       </div>
       <div style={{position: 'absolute', left: 1500, top: 300, opacity: m2}}>
         <Chip color={K.ink}>比 DeepSeek 低 1.5</Chip>
@@ -115,8 +115,8 @@ const BOLD = [0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 
 const WINS = [
   {name: 'HLE-Full w/ tools', v: 70.0, second: 'Opus 5.5 67.7', beat: 1},
   {name: 'BrowseComp', v: 92.1, second: 'GPT-6 Astra 91.5', beat: 1},
-  {name: 'AutomationBench-AA', v: 73.3, second: 'Opus 5.5 69.5', beat: 2},
-  {name: 'OfficeQA Pro v2', v: 64.4, second: 'Opus 5.5 62.2', beat: 2},
+  {name: 'AutomationBench-AA', v: 73.3, second: 'Opus 5.5 69.5', beat: 1},
+  {name: 'OfficeQA Pro v2', v: 64.4, second: 'Opus 5.5 62.2', beat: 1},
 ];
 
 export const Wins: React.FC = () => {
@@ -130,7 +130,7 @@ export const Wins: React.FC = () => {
         <div style={{display: 'flex', gap: 5}}>
           {BOLD.map((x, i) => {
             const on = x && prog(b[0], 8, 10 + i * 0.8) > 0.5;
-            return <div key={i} style={{width: 31, height: 40, borderRadius: 5, background: on ? K.hero : K.grey, boxShadow: on ? `0 0 12px ${K.hero}88` : undefined, opacity: prog(b[0], 6, i * 0.5)}} />;
+            return <div key={i} style={{width: 31, height: 40, borderRadius: 5, background: on ? K.hero : K.grey, opacity: prog(b[0], 6, i * 0.5)}} />;
           })}
         </div>
         <div style={{marginTop: 10, opacity: prog(b[0], 12, 40)}}>
@@ -141,7 +141,7 @@ export const Wins: React.FC = () => {
       </div>
       <div style={{position: 'absolute', left: 96, top: 380, display: 'grid', gridTemplateColumns: 'repeat(2, 846px)', gap: 26}}>
         {WINS.map((w, i) => {
-          const f = b[w.beat] - (i % 2) * 14;
+          const f = b[w.beat] - [0, 26, 52, 80][i];
           return (
             <div key={w.name} style={pop(f, 0, 0.88)}>
               <Panel glow={K.hero} style={{height: 190, padding: '22px 30px', position: 'relative'}}>
@@ -208,7 +208,7 @@ export const Gaps: React.FC = () => {
               </Zh>
             </div>
             <div style={{position: 'absolute', left: xk, top: y - 3, width: (xt - xk) * d, height: 6, background: `linear-gradient(90deg, ${K.hero}, ${K.grey2})`, borderRadius: 3}} />
-            <div style={{position: 'absolute', left: xk - 16, top: y - 16, width: 32, height: 32, borderRadius: 16, background: K.hero, boxShadow: `0 0 20px ${K.hero}`}} />
+            <div style={{position: 'absolute', left: xk - 16, top: y - 16, width: 32, height: 32, borderRadius: 16, background: K.hero}} />
             <div style={{position: 'absolute', left: xk - 120, top: y + 22, width: 240, textAlign: 'center'}}>
               <Num size={36} color={K.hero}>
                 {fmt(count(f, g.k, 22), 1)}
@@ -260,7 +260,7 @@ export const Cad: React.FC = () => {
   return (
     <Shell part={PART}>
       <Head kicker="3D · BENCHCAD" title="从渲染图写出 CAD" sub="多视角图 → CAD 代码 → 3D 模型" />
-      <div style={{position: 'absolute', left: 96, top: 250, ...rise(b[0], 0)}}>
+      <div style={{position: 'absolute', left: 96, top: 250, ...rise(b[1], -6)}}>
         <Panel style={{width: 960, height: 560, padding: '22px 30px 26px'}}>
           <div style={{display: 'flex', gap: 30, alignItems: 'center'}}>
             <Zh size={24} w={800} color={K.dim}>
@@ -268,7 +268,7 @@ export const Cad: React.FC = () => {
             </Zh>
             <span style={{display: 'flex', gap: 16, opacity: prog(b[1], 12)}}>
               <Chip color={K.hero}>■ 带工具</Chip>
-              <Chip color={K.hero2}>■ 不带工具</Chip>
+              <Chip color="#5AA8FF">■ 不带工具（细条）</Chip>
             </span>
           </div>
           {CAD.map((r, i) => {
@@ -276,21 +276,21 @@ export const Cad: React.FC = () => {
             const f2 = b[1] - 30 - i * 5;
             return (
               <div key={r.n} style={{display: 'flex', alignItems: 'center', marginTop: 30, opacity: prog(b[1], 10, i * 5)}}>
-                <div style={{width: 330, textAlign: 'right', paddingRight: 20}}>
+                <div style={{width: 330, flexShrink: 0, textAlign: 'right', paddingRight: 20, boxSizing: 'border-box'}}>
                   <Zh size={r.hero ? 26 : 22} w={r.hero ? 900 : 700} color={r.hero ? K.ink : K.dim} style={{whiteSpace: 'nowrap'}}>
                     {r.n}
                   </Zh>
                 </div>
                 <div>
                   <div style={{display: 'flex', alignItems: 'center', gap: 10}}>
-                    <div style={{width: (r.w / 100) * W * prog(f1, 24), height: 26, borderRadius: '0 4px 4px 0', background: r.hero ? K.hero : K.grey2}} />
+                    <div style={{width: (r.w / 100) * W * prog(f1, 24), height: 26, borderRadius: 5, background: r.hero ? K.hero : K.grey2, flexShrink: 0}} />
                     <Num size={26} color={r.hero ? K.hero : K.ink}>
                       {fmt(count(f1, r.w, 24), 1)}
                     </Num>
                   </div>
                   <div style={{display: 'flex', alignItems: 'center', gap: 10, marginTop: 4}}>
-                    <div style={{width: ((r.o ?? 0) / 100) * W * prog(f2, 24), height: 18, borderRadius: '0 4px 4px 0', background: r.hero ? K.hero2 : K.grey}} />
-                    <Num size={18} color={r.hero ? K.hero2 : K.dim} style={{opacity: prog(f2, 10)}}>
+                    <div style={{width: ((r.o ?? 0) / 100) * W * prog(f2, 24), height: 18, borderRadius: 4, background: r.hero ? '#7FBDFF' : K.grey, flexShrink: 0}} />
+                    <Num size={19} color={r.hero ? K.hero : K.dim} style={{opacity: prog(f2, 10)}}>
                       {r.o == null ? '未报告' : fmt(count(f2, r.o, 24), 1)}
                     </Num>
                   </div>
@@ -374,7 +374,67 @@ export const Cad: React.FC = () => {
           </div>
         </Panel>
       </div>
-      <SrcLine f={b[0]}>来源：K3.1 Pro 官方博客 · 3D Modeling and Design（BenchCAD 图）· Coding（human walking dynamics simulator）</SrcLine>
+      {/* beat 0: what BenchCAD asks for (illustrative); slides aside for the chart, cleared when the walking case arrives */}
+      <div style={{position: 'absolute', left: lerp(96, 1100, prog(b[1], 26)), top: 250, opacity: prog(b[0], 14, 6) * (1 - prog(b[2], 10))}}>
+        <Panel style={{width: 724, height: 560, padding: '24px 30px', position: 'relative'}}>
+          <Zh size={26} w={800}>
+            任务：看图写 CAD
+          </Zh>
+          <Illus style={{position: 'absolute', right: 26, top: 28}} />
+          <div style={{position: 'absolute', left: 30, right: 30, top: 120, display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
+            <div style={{display: 'grid', gridTemplateColumns: 'repeat(2, 80px)', gap: 8, opacity: prog(b[0], 12, 30)}}>
+              {[0, 1, 2, 3].map((v) => (
+                <svg key={v} width={80} height={80} viewBox="0 0 80 80">
+                  <rect x={0.5} y={0.5} width={79} height={79} rx={8} fill={K.panel2} stroke={K.line} />
+                  <g transform={`translate(40 42) rotate(${v * 35}) scale(${1 - v * 0.08})`} stroke={K.hero2} strokeWidth={2.2} fill={`${K.hero2}18`}>
+                    <rect x={-22} y={-14} width={44} height={28} rx={3} />
+                    <circle r={8} fill={K.panel2} />
+                  </g>
+                </svg>
+              ))}
+            </div>
+            <Arrow f={b[0]} d={46} />
+            <div style={{width: 210, height: 168, borderRadius: 10, background: '#F4F5F6', border: `1px solid ${K.line}`, padding: '14px 16px', opacity: prog(b[0], 12, 56)}}>
+              {['box(44, 28, 12)', '.hole(r=8)', '.fillet(3)'].map((l, i) => (
+                <div key={l} style={{opacity: prog(b[0], 8, 62 + i * 8)}}>
+                  <Mo size={18} color={K.dim}>
+                    {l}
+                  </Mo>
+                </div>
+              ))}
+            </div>
+            <Arrow f={b[0]} d={84} />
+            <svg width={110} height={110} viewBox="0 0 110 110" style={{opacity: prog(b[0], 12, 96)}}>
+              <g stroke={K.hero} strokeWidth={2.5} fill={`${K.hero}18`}>
+                <path d="M20 40 L60 24 L96 40 L56 56 Z" />
+                <path d="M20 40 L20 70 L56 86 L56 56 M96 40 L96 70 L56 86" fill="none" />
+                <ellipse cx={58} cy={40} rx={12} ry={6} fill={K.panel} />
+              </g>
+            </svg>
+          </div>
+          <div style={{position: 'absolute', left: 30, right: 30, top: 310, display: 'flex', justifyContent: 'space-between', opacity: prog(b[0], 12, 40)}}>
+            {[
+              ['多视角渲染图', 168],
+              ['', 70],
+              ['CAD 代码', 210],
+              ['', 70],
+              ['3D 模型', 110],
+            ].map(([l, w], i) => (
+              <div key={i} style={{width: w as number, textAlign: 'center'}}>
+                <Zh size={22} w={700} color={K.dim}>
+                  {l}
+                </Zh>
+              </div>
+            ))}
+          </div>
+          <div style={{position: 'absolute', left: 30, bottom: 30, opacity: prog(b[0], 12, 100)}}>
+            <Zh size={20} w={500} color={K.faint}>
+              评分：生成模型与原模型的体素 IoU
+            </Zh>
+          </div>
+        </Panel>
+      </div>
+      <SrcLine f={b[0]}>来源：K3.1 Pro 官方博客 · 3D Modeling and Design（BenchCAD 图；闭源分数取自各家报告）· Coding（human walking dynamics simulator）</SrcLine>
     </Shell>
   );
 };
@@ -389,7 +449,7 @@ export const Finance: React.FC = () => {
       <Num size={38} color={c === K.hero ? K.hero : K.ink}>
         {fmt(count(f, v, 26), dec)}
       </Num>
-      <div style={{width: 96, height: (v / max) * H * prog(f, 26), background: c, borderRadius: '8px 8px 0 0', marginTop: 8, boxShadow: c === K.hero ? `0 0 22px ${K.hero}55` : undefined}} />
+      <div style={{width: 96, height: (v / max) * H * prog(f, 26), background: c, borderRadius: '8px 8px 0 0', marginTop: 8}} />
       <div style={{marginTop: 8}}>
         <Zh size={22} w={800} color={K.dim}>
           {label}

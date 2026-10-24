@@ -1,8 +1,8 @@
 // Part 4: the deliberate cut — cyber data removed before the open-weight release (K3.1 Pro blog · Cybersecurity).
 import React from 'react';
-import {useCurrentFrame} from 'remotion';
+import {AbsoluteFill, useCurrentFrame} from 'remotion';
 import {useBeats} from '@atv/lib/timing';
-import {Chip, count, fmt, Head, Illus, K, lerp, Mo, Num, Panel, prog, rise, Shell, SrcLine, usePopIn, Zh} from './common';
+import {Chip, count, fmt, Head, Illus, K, lerp, Mo, Mountains, Num, Panel, prog, rise, Shell, SrcLine, usePopIn, Zh} from './common';
 
 const PART = '04 · 调弱的那一刀';
 
@@ -60,6 +60,7 @@ export const Cyber: React.FC = () => {
               <Zh size={26} w={900}>
                 {t}
               </Zh>
+              <Illus style={{position: 'absolute', right: 18, top: 22}} />
               <svg width={270} height={200} style={{position: 'absolute', left: 18, top: 70}}>
                 {Array.from({length: 48}, (_, i) => {
                   const cyber = i % 7 === 3;
@@ -117,7 +118,7 @@ export const Cyber: React.FC = () => {
                     </Mo>
                   )}
                 </div>
-                <div style={{position: 'absolute', left: x0 - 790 - 30, top: 10, width: (r.v / 100) * W * g, height: 40, background: color, borderRadius: '0 6px 6px 0', boxShadow: r.hero ? `0 0 24px ${K.hero}55` : undefined}} />
+                <div style={{position: 'absolute', left: x0 - 790 - 30, top: 10, width: (r.v / 100) * W * g, height: 40, background: color, borderRadius: 6}} />
                 <div style={{position: 'absolute', left: x0 - 790 - 30 + (r.v / 100) * W * g + 14, top: 12}}>
                   <Num size={r.hero ? 38 : 30} color={r.hero ? K.hero : K.ink}>
                     {fmt(count(f, r.v, 26), 1)}
@@ -130,40 +131,40 @@ export const Cyber: React.FC = () => {
           <div style={{position: 'absolute', right: 30, top: 60, ...pop(b[3], 44, 0.5)}}>
             <Chip color={K.warn}>删数据：90.5 → 81.0（−9.5）</Chip>
           </div>
-          <div style={{position: 'absolute', left: 30, right: 30, bottom: 18, ...rise(b[4], 60)}}>
+          <div style={{position: 'absolute', left: 30, right: 30, bottom: 14, ...rise(b[4], 60)}}>
             <Zh size={20} w={700} color={K.dim}>
               官方：仍落后于已公开至少三个月的闭源前沿模型
             </Zh>
+            <div>
+              <Zh size={18} w={500} color={K.faint}>
+                公开测试：ExploitBench 74.7（GPT-6 Astra 100）· ExploitGym 20.7（GPT-6 Astra 42.4）
+              </Zh>
+            </div>
           </div>
         </Panel>
       </div>
       {/* beat 5: principle */}
-      <div
-        style={{
-          position: 'absolute',
-          left: 0,
-          right: 0,
-          top: 0,
-          bottom: 0,
-          background: `rgba(7,9,13,${0.9 * prog(b[5], 16)})`,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
-        <div style={{...pop(b[5], 6, 0.9), textAlign: 'center', maxWidth: 1400}}>
-          <Mo size={24} color={K.warn} style={{letterSpacing: 3}}>
-            OPEN-WEIGHT PRINCIPLE
+      <AbsoluteFill style={{opacity: prog(b[5], 16)}}>
+        <Mountains t={frame / 30} push={prog(b[5], 120)} dim={0.25} />
+      </AbsoluteFill>
+      <div style={{position: 'absolute', left: 0, right: 0, top: 150, display: 'flex', justifyContent: 'center', opacity: prog(b[5], 12, 4)}}>
+        <div style={{textAlign: 'center', maxWidth: 1500}}>
+          <Mo size={22} color={K.warn} style={{letterSpacing: 3}}>
+            OPEN-WEIGHT PRINCIPLES
           </Mo>
-          <div style={{marginTop: 18}}>
-            <Zh size={64} w={900} style={{letterSpacing: -1}}>
-              开源权重，不推高网络攻击能力的
-              <span style={{color: K.warn}}>绝对前沿</span>
+          <div style={{marginTop: 22, ...pop(b[5], 8, 0.92)}}>
+            <Zh size={56} w={700} style={{letterSpacing: -0.5}}>
+              一、不推高网络攻击能力的<span style={{color: K.warn}}>绝对前沿</span>
             </Zh>
           </div>
-          <div style={{marginTop: 18}}>
-            <Zh size={28} w={600} color={K.dim}>
-              “not release open weights that would extend the absolute frontier of cyber capability”
+          <div style={{marginTop: 18, ...pop(b[5], 60, 0.92)}}>
+            <Zh size={56} w={700} style={{letterSpacing: -0.5}}>
+              二、逐步放开，让<span style={{color: K.hero}}>防守方</span>也用得上
+            </Zh>
+          </div>
+          <div style={{marginTop: 22, opacity: prog(b[5], 12, 80)}}>
+            <Zh size={22} w={500} color="#3E4A54">
+              “progressively raise the cyber capability available in open weights … benefits people who need it for defensive purposes”
             </Zh>
           </div>
         </div>

@@ -7,12 +7,12 @@ import {Chip, clamp01, count, fmt, Head, Illus, K, lerp, Mo, Num, Panel, prog, r
 const PART = '01 · 底座 K3';
 
 // ------------------------------------------------------------------ scale: K2 vs K3
-type Pair = {label: string; k2: number; k3: number; u: string; dec: number; ratio: string; beat: number; k2s?: string; k3s?: string};
+type Pair = {label: string; k2: number; k3: number; u: string; dec: number; ratio: string; beat: number; delay?: number; k2s?: string; k3s?: string};
 const PAIRS: Pair[] = [
   {label: '总参数', k2: 1.04, k3: 2.78, u: '万亿', dec: 2, ratio: '×2.7', beat: 0},
   {label: '每 token 激活', k2: 326, k3: 1042, u: '亿', dec: 0, ratio: '×3.2', beat: 1},
   {label: '路由专家', k2: 384, k3: 896, u: '个', dec: 0, ratio: '每次选 8 → 16', beat: 2},
-  {label: '训练上下文', k2: 128, k3: 1000, u: 'K', dec: 0, ratio: '×8', beat: 3, k2s: '128K', k3s: '1M'},
+  {label: '训练上下文', k2: 128, k3: 1000, u: 'K', dec: 0, ratio: '×8', beat: 2, delay: 66, k2s: '128K', k3s: '1M'},
 ];
 
 export const Scale: React.FC = () => {
@@ -24,7 +24,7 @@ export const Scale: React.FC = () => {
     <Shell part={PART}>
       <Head kicker="SCALE · K2 → K3" title="底座 K3 有多大" sub="柱长按各行 K3 = 满格" />
       {PAIRS.map((r, i) => {
-        const f = b[r.beat];
+        const f = b[r.beat] - (r.delay ?? 0);
         const g2 = prog(f, 24, 4);
         const g3 = prog(f, 30, 12);
         return (
@@ -39,7 +39,7 @@ export const Scale: React.FC = () => {
               <Mo size={18} color={K.faint} style={{width: 34}}>
                 K2
               </Mo>
-              <div style={{width: (r.k2 / r.k3) * W * g2, height: 26, background: K.grey2, borderRadius: '0 5px 5px 0'}} />
+              <div style={{width: (r.k2 / r.k3) * W * g2, height: 26, background: K.grey2, borderRadius: 5}} />
               <Num size={28} color={K.dim} w={700}>
                 {r.k2s ?? fmt(count(f - 4, r.k2, 24), r.dec)}
                 {!r.k2s && <span style={{fontSize: 18, marginLeft: 4}}>{r.u}</span>}
@@ -50,7 +50,7 @@ export const Scale: React.FC = () => {
               <Mo size={18} color={K.hero2} style={{width: 34}}>
                 K3
               </Mo>
-              <div style={{width: W * g3, height: 42, background: `linear-gradient(90deg, ${K.hero2}88, ${K.hero2})`, borderRadius: '0 6px 6px 0', boxShadow: `0 0 24px ${K.hero2}44`}} />
+              <div style={{width: W * g3, height: 42, background: K.hero2, borderRadius: 6}} />
               <Num size={40} color={K.ink}>
                 {r.k3s ?? fmt(count(f - 12, r.k3, 30), r.dec)}
                 {!r.k3s && <span style={{fontSize: 22, marginLeft: 4, color: K.dim}}>{r.u}</span>}
@@ -68,14 +68,14 @@ export const Scale: React.FC = () => {
           激活占比 <span style={{color: K.hero}}>3.75%</span>
         </Zh>
       </div>
-      {/* beat 4: scaling efficiency */}
-      <div style={{position: 'absolute', right: 96, top: 120, ...pop(b[4], 0, 0.5)}}>
+      {/* beat 3: scaling efficiency */}
+      <div style={{position: 'absolute', right: 96, top: 800, ...pop(b[3], 0, 0.5)}}>
         <Panel glow={K.hero} style={{padding: '14px 28px', display: 'flex', alignItems: 'baseline', gap: 14}}>
           <Zh size={26} w={800} color={K.dim}>
             扩展效率
           </Zh>
           <Num size={64} color={K.hero}>
-            {fmt(count(b[4] - 6, 2.5, 26, 1), 1)}×
+            ≈{fmt(count(b[3] - 6, 2.5, 26, 1), 1)}×
           </Num>
           <Zh size={22} w={700} color={K.dim}>
             vs K2
@@ -120,16 +120,15 @@ export const Attn: React.FC = () => {
                 width: cellW,
                 height: cellH,
                 borderRadius: lerp(14, 3, z),
-                background: lit ? K.ink : `${K.hero}`,
-                opacity: shown * (lit ? 0.95 : 0.85),
-                boxShadow: lit ? `0 0 18px rgba(255,255,255,0.35)` : `0 0 14px ${K.hero}44`,
+                background: lit ? K.ink : K.hero,
+                opacity: shown * (lit ? 0.95 : 0.9),
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
               }}
             >
               {i < 4 && (
-                <span style={{opacity: 1 - z, fontFamily: '"JetBrains Mono", monospace', fontWeight: 800, fontSize: 30, color: K.bg, textAlign: 'center', lineHeight: 1.1}}>
+                <span style={{opacity: 1 - z, fontFamily: '"JetBrains Mono", monospace', fontWeight: 800, fontSize: 30, color: K.onHero, textAlign: 'center', lineHeight: 1.1}}>
                   {lit ? (
                     <>
                       Gated
@@ -297,7 +296,13 @@ export const Ctx: React.FC = () => {
       </div>
       <div style={{position: 'absolute', left: 200, top: 420, width: 1560, height: 400}}>
         {/* axis */}
-        <div style={{position: 'absolute', left: 0, top: 120, width: 1500 * prog(b[1], 20), height: 2, background: K.dim}} />
+        <div style={{position: 'absolute', left: 0, top: 120, width: 1500 * prog(b[0], 24, 30), height: 2, background: K.dim}} />
+        {[8, 64, 256, 1024].map((v, i) => (
+          <div key={v} style={{position: 'absolute', left: lx(v) - 1, top: 112, width: 2, height: 16, background: K.grey2, opacity: prog(b[0], 10, 40 + i * 4)}} />
+        ))}
+        <div style={{position: 'absolute', left: lx(1024) - 150, top: -40, width: 300, textAlign: 'center', ...pop(b[0], 70, 0.7), opacity: prog(b[0], 12, 70) * (1 - prog(b[1], 12, 50))}}>
+          <Chip color={K.hero}>直接外推 → 1M</Chip>
+        </div>
         {STAGES.map((s, i) => {
           const f = b[1] - 12 - i * 16;
           const g = prog(f, 18);
@@ -350,6 +355,7 @@ export const AttnRes: React.FC = () => {
           <Zh size={28} w={900} color={K.dim}>
             普通残差：全部相加
           </Zh>
+          <Illus style={{position: 'absolute', right: 24, top: 28}} />
           <svg width={560} height={440} style={{position: 'absolute', left: 20, top: 70}}>
             <line x1={150} y1={360} x2={150} y2={20} stroke={K.grey2} strokeWidth={10} />
             {Array.from({length: L}, (_, i) => {
@@ -372,7 +378,7 @@ export const AttnRes: React.FC = () => {
           </svg>
           <div style={{position: 'absolute', left: 26, bottom: 22}}>
             <Zh size={22} w={600} color={K.faint}>
-              越往深处，早期层的信息越被稀释
+              所有前层信息被压进同一个状态
             </Zh>
           </div>
         </Panel>
@@ -392,7 +398,7 @@ export const AttnRes: React.FC = () => {
                 return (
                   <g key={i}>
                     <rect x={120} y={y - 18} width={180} height={36} rx={8} fill={i === L - 1 ? K.hero : K.panel2} stroke={i === L - 1 ? K.hero : K.grey2} />
-                    <text x={210} y={y + 7} textAnchor="middle" fill={i === L - 1 ? K.bg : K.dim} fontSize={18} fontFamily="JetBrains Mono" fontWeight={i === L - 1 ? 800 : 500}>
+                    <text x={210} y={y + 7} textAnchor="middle" fill={i === L - 1 ? K.onHero : K.dim} fontSize={18} fontFamily="JetBrains Mono" fontWeight={i === L - 1 ? 800 : 500}>
                       {i === 0 ? 'embedding' : `layer ${i}`}
                     </text>
                   </g>
@@ -416,7 +422,7 @@ export const AttnRes: React.FC = () => {
                 );
               })}
               <text x={480} y={60} fill={K.hero} fontSize={22} fontFamily="Noto Sans SC" fontWeight={800} opacity={prog(b[1], 12, 30)}>
-                α：学到的权重，按需取用
+                α：由可学习的查询算出的权重
               </text>
             </g>
             {/* block version */}
@@ -487,8 +493,8 @@ export const Moe: React.FC = () => {
                 cx={(i % cols) * cell + cell / 2}
                 cy={Math.floor(i / cols) * cell + cell / 2}
                 r={on ? 6.5 : 4}
-                fill={on ? K.hero : K.grey}
-                opacity={on ? 1 : 0.8}
+                fill={on ? K.hero : '#D6DADD'}
+                opacity={1}
               />
             );
           })}
@@ -510,7 +516,7 @@ export const Moe: React.FC = () => {
             路由专家在潜空间里算
           </Zh>
           {[
-            {l: '模型宽度', v: 7168, c: K.grey2, note: '2 个共享专家走全宽'},
+            {l: '模型宽度', v: 7168, c: K.grey2, note: '共享专家 ×2 走全宽'},
             {l: '路由专家宽度', v: 3584, c: K.hero, note: '0.5×，通信和权重流量更小'},
           ].map((r, i) => (
             <div key={r.l} style={{marginTop: 26, display: 'flex', alignItems: 'center', gap: 18}}>
@@ -519,11 +525,11 @@ export const Moe: React.FC = () => {
                   {r.l}
                 </Zh>
               </div>
-              <div style={{width: (r.v / 7168) * 520 * prog(b[1], 24, 8 + i * 8), height: 40, background: r.c, borderRadius: 6}} />
+              <div style={{width: (r.v / 7168) * 460 * prog(b[1], 24, 8 + i * 8), height: 40, background: r.c, borderRadius: 6, flexShrink: 0}} />
               <Num size={34} color={K.ink}>
                 {r.v}
               </Num>
-              <Zh size={20} w={600} color={K.faint} style={{opacity: prog(b[1], 12, 30)}}>
+              <Zh size={20} w={600} color={K.faint} style={{opacity: prog(b[1], 12, 30), whiteSpace: 'nowrap'}}>
                 {r.note}
               </Zh>
             </div>
@@ -562,11 +568,11 @@ export const Moe: React.FC = () => {
                     |f(x)| ≤ β1·β2 = 100
                   </text>
                   <polyline points={line(swi, g1)} fill="none" stroke={K.red} strokeWidth={5} />
-                  <text x={sx(10)} y={40} fill={K.red} fontSize={22} fontFamily="Noto Sans SC" fontWeight={800} opacity={prog(b[2], 12, 26)}>
+                  <text x={sx(20)} y={40} fill={K.red} fontSize={22} fontFamily="Noto Sans SC" fontWeight={800} opacity={prog(b[2], 12, 26)}>
                     SwiGLU：两个因子都没上限 → 冲出画面
                   </text>
                   <polyline points={line(situ, g2)} fill="none" stroke={K.hero} strokeWidth={6} />
-                  <text x={sx(55)} y={sy(100) + 40} fill={K.hero} fontSize={22} fontFamily="Noto Sans SC" fontWeight={800} opacity={prog(b[3], 12, 30)}>
+                  <text x={sx(35)} y={sy(100) + 58} fill={K.hero} fontSize={22} fontFamily="Noto Sans SC" fontWeight={800} opacity={prog(b[3], 12, 30)}>
                     SiTU-GLU：原点附近像 SwiGLU，大值被压住
                   </text>
                   <text x={930} y={Y0 + 28} textAnchor="end" fill={K.faint} fontSize={16} fontFamily="JetBrains Mono">
@@ -647,7 +653,7 @@ export const Vision: React.FC = () => {
       <div style={{position: 'absolute', left: 96, top: 280, display: 'flex', alignItems: 'center', gap: 30}}>
         <div style={{display: 'grid', gridTemplateColumns: 'repeat(3, 90px)', gap: 8, ...rise(b[0], 0)}}>
           {Array.from({length: 9}, (_, i) => (
-            <div key={i} style={{width: 90, height: 90, borderRadius: 10, background: `hsl(${195 + i * 12}, 60%, ${22 + (i % 3) * 8}%)`, border: `1px solid ${K.line}`}} />
+            <div key={i} style={{width: 90, height: 90, borderRadius: 10, background: `hsl(${200 + i * 5}, ${18 + (i % 3) * 6}%, ${48 + (i % 3) * 10 + Math.floor(i / 3) * 4}%)`, border: `1px solid ${K.line}`}} />
           ))}
         </div>
         <Arrow f={b[0]} d={8} />
@@ -669,8 +675,9 @@ export const Vision: React.FC = () => {
             <Zh size={30} w={900}>
               同一个主干 · 同一个上下文
             </Zh>
+            <Illus style={{position: 'absolute', right: 20, top: 14}} />
             <div style={{display: 'flex', gap: 6, marginTop: 14}}>
-              {Array.from({length: 18}, (_, i) => {
+              {Array.from({length: 17}, (_, i) => {
                 const vis = i % 3 === 1;
                 return <div key={i} style={{width: 20, height: 20, borderRadius: 4, background: vis ? K.hero : K.grey2, opacity: 0.4 + 0.6 * Math.abs(Math.sin((i / 18 + flow) * Math.PI))}} />;
               })}
@@ -692,7 +699,7 @@ export const Vision: React.FC = () => {
                 SigLIP 对比学习初始化
               </Zh>
             </div>
-            <div style={{position: 'absolute', left: 24, right: 24, top: 86, height: 5, background: K.red, transform: `scaleX(${prog(b[1], 16, 16)})`, transformOrigin: 'left'}} />
+            <div style={{position: 'absolute', left: 24, right: 24, top: 68, height: 4, background: K.red, transform: `scaleX(${prog(b[1], 16, 16)})`, transformOrigin: 'left'}} />
           </Panel>
         </div>
         <div style={pop(b[1], 26)}>
@@ -713,6 +720,151 @@ export const Vision: React.FC = () => {
         </div>
       </div>
       <SrcLine f={b[0]}>来源：Kimi K3 技术报告 §2.4 Native Vision（MoonViT-V2 27 层、约 0.4B 参数；Fig. 6 梯度范数对比）</SrcLine>
+    </Shell>
+  );
+};
+
+// ------------------------------------------------------------------ optimizer + pre-training data (report §2.5, §3.1–3.3)
+// per-head update scale before / after per-head orthogonalisation (illustrative: the report gives no numbers)
+const HEAD_SCALE = [1.0, 0.34, 0.82, 0.22, 0.64, 0.16, 0.9, 0.3];
+const PAIRS_CODE: {k: string; code: string}[] = [
+  {k: 'SVG', code: '<path d="M…"/>'},
+  {k: '3D', code: 'mesh.extrude(…)'},
+  {k: '网页', code: '<div class=…>'},
+  {k: '游戏', code: 'player.jump()'},
+  {k: 'CAD', code: 'sketch.circle(…)'},
+];
+
+/** Tiny rendered thumbnails for the code ↔ render pairs (illustrative). */
+const Thumb: React.FC<{k: string; g: number}> = ({k, g}) => (
+  <svg width={110} height={64} viewBox="0 0 110 64" style={{opacity: g}}>
+    <rect x={0.5} y={0.5} width={109} height={63} rx={8} fill={K.panel2} stroke={K.line} />
+    {k === 'SVG' && <path d="M14 48 C 34 6, 60 6, 96 44" stroke={K.hero} strokeWidth={4} fill="none" strokeLinecap="round" />}
+    {k === '3D' && (
+      <g stroke={K.hero2} strokeWidth={2.5} fill="none">
+        <path d="M40 20 L60 12 L80 20 L60 28 Z" fill={`${K.hero2}22`} />
+        <path d="M40 20 L40 44 L60 52 L60 28 M80 20 L80 44 L60 52" />
+      </g>
+    )}
+    {k === '网页' && (
+      <g>
+        <rect x={14} y={12} width={82} height={8} rx={3} fill={K.grey2} />
+        <rect x={14} y={26} width={36} height={26} rx={4} fill={`${K.hero}33`} />
+        <rect x={56} y={26} width={40} height={6} rx={3} fill={K.grey} />
+        <rect x={56} y={38} width={30} height={6} rx={3} fill={K.grey} />
+      </g>
+    )}
+    {k === '游戏' && (
+      <g>
+        <rect x={10} y={46} width={90} height={6} rx={3} fill={K.hero2} opacity={0.5} />
+        <rect x={30} y={22} width={14} height={18} rx={3} fill={K.hero} />
+        <circle cx={76} cy={34} r={6} fill={K.warn} />
+      </g>
+    )}
+    {k === 'CAD' && (
+      <g stroke={K.ink} strokeWidth={2} fill="none">
+        <rect x={26} y={16} width={58} height={34} rx={3} />
+        <circle cx={55} cy={33} r={10} />
+        <line x1={20} y1={56} x2={90} y2={56} strokeDasharray="4 3" stroke={K.faint} />
+      </g>
+    )}
+  </svg>
+);
+
+export const Train: React.FC = () => {
+  const b = useBeats();
+  const pop = usePopIn();
+  const split = prog(b[0], 30, 70); // full-matrix -> per-head
+  return (
+    <Shell part={PART}>
+      <Head kicker="OPTIMIZER · DATA" title="优化器与预训练数据" sub="Per-Head Muon · 代码 ↔ 渲染图" />
+      {/* left: Per-Head Muon */}
+      <div style={{position: 'absolute', left: 96, top: 222, ...rise(b[0], 0)}}>
+        <Panel style={{width: 860, height: 560, padding: '24px 30px', position: 'relative'}}>
+          <Zh size={30} w={700}>
+            Per-Head Muon
+          </Zh>
+          <Illus style={{position: 'absolute', right: 26, top: 30}} />
+          <div style={{marginTop: 4}}>
+            <Zh size={21} w={500} color={K.dim}>
+              {split < 0.5 ? '整块 Q/K/V 一起正交化：梯度大的头主导更新' : '按头切块、各自正交化：每个头的更新幅度一致'}
+            </Zh>
+          </div>
+          {/* the projection matrix, one column per head */}
+          <div style={{position: 'absolute', left: 40, top: 150, display: 'flex', gap: lerp(0, 22, split)}}>
+            {HEAD_SCALE.map((v, i) => {
+              const h = lerp(v, 0.62, split);
+              return (
+                <div key={i} style={{display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8}}>
+                  <div
+                    style={{
+                      width: lerp(92, 72, split),
+                      height: 200,
+                      background: K.panel2,
+                      border: `1.5px solid ${split > 0.5 ? K.hero : K.grey2}`,
+                      borderRadius: lerp(0, 10, split),
+                      position: 'relative',
+                      opacity: prog(b[0], 10, 8 + i * 2),
+                    }}
+                  >
+                    <div style={{position: 'absolute', left: 10, right: 10, bottom: 10, height: 170 * h * prog(b[0], 20, 16 + i * 2), borderRadius: 5, background: split > 0.5 ? K.hero : K.hero2, opacity: 0.85}} />
+                  </div>
+                  <Mo size={16} color={K.faint}>
+                    h{i + 1}
+                  </Mo>
+                </div>
+              );
+            })}
+          </div>
+          <div style={{position: 'absolute', left: 40, top: 412, opacity: prog(b[0], 12, 30)}}>
+            <Zh size={19} w={500} color={K.faint}>
+              柱高 = 该头的更新幅度
+            </Zh>
+          </div>
+          <div style={{position: 'absolute', left: 30, right: 30, bottom: 24, display: 'flex', gap: 10, flexWrap: 'wrap', opacity: prog(b[0], 12, 100)}}>
+            <Chip color={K.hero2} style={{fontSize: 18}}>Muon + weight clipping</Chip>
+            <Chip color={K.hero2} style={{fontSize: 18}}>余弦学习率 · 1% warmup · wd 0.1</Chip>
+            <Chip color={K.hero2} style={{fontSize: 18}}>各自调参后，余弦衰减的最终损失低于 WSD</Chip>
+          </div>
+        </Panel>
+      </div>
+      {/* right: programmatic multimodal data */}
+      <div style={{position: 'absolute', left: 990, top: 222, ...pop(b[1], 0, 0.92)}}>
+        <Panel glow={K.hero} style={{width: 834, height: 560, padding: '24px 30px', position: 'relative'}}>
+          <Zh size={30} w={700}>
+            代码 ↔ 渲染图，成对训练
+          </Zh>
+          <Illus style={{position: 'absolute', right: 26, top: 30}} />
+          <div style={{marginTop: 4}}>
+            <Zh size={21} w={500} color={K.dim}>
+              报告：大幅扩充程序化多模态数据
+            </Zh>
+          </div>
+          {PAIRS_CODE.map((r, i) => {
+            const g = prog(b[1], 14, 10 + i * 9);
+            return (
+              <div key={r.k} style={{position: 'absolute', left: 30, top: 118 + i * 80, display: 'flex', alignItems: 'center', gap: 18, opacity: g}}>
+                <div style={{width: 70, textAlign: 'right'}}>
+                  <Zh size={24} w={800}>
+                    {r.k}
+                  </Zh>
+                </div>
+                <div style={{width: 300, height: 60, borderRadius: 8, background: '#F4F5F6', border: `1px solid ${K.line}`, display: 'flex', alignItems: 'center', padding: '0 16px'}}>
+                  <Mo size={19} color={K.dim}>
+                    {r.code}
+                  </Mo>
+                </div>
+                <svg width={70} height={24}>
+                  <line x1={4} y1={12} x2={52 * prog(b[1], 12, 18 + i * 9) + 4} y2={12} stroke={K.hero} strokeWidth={2.5} />
+                  <path d="M50 4 L62 12 L50 20" stroke={K.hero} strokeWidth={2.5} fill="none" opacity={prog(b[1], 8, 26 + i * 9)} />
+                </svg>
+                <Thumb k={r.k} g={prog(b[1], 12, 24 + i * 9)} />
+              </div>
+            );
+          })}
+        </Panel>
+      </div>
+      <SrcLine f={b[0]}>来源：Kimi K3 技术报告 §2.5 Per-Head Muon、§3.1 Pre-Training Data（SVG、3D、Webpage、Game、CAD）、§3.2–3.3 训练配方</SrcLine>
     </Shell>
   );
 };

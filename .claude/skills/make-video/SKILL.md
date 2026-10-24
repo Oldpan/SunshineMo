@@ -47,9 +47,13 @@ Anything after `--` goes to the engine (`./sm build <slug> -- --range 56 64` for
   100–200 character introduction (whitespace not counted) on the real hook and who it is for. No alternative titles,
   references, disclaimers or hashtags. Narrated episodes keep it in `source/video.md` (the engine checks it; `sm new`
   delivers it as `介绍和文案.md`); code episodes write `介绍和文案.md` in the episode. `sm publish` refuses anything else.
-- `./sm publish <slug>` uploads every file in `deliver.files` to `deliver.drive` (default `video_from_opus/<标题>/`),
-  checks each size, writes the folder link and file ids back into `video.yaml`, and in a cloud thread also copies them
-  to `/mnt/project-files/<标题>/`. Commit `video.yaml`.
+- `./sm publish <slug>` delivers every file in `deliver.files`, depending on where it runs (`SM_PROFILE` from `env.sh`):
+  - cloud: uploads to Drive `deliver.drive` (default `video_from_opus/<标题>/`), checks each size, writes the folder
+    link and file ids back into `video.yaml`, and in a cloud thread also copies them to `/mnt/project-files/<标题>/`.
+    Commit `video.yaml`.
+  - Mac: copies them to the iCloud video library `$SM_ICLOUD_VIDEO/<deliver.drive 的最后一级>/` (default
+    `~/Library/Mobile Documents/com~apple~CloudDocs/work-station/zmt/video/`, the same library article-to-video uses).
+    Nothing goes to Drive unless you add `--drive`.
 - Drive needs `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` and a refresh token (`GOOGLE_REFRESH_TOKEN`, or
   `scripts/gdrive_auth.py`; see `docs/google-drive-api.md`).
 

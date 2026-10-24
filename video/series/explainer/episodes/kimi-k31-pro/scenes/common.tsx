@@ -7,8 +7,11 @@ import {AbsoluteFill, interpolate, useCurrentFrame} from 'remotion';
 import {FONT_MONO, FONT_NUM, FONT_ZH, THEMES} from '@atv/lib/theme';
 import {clamp01, EASE, prog, useScene, useSpring} from '@atv/lib/timing';
 
-// The episode's dark theme. Background (lib/chrome) reads THEMES by name, so register it before the first render.
-THEMES.kimi = {bg: '#07090D', bg2: '#0C1D2C', accent: '#3FD0FF', accentSoft: '#10202C', ink: '#EEF2F7', dark: true};
+// The episode's theme. Background (lib/chrome) reads THEMES by name, so register it before the first render.
+// Not flagged `dark`: the engine would draw twinkling stars behind the scenes, which show through in the fade between
+// two scenes; without the flag the gap is the same near-black as Shell's ground. Subtitles then use the dark box, and
+// script.yaml has no meta.nav so the engine's light nav bar stays hidden (PartTag replaces it).
+THEMES.kimi = {bg: '#07090D', bg2: '#0C1D2C', accent: '#3FD0FF', accentSoft: '#10202C', ink: '#EEF2F7'};
 
 export const K = {
   bg: '#07090D',

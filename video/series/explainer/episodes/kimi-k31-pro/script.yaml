@@ -9,15 +9,8 @@ meta:
   fps: 30
   width: 1920
   height: 1080
-  gap: 0.15
-  scene_tail: 0.35
-  nav:
-    intro: {label: Kimi K3.1 Pro}
-    base: {label: 第一部分 · 底座 K3}
-    post: {label: 第二部分 · 后训练}
-    eval: {label: 第三部分 · 跑分}
-    cyber: {label: 第四部分 · 调弱的那一刀}
-    end: {label: 收尾}
+  gap: 0.12
+  scene_tail: 0.3
 
 readings:
   调低: tiáo
@@ -215,7 +208,6 @@ scenes:
       - 金融上，内部经营模拟测试从 K3 的 8.9 到 37，约 4.2 倍。
       - 财务建模提高 7.2 分，金融研究提高 11.6 分。
       - 内部高难幻觉测试，断言级幻觉率从 23.4% 降到 8.3%。
-      - 博客也说明，这是找茬式压力测试，不代表日常错误率。
 
   # ------------------------------------------------------------------ part 4 · cyber
   - id: cyber
@@ -233,7 +225,7 @@ scenes:
   - id: outro
     theme: kimi
     nav: end
-    hold: 1.2
+    hold: 0.5
     beats:
       - 总结：底座 K3，混合注意力、注意力残差、超稀疏专家。
       - K3.1 Pro 加码后训练，编程和智能体追近闭源，知识推理还差一截。

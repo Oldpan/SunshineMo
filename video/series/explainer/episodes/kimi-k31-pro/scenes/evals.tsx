@@ -484,7 +484,7 @@ export const Finance: React.FC = () => {
               ↓ 15.1
             </Num>
           </div>
-          <div style={{position: 'absolute', left: 28, right: 28, bottom: 22, ...rise(b[3], 0)}}>
+          <div style={{position: 'absolute', left: 28, right: 28, bottom: 22, ...rise(b[2], 70)}}>
             <Chip color={K.warn} style={{fontSize: 19}}>
               专门找茬的压力测试，不代表日常使用的错误率
             </Chip>

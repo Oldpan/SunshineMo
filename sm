@@ -11,8 +11,11 @@ Each episode is a directory video/series/<series>/episodes/<slug>/ with a video.
       files:                  # local path (relative to the episode) -> name on Drive
         - {from: out/你来啦_ContextAndMemory.mp4, as: 你来啦_ContextAndMemory.mp4}
         - {from: out/cover_16x9.png, as: 你来啦_封面_16x9.png}
-        - {from: 介绍和文案.md}
+        - {from: 介绍和文案.md}  # narrated: {from: source/video.md, as: 介绍和文案.md}
     drive: ...                # written by `sm publish`; keep it last in the file
+
+介绍和文案.md is the Mac format and nothing else: an H1 title, a blank line, then one 100–200 character
+introduction (whitespace not counted). No alternative titles, references or hashtags; `sm publish` checks it.
 
 Commands:
     sm new <slug> --series S --title T [--source URL] [--article md]   start an episode
@@ -41,6 +44,7 @@ ROOT = Path(__file__).resolve().parent
 SERIES = ROOT / "video" / "series"
 ATV = ROOT / "third_party" / "article-to-video"
 PY = sys.executable  # the code engine's python
+COPY = "介绍和文案.md"  # the title + introduction that goes to Drive beside the video
 
 
 def atv_py():
@@ -114,7 +118,7 @@ def cmd_new(a):
         files = [{"from": f"out/{a.slug}.mp4", "as": f"{a.title}.mp4"},
                  {"from": "out/封面_16x9.png", "as": f"{a.title}_封面_16x9.png"},
                  {"from": "out/封面_3x4.png", "as": f"{a.title}_封面_3x4.png"},
-                 {"from": "介绍和文案.md"}]
+                 {"from": "source/video.md", "as": COPY}]  # the engine already checks this file
         style = "flat"
     else:
         tpl = sdir / "template"
@@ -124,7 +128,7 @@ def cmd_new(a):
         files = [{"from": "out/episode.mp4", "as": f"{a.title}.mp4"},  # the templates' render.py output
                  {"from": "out/cover_16x9.png", "as": f"{a.title}_封面_16x9.png"},
                  {"from": "out/cover_3x4.png", "as": f"{a.title}_封面_3x4.png"},
-                 {"from": "介绍和文案.md"}]
+                 {"from": COPY}]
         style = a.series
     meta = {"title": a.title, "engine": engine, "style": style}
     if a.source:
@@ -202,8 +206,25 @@ def deliverables(ep, v):
         src = ep / f["from"]
         if not src.is_file():
             die(f"missing {src.relative_to(ROOT)} (build first?)")
-        out.append((src, f.get("as") or src.name))
+        name = f.get("as") or src.name
+        if name == COPY:
+            check_copy(src)
+        out.append((src, name))
     return out
+
+
+def check_copy(src):
+    """Same rule as article-to-video's scripts/link_video.py (the Mac format): `# 标题`, then a 100–200 character
+    introduction, and nothing else."""
+    lines = src.read_text(encoding="utf-8").strip().splitlines()
+    if not lines or not lines[0].startswith("# ") or not lines[0][2:].strip():
+        die(f"{src.relative_to(ROOT)}: first line must be the title as `# 标题`")
+    body = lines[1:]
+    if any(line.lstrip().startswith(("#", ">", "- ", "1. ")) for line in body):
+        die(f"{src.relative_to(ROOT)}: only a title and one introduction paragraph (no headings, lists or quotes)")
+    count = len("".join("".join(body).split()))
+    if not 100 <= count <= 200:
+        die(f"{src.relative_to(ROOT)}: introduction must be 100–200 characters excluding whitespace (got {count})")
 
 
 def write_drive(ep, record):

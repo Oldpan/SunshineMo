@@ -1,0 +1,20 @@
+# 开源旗舰逼近 Opus：Kimi K3.1 Pro 全拆解 — see `sm --help` for the fields
+title: 开源旗舰逼近 Opus：Kimi K3.1 Pro 全拆解
+engine: narrated
+style: kimi        # episode theme registered in scenes/common.tsx (light look after Kimi's release page)
+source: https://www.kimi.com/blog/kimi-k3-1-pro
+deliver:
+  drive: video_from_opus/Kimi K3.1 Pro 拆解
+  files:
+  - {from: out/kimi-k31-pro.mp4, as: Kimi K3.1 Pro 拆解_KimiK31Pro.mp4}
+  - {from: out/封面_16x9.png, as: Kimi K3.1 Pro 拆解_封面_16x9.png}
+  - {from: out/封面_3x4.png, as: Kimi K3.1 Pro 拆解_封面_3x4.png}
+  - {from: 介绍和文案.md}
+drive:
+  folder: video_from_opus/Kimi K3.1 Pro 拆解
+  url: https://drive.google.com/drive/folders/1btSIybfDI2Pqr3JeKK0qtPtLMajxMC4x
+  files:
+  - {name: Kimi K3.1 Pro 拆解_KimiK31Pro.mp4, id: 13y3fxWnp-8yXPiRiM4_5jR8R1de8BB9f, bytes: 34458991}
+  - {name: Kimi K3.1 Pro 拆解_封面_16x9.png, id: 1ud7V_b2UVejrZotQxMyowrRPMT2X10AL, bytes: 1328476}
+  - {name: Kimi K3.1 Pro 拆解_封面_3x4.png, id: 1W9AXjMOoLpywi8FygfP3JOa2n0TIc3Pc, bytes: 780381}
+  - {name: 介绍和文案.md, id: 1p2TDzSaGQ3Bsu3tQFRuIpyzEtUTWVA7s, bytes: 1676}

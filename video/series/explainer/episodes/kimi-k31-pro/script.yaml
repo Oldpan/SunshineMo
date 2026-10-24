@@ -1,0 +1,254 @@
+# Kimi K3.1 Pro · 底座架构、后训练、跑分与「故意调弱」
+# 来源：Kimi K3.1 Pro 官方技术博客（2026-10-23）+ Kimi K3 技术报告（K3.1 Pro 的底座）
+# 完整出处见 source/article.md（复核只认这份资料）
+meta:
+  title: 开源旗舰逼近 Opus：Kimi K3.1 Pro 全拆解
+  topic: Kimi K3.1 Pro 拆解
+  source: https://www.kimi.com/blog/kimi-k3-1-pro
+  voice: qwen-longanhuan
+  fps: 30
+  width: 1920
+  height: 1080
+  gap: 0.1
+  scene_tail: 0.3
+
+readings:
+  调低: tiáo
+  调弱: tiáo
+  长度: cháng
+  变长: cháng
+  拉长: cháng
+  长程: cháng
+  长上下文: cháng
+  重做: chóng
+  一行: háng
+  行走: xíng
+  还差: hái chà
+  还是: hái
+  差距: chā
+  差了: chà
+  权重: zhòng
+  分数: shù
+  中期: zhōng
+  降到: jiàng
+  只差: chà
+  残差: chā
+  省内存: shěng
+  分位数: shù
+  量化: liàng
+  多视角: jiǎo
+  还原: huán
+  对角: jiǎo
+  token 数: shù
+  还修正: hái
+  处力臂: chù
+  高难: nán
+  幻觉: jué
+
+lexicon:
+  "Kimi K3.1 Pro": "Kimi K 三点一 Pro"
+  "K3.1 Pro": "K 三点一 Pro"
+  "K3.1": "K 三点一"
+  "K3": "K 三"
+  "K2": "K 二"
+  "Opus 5.5": "Opus 五点五"
+  "GPT-6 Astra": "GPT 六 Astra"
+  "Terminal-Bench 4.0": "Terminal Bench 四点零"
+  "SWE Marathon": "S W E Marathon"
+  "DeepSWE": "Deep S W E"
+  "HLE-Diamond": "H L E Diamond"
+  "HLE": "H L E"
+  "BenchCAD": "Bench CAD"
+  "CAD": "C A D"
+  "OfficeQA Pro v2": "Office Q A Pro V 二"
+  "AutomationBench": "Automation Bench"
+  "ProgramBench": "Program Bench"
+  "KDA": "K D A"
+  "Gated MLA": "Gated M L A"
+  "MLA": "M L A"
+  "MoE": "M O E"
+  "LatentMoE": "Latent M O E"
+  "RMSNorm": "R M S Norm"
+  "SiTU-GLU": "SiTU G L U"
+  "MoonViT-V2": "Moon ViT V 二"
+  "SigLIP": "Sig LIP"
+  "SFT": "S F T"
+  "RL": "R L"
+  "MXFP4": "M X F P 四"
+  "Tensor Core": "Tensor Core"
+  "token": "token"
+  "1M": "一百万"
+  "128K": "一百二十八 K"
+  "Per-Head Muon": "Per Head Muon"
+  "MoonEP": "Moon E P"
+  "microVM": "micro V M"
+  "EAGLE-3": "EAGLE 三"
+  "MTP": "M T P"
+  "SVG": "S V G"
+  "WSD": "W S D"
+
+scenes:
+  # ------------------------------------------------------------------ intro
+  - id: cover
+    theme: kimi
+    nav: intro
+    beats:
+      - 月之暗面刚发布 Kimi K3.1 Pro，三万亿参数级的开源模型。
+      - 终端编程测试拿到 65.7，离 Opus 5.5 只差 0.7。
+      - 但最有意思的是，他们故意把它的一项能力调低了。
+
+  - id: whatis
+    theme: kimi
+    nav: intro
+    beats:
+      - K3.1 Pro 没有换底座，它是 K3 加上大得多的后训练。
+      - 同时发布的 Highspeed 版，速度快二到三倍。
+
+  # ------------------------------------------------------------------ part 1 · base
+  - id: scale
+    theme: kimi
+    nav: base
+    beats:
+      - 先看底座 K3。总参数 2.78 万亿，约是 K2 的 2.7 倍。
+      - 每个 token 只激活 1042 亿，不到百分之四。
+      - 路由专家从 384 加到 896，训练上下文拉长 8 倍。
+      - 架构、数据和配方合起来，扩展效率约是 K2 的 2.5 倍。
+
+  - id: attn
+    theme: kimi
+    nav: base
+    beats:
+      - 第一个设计，混合注意力：三层 KDA 接一层 Gated MLA。
+      - 全模型是 69 层 KDA，加 24 层 MLA。
+      - KDA 是线性注意力，状态大小固定，不随长度增长。
+      - MLA 负责全局对照，而且完全不用位置编码。
+      - 报告还给 KDA 的衰减设了下界，对角块也能走 Tensor Core 矩阵乘。
+
+  - id: ctx
+    theme: kimi
+    nav: base
+    beats:
+      - 所以不改位置编码，就能直接外推到 1M。
+      - 训练分四段：预训练 8K 到 64K，退火 256K 到 1M。
+
+  - id: attnres
+    theme: kimi
+    nav: base
+    beats:
+      - 第二个设计，注意力残差。普通残差把前面各层一股脑加在一起。
+      - K3 让每一层用注意力，挑着读前面各层的结果。
+      - 为了省内存，按 12 层一块分成 8 块，只在块之间做注意力。
+
+  - id: moe
+    theme: kimi
+    nav: base
+    beats:
+      - 第三个设计，Stable LatentMoE：896 个专家每次选 16 个。
+      - 路由专家在一半宽度的潜空间里计算，两个共享专家保留全宽。
+      - 这么稀疏，容易激活爆炸、负载不均。
+      - 所以加了 RMSNorm 和新的 SiTU-GLU，给激活值封顶。
+      - 再用分位数平衡，让每个专家分到差不多的 token。
+
+  - id: vision
+    theme: kimi
+    nav: base
+    beats:
+      - 视觉也是原生的，图文视频共用一个主干。
+      - 视觉编码器 MoonViT-V2 从零训练，不再用 SigLIP 初始化。
+
+  - id: train
+    theme: kimi
+    nav: base
+    beats:
+      - 优化器用 Per-Head Muon：按头分块正交化，各头的更新更均衡。
+      - 预训练数据里，大量代码配上渲染图：SVG、3D、网页、游戏和 CAD。
+
+  # ------------------------------------------------------------------ part 2 · post-training
+  - id: post
+    theme: kimi
+    nav: post
+    beats:
+      - 第二部分，后训练。K3 先用 SFT 冷启动。
+      - 再分通用、智能体、编程三个领域做强化学习。
+      - 每个领域分低、高、最高三档思考强度，一共九个专家。
+      - 三档靠 token 预算训出来：超预算就记负分，先训最高档，再收紧预算。
+      - 最后用多老师在线蒸馏，把九个专家合成一个模型。
+      - 整个后训练都做量化感知训练，专家权重压到四比特浮点。
+
+  - id: infra
+    theme: kimi
+    nav: post
+    beats:
+      - 训练系统也是自研的：MoonEP 让每张卡分到的 token 数完全相同。
+      - 智能体 RL 跑在 microVM 沙箱里，训练和评测一共开了五千多万个沙箱。
+
+  - id: k31
+    theme: kimi
+    nav: post
+    beats:
+      - K3.1 Pro 在 K3 的基础上，用大得多的后训练算力继续训练。
+      - 联合强化学习覆盖几百个下游领域。
+      - 内部长程编程测试，从 K3 的 55.95 升到 61.2。
+
+  # ------------------------------------------------------------------ part 3 · evals
+  - id: coding
+    theme: kimi
+    nav: eval
+    beats:
+      - 第三部分，跑分。Terminal-Bench 4.0，K3.1 Pro 65.7。
+      - SWE Marathon，它拿了表里最高的 51.7。
+      - DeepSWE 75.5，只比 DeepSeek 的 77.0 低一点。
+
+  - id: wins
+    theme: kimi
+    nav: eval
+    beats:
+      - 智能体任务上，它有好几项是表内第一。
+      - 带工具的 HLE、BrowseComp、AutomationBench 和 OfficeQA，都排第一。
+
+  - id: gaps
+    theme: kimi
+    nav: eval
+    beats:
+      - 差距也很明显。不带工具的 HLE，51.1 对 Opus 5.5 的 59.8。
+      - HLE-Diamond 只有 39.4，GPT-6 Astra 是 65.8。
+      - ProgramBench 31.5，还不到 Opus 5.5 的一半。
+
+  - id: cad
+    theme: kimi
+    nav: eval
+    beats:
+      - 3D 方面，BenchCAD 要看多视角渲染图，写代码还原出模型。
+      - 带工具 92.7；不带工具 72.8，几乎追平 Opus 的 73.0。
+      - 内部还有个人体行走仿真：167 个任务、420 次评审。
+      - 模拟人从几秒就摔倒，到连续走 11.2 秒，还修正了 36 处力臂错误。
+
+  - id: finance
+    theme: kimi
+    nav: eval
+    beats:
+      - 金融上，内部经营模拟测试从 K3 的 8.9 到 37，约 4.2 倍。
+      - 财务建模提高 7.2 分，金融研究提高 11.6 分。
+      - 内部高难幻觉测试，断言级幻觉率从 23.4% 降到 8.3%。
+
+  # ------------------------------------------------------------------ part 4 · cyber
+  - id: cyber
+    theme: kimi
+    nav: cyber
+    beats:
+      - 最后说开头那一刀。漏洞利用能力，会随后训练一路上涨。
+      - 来源是中期训练语料和 RL 环境里，混着的网络安全数据。
+      - 开源版把这两个阶段的这类数据都删了，保留通用编程任务。
+      - 内部漏洞利用测试，不删的版本解出 90.5%，删完是 81.0%。
+      - 仍远高于 K3 的 33.3%，但官方说仍落后于闭源前沿。
+      - 原则有两条：不推高攻击能力的绝对前沿，同时逐步放开，让防守方也用得上。
+
+  # ------------------------------------------------------------------ outro
+  - id: outro
+    theme: kimi
+    nav: end
+    hold: 0.5
+    beats:
+      - 总结：底座 K3，混合注意力、注意力残差、超稀疏专家。
+      - K3.1 Pro 加码后训练，多项追近闭源，知识推理和部分编程仍有差距。
+      - 多数分数是官方自测，权重 11 月 4 日前放出，到时可以亲手验证。

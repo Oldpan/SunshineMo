@@ -11,6 +11,8 @@
 | 集数 | 片子 | 时长 | 目录 |
 |---|---|---|---|
 | 1 | 老地方（探索与利用） | 160.0 s | `episodes/explore_exploit/` |
+| 2 | 谁先开口（死锁） | 160.0 s | `episodes/deadlock/` |
+| 3 | 会算数的马（过拟合） | 156.9 s | `episodes/clever_hans/` |
 
 ## 结构（每集都一样）
 

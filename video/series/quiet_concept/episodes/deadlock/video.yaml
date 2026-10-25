@@ -9,3 +9,11 @@ deliver:
     - {from: out/cover_16x9.png, as: 谁先开口_封面_16x9.png}
     - {from: out/cover_3x4.png, as: 谁先开口_封面_3x4.png}
     - {from: 介绍和文案.md}
+drive:
+  folder: video_from_opus/一帧一理02_谁先开口
+  url: https://drive.google.com/drive/folders/1x4ZhnM_51T_Xb9IWPtkqCm_p5xUBMncU
+  files:
+  - {name: 谁先开口_Deadlock.mp4, id: 1xeQZZFmu15EYTZvzgMWqIJT2VIG-Gprk, bytes: 285410911}
+  - {name: 谁先开口_封面_16x9.png, id: 1qGBl0LlytMkWoGkb7fOWqlPRQ5tCbqQ7, bytes: 1642320}
+  - {name: 谁先开口_封面_3x4.png, id: 1bUbOTV6aursFNhNuCkbJRRSvqJ08wBlg, bytes: 1296509}
+  - {name: 介绍和文案.md, id: 1YidzOnEzckAcitOEwaJTVo2c2cNoSM-e, bytes: 538}

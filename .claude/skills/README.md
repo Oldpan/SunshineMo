@@ -38,8 +38,9 @@
 - **视觉风格**：59 种成片风格，分 2D / 2.5D / 3D：油画厚涂、水彩、浮世绘、水墨、木刻、版画丝网、彩色玻璃、剪纸、皮影、纸灯笼、积木玩具、80 年代赛璐璐、像素 RPG、HD-2D、低多边形、白模、移轴、蓝图、ASCII CRT、黑白默片、新闻纪录片、间谍片头、瑞士风格、Dark Keynote、卫星简报、激光扫描、产品拆解、可视化调查等。图鉴：<https://lemomo-ai.github.io/lemo-opuscar/>
 - **最适合**：已经想好一种明确画风的短片；数据解说、科普纪实、用真实档案素材剪新闻片；想把某个风格改成我们自己的风格并存下来。
 - **调用**：`/lemo-opuscar`，或说「用 lemo-opuscar 的浮世绘风格做……」「有哪些风格？」。
-- **注意**：这里只装了它的轻量入口。第一次运行 `scripts/setup.sh` 会把风格库稀疏克隆到 `~/lemo-opuscar`（需要能访问 GitHub），依赖装在那边。它的风格按 Opus 5.5 调过。
-- **来源**：[lemomo-ai/lemo-opuscar](https://github.com/lemomo-ai/lemo-opuscar) @ `3961ddb` · 代码 MIT；样片视频和静帧 CC BY 4.0（复用样片须署名 LemoLab）；三段第三方配音不可复用。用它做出来的片子归我们自己。
+- **我们的笔记**：`docs/reference/lemo-opuscar-library.md`，59 种风格的中文全表（含样片一句话、用途）、和我们各系列的对应、它的导演法和技术法里值得收编的规则（阅读时长公式、真静音、cue map 卡点检查、−14 LUFS 混音、样片六项对比），以及在我们这里要改的地方（Qwen 配音、`./sm publish` 交付）。挑风格先看这份，不用先装库。
+- **注意**：这里只装了它的轻量入口。第一次运行 `scripts/setup.sh` 会把风格库稀疏克隆到 `~/lemo-opuscar`（需要能访问 GitHub，跟它的 main 走），依赖装在那边。它的风格按 Opus 5.5 调过。
+- **来源**：[lemomo-ai/lemo-opuscar](https://github.com/lemomo-ai/lemo-opuscar) @ `413a6bd` · 代码 MIT；样片视频和静帧 CC BY 4.0（复用样片须署名 LemoLab）；三段第三方配音不可复用。用它做出来的片子归我们自己。
 
 ### animate（cth9191）
 
@@ -74,7 +75,7 @@
 
 ## 和本仓库的引擎怎么配合
 
-- **优先借做法**：开工前想换画风，按 xilo-opus-video 的做法先出三个拉开差异的方案和预览帧，确认后再写 brief；分镜按 animate 的「故事 / 画面 / 分镜」三次确认；解说语法参考 huashu-art-motion 的 9 种语法和它的交付检查清单。
+- **优先借做法**：开工前想换画风，按 xilo-opus-video 的做法先出三个拉开差异的方案和预览帧，确认后再写 brief；分镜按 animate 的「故事 / 画面 / 分镜」三次确认；解说语法参考 huashu-art-motion 的 9 种语法和它的交付检查清单。导演和节奏规则（前 3 秒钩子、两次真静音、字幕阅读时长、交付前只修一轮）按 lemo-opuscar 的 DIRECTOR，摘要在 `docs/reference/lemo-opuscar-library.md`。
 - **画风用顺了就收编**：讲解片的画风写进 article-to-video 的 `renderer/src/lib/styles/`，代码短片的写进系列的 `style.py` 或 `video/core/`，再在下面的表里登记。不要直接改第三方文件。
 - **要用 skill 自己的管线**：先用 article-to-video 的 `synth.py` 出 Qwen 配音和逐句时长，再把时间轴交给 skill 的场景代码，或把它渲出的片段当素材；交付照样走 `./sm publish`。
 

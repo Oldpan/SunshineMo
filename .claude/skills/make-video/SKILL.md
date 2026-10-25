@@ -54,8 +54,8 @@ Anything after `--` goes to the engine (`./sm build <slug> -- --range 56 64` for
   - Mac: copies them to the iCloud video library `$SM_ICLOUD_VIDEO/<deliver.drive 的最后一级>/` (default
     `~/Library/Mobile Documents/com~apple~CloudDocs/work-station/zmt/video/`, the same library article-to-video uses).
     Nothing goes to Drive unless you add `--drive`.
-  - After the Drive upload it adds the video (title, 16:9 cover, introduction, Drive links) to the user's Notion
-    video list; retry with `./sm notion <slug>`. Setup and layout: `docs/notion.md`.
+- Then register the video in the user's Notion 发布话题总表 with the Notion connector (one row per topic; a
+  `## 视频` section with the 16:9 cover, the introduction and the Drive links). Steps: `docs/notion.md`.
 - Drive needs `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` and a refresh token (`GOOGLE_REFRESH_TOKEN`, or
   `scripts/gdrive_auth.py`; see `docs/google-drive-api.md`).
 

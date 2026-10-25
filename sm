@@ -23,7 +23,6 @@ Commands:
     sm verify <slug>                                                   check the render
     sm publish <slug> [--dry-run] [--drive]                            cloud: upload to Drive, record it in video.yaml
                                                                        mac: copy to iCloud (--drive: Drive instead)
-    sm notion <slug> [--replace]                                       add a published video to the Notion list
     sm list                                                            every episode and its engine
     sm doctor                                                          what this machine can run
 
@@ -280,34 +279,7 @@ def cmd_publish(a):
             shutil.copy2(src, dest / name)
         print(f"copied to {dest}/")
     print(f"recorded in {(ep / 'video.yaml').relative_to(ROOT)}; commit it")
-    try:
-        notion(ep, load(ep), items)
-    except SystemExit as e:  # Drive is done and recorded; the Notion entry can be retried with `sm notion`
-        print(f"{e}\nNotion not updated; retry with: ./sm notion {a.slug}", file=sys.stderr)
-
-
-def notion(ep, v, items, replace=False):
-    """Add the video to the Notion list: title + introduction from 介绍和文案.md, the 16:9 cover, the Drive links."""
-    record = v.get("drive") or die("not on Drive yet: sm publish first")
-    ids = {f["name"]: f["id"] for f in record.get("files", [])}
-    video = next((n for _, n in items if n.endswith(".mp4")), None)
-    copy = next((s for s, n in items if n == COPY), None)
-    cover = next((s for s, n in items if "16x9" in n), None)
-    if video not in ids or copy is None:
-        die("video.yaml needs an .mp4 on Drive and a 介绍和文案.md in deliver.files")
-    sys.path.insert(0, str(ROOT / "scripts"))
-    import notion_sync  # noqa: E402
-
-    args = ["--copy", str(copy), "--video-url", f"https://drive.google.com/file/d/{ids[video]}/view",
-            "--folder-url", record["url"]]
-    args += ["--cover", str(cover)] if cover else []
-    notion_sync.main(args + (["--replace"] if replace else []))
-
-
-def cmd_notion(a):
-    ep = find(a.slug)
-    v = load(ep)
-    notion(ep, v, deliverables(ep, v), a.replace)
+    print("next: add it to Notion 发布话题总表 (docs/notion.md)")
 
 
 def publish_icloud(items, dest, dry_run):
@@ -395,14 +367,11 @@ def main():
     p.add_argument("slug")
     p.add_argument("--dry-run", action="store_true")
     p.add_argument("--drive", action="store_true", help="on a Mac, upload to Drive instead of copying to iCloud")
-    p = sub.add_parser("notion")
-    p.add_argument("slug")
-    p.add_argument("--replace", action="store_true", help="rewrite the entry if the title is already there")
     sub.add_parser("list")
     sub.add_parser("doctor")
     a = ap.parse_args(argv)
     a.rest = rest
-    {"new": cmd_new, "build": cmd_build, "verify": cmd_verify, "publish": cmd_publish, "notion": cmd_notion,
+    {"new": cmd_new, "build": cmd_build, "verify": cmd_verify, "publish": cmd_publish,
      "list": cmd_list, "doctor": cmd_doctor}[a.cmd](a)
 
 

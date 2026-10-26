@@ -186,7 +186,7 @@ def seal(c, x, y, s, text, font):
     rows = math.ceil(n / cols)
     cell = 2 * s * 0.84 / max(rows, cols)
     for i, ch in enumerate(text):
-        cx = x + s * 0.42 - (i // rows) * cell - cell / 2 + (cell / 2 if cols == 1 else 0) - (s * 0.42 - cell if cols == 1 else 0)
+        cx = x + s * 0.42 - (i // rows) * s * 0.84 if cols == 2 else x      # right column first
         cy = y - s * 0.84 + (i % rows) * cell + cell * 0.85
         f = skia.Font(font.getTypeface(), cell * 0.92)
         c.drawString(ch, cx - f.measureText(ch) / 2, cy, f, clear)

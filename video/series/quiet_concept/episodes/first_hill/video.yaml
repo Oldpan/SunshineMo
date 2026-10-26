@@ -9,3 +9,11 @@ deliver:
     - {from: out/cover_16x9_B.png, as: 第一座山_封面_16x9.png}
     - {from: out/cover_3x4_B.png, as: 第一座山_封面_3x4.png}
     - {from: 介绍和文案.md}
+drive:
+  folder: video_from_opus/一帧一理04_第一座山
+  url: https://drive.google.com/drive/folders/1of_PhDKJjdWdbkcGMp4cWRmFDT_aZfcC
+  files:
+  - {name: 第一座山_LocalOptimum.mp4, id: 1ig-mDfZ6kuN6Cf9kjRgI8FdAya-vSG_f, bytes: 275215247}
+  - {name: 第一座山_封面_16x9.png, id: 1MwtfmcS5qVQZTl6rkPzoHz1ktzeC3yPD, bytes: 2392332}
+  - {name: 第一座山_封面_3x4.png, id: 1Mrd4XBXPuxx2tRuWSyq5gJqUG8YsNVA2, bytes: 1414059}
+  - {name: 介绍和文案.md, id: 1BEaxN8Z7Y8baiUrsc92b8Rrih6lNgTsG, bytes: 533}

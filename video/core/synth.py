@@ -862,7 +862,10 @@ def pingpong(x, delay, fb=0.38, taps=6):
 
 
 def gate_silence(length, spans):
-    """Mute the mix over each (t_start, t_end) span, e.g. the beat before a drop."""
+    """Mute the mix over each (t_start, t_end) span, e.g. the beat before a drop.
+
+    Careful: an 8 ms cut to digital zero (reverb tail included) reads as a playback stutter, and much more so
+    when the picture also holds still or a scene cut follows.  Prefer `breath()` for a pause inside a scene."""
     g = np.ones(length, np.float32)
     f = int(0.008 * SR)
     for ta, tb in spans:
@@ -870,6 +873,19 @@ def gate_silence(length, spans):
         g[a:b] = 0
         g[a - f:a] = np.linspace(1, 0, f)
         g[b - f:b] = np.linspace(0, 1, f)
+    return g
+
+
+def breath(length, spans, floor=0.3, down=0.12, up=0.06):
+    """A pause that never sounds like a dropout: the mix dips to `floor` over `down` seconds at each
+    (t_start, t_end) span and comes back over `up` seconds, so tails keep ringing under it."""
+    g = np.ones(length, np.float32)
+    for ta, tb in spans:
+        a, b = int(ta * SR), int(tb * SR)
+        d, u = int(down * SR), int(up * SR)
+        g[a:b] = np.minimum(g[a:b], floor)
+        g[a:a + d] = np.minimum(g[a:a + d], np.linspace(1, floor, d))
+        g[b - u:b] = np.minimum(g[b - u:b], np.linspace(floor, 1, u))
     return g
 
 

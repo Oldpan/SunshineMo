@@ -155,8 +155,9 @@ HITS += [("step", 58, b * 0.5) for b in range(8)]
 HITS += [("dawn", 59, 0), ("flag", 59, 2)]
 HITS += [("final", 60, 0), ("endcard", 62, 0)]
 
-# true silences (bar, beat from, beat to): the whole mix and the picture hold still
-SILENCES = [(3, 2.5, 4.0), (7, 3.0, 4.0), (13, 0.5, 2.0), (21, 3.0, 4.0), (41, 2.5, 4.0), (53, 3.0, 4.0),
+# breaths (bar, beat from, beat to): the mix dips to a third for a moment while the picture keeps moving.
+# Not true silences: gated silence + a held frame played back as seven stutters in the first cut.
+BREATHS = [(3, 2.5, 4.0), (7, 3.0, 4.0), (13, 0.5, 2.0), (21, 3.0, 4.0), (41, 2.5, 4.0), (53, 3.0, 4.0),
             (57, 0.5, 2.0)]
 SCENE_CUTS = [8, 10, 16, 22, 24, 32, 38, 48, 52, 54, 60, 62]
 

@@ -17,7 +17,7 @@ sys.path.insert(0, str(next(p for p in Path(__file__).resolve().parents if (p / 
 from core.paths import episode  # noqa: E402
 HERE, OUT = episode(__file__)  # also puts the series dir (style.py) on sys.path
 from core.synth import *  # noqa: E402,F401,F403
-from cues import BPM, BARS, SECTIONS, HITS, SILENCES  # noqa: E402
+from cues import BPM, BARS, SECTIONS, HITS, BREATHS  # noqa: E402
 
 SONG = Song(bpm=BPM, bars=BARS, fps=60, sections=SECTIONS)
 bt, BAR, BEAT = SONG.bt, SONG.bar, SONG.beat
@@ -378,12 +378,10 @@ if __name__ == "__main__":
     compose()
     levels = {"pad": 0.6, "pluck": 0.55, "foot": 0.9, "count": 0.75, "kick": 0.95, "clap": 0.6, "hat": 0.3,
               "bass": 0.6, "fx": 0.6}
-    silence = [(bt(b, b0), bt(b, b1)) for b, b0, b1 in SILENCES]
     mix, buses = mixdown(SONG, BUS, KICKS, levels, {"pad": 0.45, "pluck": 0.5, "bass": 0.35},
-                         {"count": (BEAT * 0.75, 0.3)}, ir=reverb_ir(2.4), silence=silence, drive=1.15,
-                         fade_out=1.5, out_gain=0.88)
+                         {"count": (BEAT * 0.75, 0.3)}, ir=reverb_ir(2.4), drive=1.15, fade_out=1.5, out_gain=0.88)
     mix = lowpass(mix, 15000, order=1)
-    mix = mix * gate_silence(mix.shape[1], silence)    # the reverb tail too: a true silence is silent
+    mix = mix * breath(mix.shape[1], [(bt(b, b0), bt(b, b1)) for b, b0, b1 in BREATHS])   # dips, never dropouts
     mix *= 0.97 / max(0.97, np.abs(mix).max())
     export(OUT, SONG, mix, buses, EVENTS, envs=ENVS)
     loudness_report(mix, SONG)

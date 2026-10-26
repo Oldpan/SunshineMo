@@ -29,7 +29,7 @@ from core import post  # noqa: E402
 from style import serif, parse_marks  # noqa: E402
 from ink import (PAPER, INKC, RED, TONE, col4, ink_paint, paper_image, brush, mass, moss, seal,  # noqa: E402
                  noise1)
-from cues import (BPM, BARS, SECTIONS, TITLE, TITLE_Q, CONCEPT, SILENCES, captions, hit_times,  # noqa: E402
+from cues import (BPM, BARS, SECTIONS, TITLE, TITLE_Q, CONCEPT, captions, hit_times,  # noqa: E402
                   t_of)
 
 W, H = 1920, 1080
@@ -66,10 +66,7 @@ def since_nth(name, i, t, lo=0):
 
 
 def frozen(t):
-    for b, b0, b1 in SILENCES:
-        a, z = t_of(b, b0), t_of(b, b1)
-        if a <= t < z:
-            return a
+    """The picture never holds still on a breath: a held frame over a quiet beat plays back as a stutter."""
     return t
 
 

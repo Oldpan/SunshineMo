@@ -1,0 +1,12 @@
+# 快约 2 倍：Claude 官方教你把 subagent 并回主循环 — see `sm --help` for the fields
+title: 快约 2 倍：Claude 官方教你把 subagent 并回主循环
+engine: narrated
+style: claudeblog  # episode theme registered in scenes/common.tsx (warm paper + clay, after the article's own diagrams)
+source: https://claude.com/blog/building-agents-when-to-fold-subagents-into-your-main-agent-loop
+deliver:
+  drive: video_from_opus/subagent 并回主循环
+  files:
+  - {from: out/fold-subagents.mp4, as: subagent 并回主循环_FoldSubagents.mp4}
+  - {from: out/封面_16x9.png, as: subagent 并回主循环_封面_16x9.png}
+  - {from: out/封面_3x4.png, as: subagent 并回主循环_封面_3x4.png}
+  - {from: source/video.md, as: 介绍和文案.md}

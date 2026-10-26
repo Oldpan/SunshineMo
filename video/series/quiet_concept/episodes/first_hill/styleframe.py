@@ -8,8 +8,8 @@ import numpy as np
 import skia
 
 sys.path.insert(0, str(next(p for p in Path(__file__).resolve().parents if (p / "core").is_dir())))
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from style import serif  # noqa: E402
 from ink import *  # noqa: E402,F401,F403
 
@@ -117,7 +117,7 @@ def dawn_frame():
 
 
 if __name__ == "__main__":
-    out = Path(__file__).resolve().parents[1] / "out"
+    out = Path(__file__).resolve().parent / "out"
     out.mkdir(exist_ok=True)
     for name, fn in (("ink_fog", fog_frame), ("ink_dawn", dawn_frame)):
         surf = fn()

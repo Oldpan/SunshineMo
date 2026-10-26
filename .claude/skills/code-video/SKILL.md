@@ -46,7 +46,7 @@ HERE, OUT = episode(__file__)   # also puts the series dir (style.py) on sys.pat
 - **Never show the production brief** in the film (no "made with code / no samples" line); it belongs in the README only.
 - **Delivery:**
   - Send the mp4 in chat (SendUserFile).
-  - Upload to Google Drive with `./sm publish <name>`: it sends every file in the episode's `video.yaml` `deliver.files` (the mp4, both covers and `介绍和文案.md` with titles, description with the disclaimer and references, hashtags) to `video_from_opus/<视频名>/`, checks each size, and writes the Drive record back into `video.yaml`. Keep `介绍和文案.md` in the episode directory. Details are in `docs/google-drive-api.md`; the make-video skill has the whole `./sm` flow.
+  - Upload to Google Drive with `./sm publish <name>`: it sends every file in the episode's `video.yaml` `deliver.files` (the mp4, both covers and `介绍和文案.md`: `# 标题`, a blank line and one 100–200 character introduction, nothing else) to `video_from_opus/<视频名>/`, checks each size, and writes the Drive record back into `video.yaml`. Keep `介绍和文案.md` in the episode directory. Details are in `docs/google-drive-api.md`; the make-video skill has the whole `./sm` flow.
   - Commit the code and `video.yaml`, never the `out/` directory or any media (`.gitignore` and `.githooks/pre-commit` enforce it).
 
 ## Choosing where to work

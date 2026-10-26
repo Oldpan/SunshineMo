@@ -11,9 +11,8 @@ engine: narrated
 episodes/<slug>/        slug = Remotion 的 composition id：小写字母、数字、短横线
   video.yaml            标题、引擎、风格、交付清单；sm publish 在末尾写回 Drive 记录
   script.yaml           旁白脚本，写法见 article-to-video 的 references/script.md
-  source/               article.md（原文和所有用到的资料）、video.md（标题 + 100–200 字介绍）、小配图
+  source/               article.md（原文和所有用到的资料）、video.md（标题 + 100–200 字介绍，原样作为 `介绍和文案.md` 传 Drive，别的都不写）、小配图
   scenes/               自定义场景：index.tsx 导出 id = '<slug>' 和 registry，场景文件和它同级，用 '@atv/lib/...' 引用渲染器
-  介绍和文案.md          发布用的标题、简介、话题
   out/                  不进 git
 ```
 

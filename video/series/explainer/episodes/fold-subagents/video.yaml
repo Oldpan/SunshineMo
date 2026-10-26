@@ -10,3 +10,11 @@ deliver:
   - {from: out/封面_16x9.png, as: subagent 并回主循环_封面_16x9.png}
   - {from: out/封面_3x4.png, as: subagent 并回主循环_封面_3x4.png}
   - {from: source/video.md, as: 介绍和文案.md}
+drive:
+  folder: video_from_opus/subagent 并回主循环
+  url: https://drive.google.com/drive/folders/1-1WqC1edNAGqlTQIwXGWCeSSakGG9Nep
+  files:
+  - {name: subagent 并回主循环_FoldSubagents.mp4, id: 1ZcA1RK-MPmBcN3KLqUVoTvlU8qgAb7XI, bytes: 29437267}
+  - {name: subagent 并回主循环_封面_16x9.png, id: 1l23NBz7JbIBw8nMepfwij0guho8R3vc5, bytes: 162485}
+  - {name: subagent 并回主循环_封面_3x4.png, id: 1FCI4ZkdVRo9R2T4nck-SQTxz0xaauo6d, bytes: 148407}
+  - {name: 介绍和文案.md, id: 1JLxbyo3saTDLr3lvzEMtwS0LI67SIS_W, bytes: 500}

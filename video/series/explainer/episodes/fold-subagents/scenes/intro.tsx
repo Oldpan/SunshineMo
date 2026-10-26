@@ -238,7 +238,7 @@ export const LayersScene: React.FC = () => {
   const R = 1024; // right diagram origin
   const r = prog(b[3], 18);
   // request packet walking down the left structure, looping
-  const loopT = ((frame - b[1] - 40) % 120) / 120;
+  const loopT = (Math.max(0, b[1] - 40) % 120) / 120;
   const leftPath: [number, number][] = [
     [L + W / 2, T + 30],
     [L + W / 2, T + 70],
@@ -257,9 +257,9 @@ export const LayersScene: React.FC = () => {
     [R + 330, T + 230],
     [R + 520, T + 230],
     [R + 330, T + 262],
-    [R + 330, T + 460],
+    [R + 330, T + 436],
   ];
-  const rt = ((frame - b[3] - 24) % 100) / 100;
+  const rt = (Math.max(0, b[3] - 24) % 100) / 100;
   return (
     <Shell part="为什么要并">
       <Head kicker="COMMON PATTERN vs WHAT WE OFTEN RECOMMEND" title="5 层结构，还是 1 个循环" />
@@ -314,7 +314,6 @@ export const LayersScene: React.FC = () => {
         <div style={{position: 'absolute', left: L + W / 2 - 50, top: T + 450, opacity: g(4)}}>
           <Lab size={16}>ANSWER</Lab>
         </div>
-        {frame > b[1] + 40 && grey < 0.5 && <Packet pts={leftPath} t={loopT} />}
       </div>
       <div style={{position: 'absolute', left: L, top: T + 500, width: W, opacity: grey}}>
         <Card style={{padding: '16px 24px'}}>
@@ -383,7 +382,7 @@ export const LayersScene: React.FC = () => {
         <div style={{position: 'absolute', left: R + 284, top: T + 450}}>
           <Lab size={16}>ANSWER</Lab>
         </div>
-        {frame > b[3] + 24 && <Packet pts={rp} t={rt} />}
+        {b[3] > 24 && <Packet pts={rp} t={rt} />}
       </div>
       <div style={{position: 'absolute', left: R, top: T + 500, width: 800, ...rise(b[3], 30)}}>
         <Card hot style={{padding: '16px 24px'}}>

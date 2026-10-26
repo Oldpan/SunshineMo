@@ -188,6 +188,7 @@ export const Why: React.FC = () => {
             <div style={{position: 'absolute', left: 0, bottom: 252}}>
               <Lab size={14}>之前</Lab>
             </div>
+            <Illus style={{position: 'absolute', right: 0, top: 0}} />
             <div style={{position: 'absolute', left: 230, bottom: 0, width: 160, height: lerp(240, 240 * 0.18, cut), background: K.clay, borderRadius: 4}} />
             <div style={{position: 'absolute', left: 230, bottom: lerp(252, 240 * 0.18 + 12, cut)}}>
               <Lab size={14} color={K.clay}>
@@ -397,12 +398,34 @@ export const Split: React.FC = () => {
     {t: 'Agent 2', d: '写测试'},
     {t: 'Agent 3', d: '做审查'},
   ];
-  const lossT = ((frame - b[1] - 20) % 80) / 80;
+  const lossT = ((Math.max(0, b[1] - 20)) % 80) / 80;
   return (
     <Shell part="真要拆的话">
       <Head kicker="SPLIT BY CONTEXT, NOT BY PROBLEM TYPE" title="按上下文拆，别按问题类型拆" />
+      {/* ghost outlines for beat 0: the two ways to split, before either is filled in */}
+      {[
+        [120, 300, 470],
+        [710, 300, 470],
+        [1300, 300, 470],
+        [120, 640, 1060],
+        [1300, 640, 500],
+      ].map(([x, y, w], i) => (
+        <div
+          key={i}
+          style={{
+            position: 'absolute',
+            left: x,
+            top: y,
+            width: w,
+            height: 140,
+            borderRadius: 14,
+            border: `2px dashed ${K.line}`,
+            opacity: prog(b[0], 12, 10 + i * 3) * (1 - prog(i < 3 ? b[1] : i === 3 ? b[2] : b[3], 10)),
+          }}
+        />
+      ))}
       {/* top row */}
-      <div style={{position: 'absolute', left: 120, top: top - 56, opacity: prog(b[1], 12)}}>
+      <div style={{position: 'absolute', left: 120, top: top - 56, opacity: prog(b[0], 12, 10)}}>
         <Lab size={18} w={700}>
           按问题类型拆
         </Lab>
@@ -430,7 +453,7 @@ export const Split: React.FC = () => {
                   <Lab size={14}>HANDOFF</Lab>
                 </div>
                 {/* bits falling off at each handoff */}
-                {frame > b[1] + 20 &&
+                {b[1] > 20 &&
                   [0, 1, 2].map((k) => {
                     const t = (lossT + k * 0.33) % 1;
                     return (
@@ -458,9 +481,9 @@ export const Split: React.FC = () => {
           每次交接都丢上下文：写测试的 agent，不知道实现为什么这么做 —— 像传话游戏
         </Zh>
       </div>
-      <div style={{position: 'absolute', left: 120, right: 120, top: bot - 70, height: 1.5, background: K.hair, opacity: prog(b[2], 12)}} />
+      <div style={{position: 'absolute', left: 120, right: 120, top: bot - 70, height: 1.5, background: K.hair, opacity: prog(b[0], 12, 16)}} />
       {/* bottom row */}
-      <div style={{position: 'absolute', left: 120, top: bot - 44, opacity: prog(b[2], 12)}}>
+      <div style={{position: 'absolute', left: 120, top: bot - 44, opacity: prog(b[0], 12, 22)}}>
         <Lab size={18} w={700} color={K.clay}>
           按上下文拆
         </Lab>
@@ -508,7 +531,7 @@ export const Loop: React.FC = () => {
   const M = {x: 560, y: 380, w: 460, h: 170}; // model box
   const batch = prog(b[1], 16, 4);
   // three tool calls fire in parallel, results come back
-  const cyc = (frame - b[1] - 10) % 90;
+  const cyc = Math.max(0, b[1] - 10) % 90;
   const out = clamp01(cyc / 30);
   const back = clamp01((cyc - 45) / 30);
   const toolY = [300, 420, 540];
@@ -565,7 +588,7 @@ export const Loop: React.FC = () => {
               <Mo size={22}>{['lookup_order', 'track_shipment', 'search_policy'][i]}</Mo>
             </Box>
           </div>
-          {frame > b[1] + 10 && (
+          {b[1] > 10 && (
             <>
               <Packet pts={[[M.x + M.w, M.y + 85], [1100, M.y + 85], [1100, y + 32], [1180, y + 32]]} t={out * 0.999} />
               <Packet pts={[[1180, y + 32], [1100, y + 32], [1100, M.y + 85], [M.x + M.w, M.y + 85]]} t={back * 0.999} color={K.ink} size={10} />

@@ -321,11 +321,11 @@ export const Flip: React.FC = () => {
               </div>
             );
           })}
-          <div style={{marginTop: 18, display: 'flex', gap: 28, opacity: showFold}}>
-            <Zh size={22} w={600} color={K.dim}>
+          <div style={{marginTop: 18, display: 'flex', gap: 28, alignItems: 'center'}}>
+            <Zh size={22} w={600} color={K.dim} style={{opacity: showFold}}>
               通过数：4 → 4
             </Zh>
-            <Zh size={22} w={700} color={K.green}>
+            <Zh size={22} w={700} color={K.green} style={{opacity: showFold}}>
               延迟 ↓
             </Zh>
             <Illus />
@@ -388,7 +388,7 @@ export const Flip: React.FC = () => {
           </div>
         </Card>
       </div>
-      <SrcLine f={b[1]}>左表为示意；案例出自原文：示例客服 agent，并掉一个 subagent 后延迟降低，但一个流程坏了</SrcLine>
+      <SrcLine f={b[0]}>左表为示意；案例出自原文：示例客服 agent，并掉一个 subagent 后延迟降低，但一个流程坏了</SrcLine>
     </Shell>
   );
 };
@@ -442,6 +442,7 @@ export const Teams: React.FC = () => {
                       <Zh size={20} w={600} color={K.dim}>
                         个工具定义在提示词里
                       </Zh>
+                      <Illus />
                     </div>
                     <div style={{position: 'relative', height: 26, marginTop: 8, background: K.stone, borderRadius: 4}}>
                       <div style={{position: 'absolute', left: 0, top: 0, bottom: 0, width: `${(toolCount / 60) * 100}%`, background: over ? K.red : K.clay, borderRadius: 4}} />
@@ -553,7 +554,7 @@ export const Kit: React.FC = () => {
   const frame = useCurrentFrame();
   const pop = usePopIn();
   const smoke = 'KIT_MODEL=fake python3 evals/run_eval.py --variant smoke';
-  const typedN = Math.floor(clamp01((frame - b[4] - 20) / 50) * smoke.length);
+  const typedN = Math.floor(clamp01((b[4] - 20) / 50) * smoke.length);
   return (
     <Shell part="迁移套件">
       <Head kicker="MIGRATION KIT" title="single-agent-loop-kit" />
@@ -616,12 +617,12 @@ export const Kit: React.FC = () => {
               $ {smoke.slice(0, typedN)}
             </Mo>
           </div>
-          <div style={{marginTop: 6, opacity: prog(frame - b[4], 12, 80)}}>
+          <div style={{marginTop: 6, opacity: prog(b[4], 12, 80)}}>
             <Mo size={18} color="#9FC59A" style={{whiteSpace: 'normal'}}>
               19 tasks ran on the offline stand-in model, 0 harness errors.
             </Mo>
           </div>
-          <div style={{marginTop: 6, opacity: prog(frame - b[4], 12, 80)}}>
+          <div style={{marginTop: 6, opacity: prog(b[4], 12, 80)}}>
             <Zh size={18} w={500} color="#B9B6AB">
               免费检查：不需要 API key，不花钱（只验证管线，不打分）
             </Zh>

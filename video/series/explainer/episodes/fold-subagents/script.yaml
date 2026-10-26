@@ -40,6 +40,7 @@ lexicon:
   "subagent": "sub agent"
   "Subagent": "sub agent"
   "Applied AI": "Applied A I"
+  "Claude Opus 4.5": "Claude Opus 四点五"
   "Opus 4.5": "Opus 四点五"
   "Claude Code": "Claude Code"
   "Claude API": "Claude A P I"
@@ -62,7 +63,7 @@ scenes:
   - id: cover
     theme: claudeblog
     beats:
-      - Anthropic 的 Applied AI 团队，10 月 22 号发了一篇搭 agent 的实战建议。
+      - Claude 官方 10 月 22 号发了一篇文章，讲 Applied AI 团队搭 agent 的实战建议。
       - 结论有点反直觉：很多企业 agent，把 subagent 并回一个主循环，效果反而更好。
       - 有客户实测，单循环比多 agent 架构快了约 2 倍。
 
@@ -110,7 +111,7 @@ scenes:
       - 理由一，共享上下文：前面每一步的结果都在同一个窗口里，模型能把它们串起来。
       - 这比 subagent 交回来的一堆摘要更完整，交接也更少。
       - 理由二，不会撑爆上下文。Claude Code 给更强模型的系统提示词，砍掉了 80% 以上。
-      - 理由三，模型更强了。从 Opus 4.5 开始，一个循环能管的事，远超多数团队的预期。
+      - 理由三，模型更强了。从 Claude Opus 4.5 开始，一个循环能管的事，远超多数团队的预期。
       - 新模型会边做边汇报、边做边检查，框架里有些设计就多余了。
       - 结构越简单，换下一代模型也越容易；僵硬的多 agent 结构，反而常常拖住新模型。
 

@@ -536,7 +536,6 @@ def wald(c, x, t, lt):
                     circ = skia.Path()
                     circ.addCircle(*P(ex, ey), 22)
                     stroke(c, circ, 2.4, u, 1.0)
-                    letter(c, "?", P(ex, ey)[0] + 18, P(ex, ey)[1] - 18, 40, u, kind="handb")
     if B(13) <= t < B(15):
         letter(c, "应有弹孔（均匀）", 1250, 800, 26, grow(B(13), t, 0.6), 0.85)
         c.drawCircle(1230, 792, 7, paint(0.9 * grow(B(13), t, 0.3), 1.6, dash=[4, 3]))
@@ -568,7 +567,7 @@ def wald(c, x, t, lt):
         drift = (t - B(12)) / (3 * BAR)                                  # keeps moving through the hold
         x.zoom = z * (1 + 0.05 * drift)
         x.fx = lerp(W / 2, 820, smooth((t - B(12)) / BAR)) - 30 * drift
-        x.fy = lerp(H / 2, 560, smooth((t - B(12)) / BAR)) + 12 * drift
+        x.fy = lerp(H / 2, 500, smooth((t - B(12)) / BAR)) + 12 * drift
     else:
         cam(x, lt, B(9), 1.0, 1.03)
     x.zoom += bump(("zero", "ghost", "cross"), t, 10, 0.008) + 0.004 * S.pulse("kick", t, 0.12)
@@ -603,7 +602,7 @@ def memo(c, x, t, lt):
     sw = f.measureText("Survivors")
     if t >= m2[1]:
         ell = skia.Path()
-        ell.addOval(skia.Rect.MakeXYWH(sx - 16, my + 180, sw + 32, 64))
+        ell.addOval(skia.Rect.MakeXYWH(sx - 6, my + 180, sw + 22, 64))
         nibs.append(stroke(c, ell, 2.6, grow(m2[1], t, 0.4), 1.0))
     if t >= m2[2]:
         nibs.append(line(c, [(sx + sw + 18, my + 212), (sx + sw + 90, my + 212)], 1.6, grow(m2[2], t, 0.3), 0.9))
@@ -1059,7 +1058,7 @@ def you(c, x, t, lt):
     fr = window("friend", 46, 47)
     cx_, cy_ = PCARDS[1]
     if t >= fr[0]:
-        nibs.append(rev_cloud(c, cx_ + CARD_W / 2, cy_ + CARD_H / 2, CARD_W / 2 + 18, CARD_H / 2 + 6,
+        nibs.append(rev_cloud(c, cx_ + CARD_W / 2, cy_ + CARD_H / 2, CARD_W / 2 + 8, CARD_H / 2 - 6,
                               grow(fr[0], t, BEAT * 0.9), 1.0, 20, 2.2))
     quiet = t < window("seen", 47, 48)[1]
     if t >= fr[1] and quiet:

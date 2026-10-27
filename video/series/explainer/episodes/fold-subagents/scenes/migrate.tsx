@@ -5,7 +5,7 @@ import {useCurrentFrame} from 'remotion';
 import {BookOpen, Check, Search, Users, Wrench, X} from 'lucide-react';
 import {GitHubMark} from '@atv/lib/brand/github';
 import {useBeats} from '@atv/lib/timing';
-import {Box, Card, clamp01, FONT_MONO, FONT_SERIF, Head, Illus, K, Lab, Mo, NumBadge, Pill, prog, rise, Serif, Shell, SrcLine, usePopIn, Wire, Zh} from './common';
+import {Box, Card, clamp01, FONT_MONO, FONT_SERIF, Ghost, Head, Illus, K, Lab, Mo, NumBadge, Pill, prog, rise, Serif, Shell, SrcLine, usePopIn, Wire, Zh} from './common';
 
 // ------------------------------------------------------------------ evals first
 export const Eval: React.FC = () => {
@@ -128,10 +128,12 @@ export const Steps: React.FC = () => {
   const W = 540;
   const col = (i: number) => 96 + i * (W + 36);
   const merge = prog(b[1], 24, 24);
-  const fold = prog(b[3], 24, 20);
+  const fold = prog(b[4], 24, 20);
+  const at = [b[1], b[2], b[4]]; // panel i appears on this beat
+  const until = [b[2], b[4], undefined];
   const panel = (i: number, title: string, note: string, body: React.ReactNode) => (
-    <div style={{position: 'absolute', left: col(i), top: 236, width: W, ...rise(b[i + 1], 0)}}>
-      <Card hot={false} style={{padding: '24px 28px', height: 600, border: `1.5px solid ${b[i + 1] >= 0 && (b[i + 2] === undefined || b[i + 2] < 0) ? K.clay : 'rgba(20,20,19,0.09)'}`}}>
+    <div style={{position: 'absolute', left: col(i), top: 236, width: W, ...rise(at[i], 0)}}>
+      <Card hot={false} style={{padding: '24px 28px', height: 600, border: `1.5px solid ${at[i] >= 0 && (until[i] === undefined || (until[i] as number) < 0) ? K.clay : 'rgba(20,20,19,0.09)'}`}}>
         <div style={{display: 'flex', alignItems: 'center', gap: 14}}>
           <NumBadge n={i + 1} size={38} />
           <Zh size={32} w={800}>
@@ -147,6 +149,9 @@ export const Steps: React.FC = () => {
   );
   return (
     <Shell part="怎么迁移 · 减少 subagent">
+      {[0, 1, 2].map((i) => (
+        <Ghost key={`g${i}`} x={col(i)} y={236} w={W} h={600} f={b[0]} gone={at[i]} delay={10 + i * 5} radius={18} />
+      ))}
       <Head kicker="REDUCE SUBAGENTS OVER TIME" title="三种做法" sub="一次只动一个" />
       {panel(
         0,
@@ -256,6 +261,11 @@ export const Steps: React.FC = () => {
           )}
         </>,
       )}
+      <div style={{position: 'absolute', left: col(1), top: 856, width: W, ...rise(b[3], 0)}}>
+        <Zh size={22} w={700} color={K.clay}>
+          只有必须直接跟用户对话的，才完整交接
+        </Zh>
+      </div>
       <SrcLine f={b[1]}>按原文第三张图重画</SrcLine>
     </Shell>
   );
@@ -265,7 +275,7 @@ export const Steps: React.FC = () => {
 const TASKS = [
   {id: '退货', a: true, z: true},
   {id: '账单', a: true, z: true},
-  {id: '诊断', a: false, z: true},
+  {id: '诊断', a: true, z: true},
   {id: '订单 + 送达日期', a: true, z: false, flip: true},
   {id: '账户', a: true, z: true},
 ];
@@ -323,7 +333,7 @@ export const Flip: React.FC = () => {
           })}
           <div style={{marginTop: 18, display: 'flex', gap: 28, alignItems: 'center'}}>
             <Zh size={22} w={600} color={K.dim} style={{opacity: showFold}}>
-              通过数：4 → 4
+              通过数：5 → 4
             </Zh>
             <Zh size={22} w={700} color={K.green} style={{opacity: showFold}}>
               延迟 ↓
@@ -434,6 +444,11 @@ export const Teams: React.FC = () => {
                     </Pill>
                     <Pill bg={K.stone} border="transparent" style={{fontSize: 20, textDecoration: 'line-through', color: K.faint}}>
                       一个 API 一个工具
+                    </Pill>
+                  </div>
+                  <div style={{marginTop: 10}}>
+                    <Pill bg="#fff" style={{fontSize: 20}}>
+                      权限检查也放进工具
                     </Pill>
                   </div>
                   <div style={{marginTop: 18, opacity: prog(b[2], 12)}}>
@@ -580,7 +595,7 @@ export const Kit: React.FC = () => {
       {/* measure -> combine -> fold */}
       <div style={{position: 'absolute', left: 96, top: 420, width: 820, ...rise(b[1], 0)}}>
         <div style={{display: 'flex', alignItems: 'center', gap: 14}}>
-          {['测量', '合并', '折叠'].map((s, i) => (
+          {['测量', '合并', '并入'].map((s, i) => (
             <React.Fragment key={s}>
               <div style={pop(b[1], i * 8, 0.9)}>
                 <Box x={0} y={0} w={200} h={90} bg={i === 0 ? K.peach : K.cream} radius={10} style={{position: 'relative'}}>

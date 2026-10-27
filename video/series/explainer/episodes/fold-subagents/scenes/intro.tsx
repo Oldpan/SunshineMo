@@ -4,7 +4,7 @@ import {useCurrentFrame} from 'remotion';
 import {Gauge, Layers, MessageSquareWarning, Network, Timer} from 'lucide-react';
 import {ClaudeSpark} from '@atv/lib/brand/claude';
 import {useBeats} from '@atv/lib/timing';
-import {Box, Card, during, FONT_SERIF, Head, Illus, K, Lab, Mo, NumBadge, Packet, Pill, prog, rise, Serif, Shell, SrcLine, ToolSq, usePopIn, Wire, Zh} from './common';
+import {Box, Card, during, FONT_SERIF, Ghost, Head, Illus, K, Lab, Mo, NumBadge, Packet, Pill, prog, rise, Serif, Shell, SrcLine, ToolSq, usePopIn, Wire, Zh} from './common';
 
 // ------------------------------------------------------------------ cover
 export const Cover: React.FC = () => {
@@ -256,8 +256,8 @@ export const LayersScene: React.FC = () => {
     [R + 330, T + 30],
     [R + 330, T + 230],
     [R + 520, T + 230],
-    [R + 330, T + 262],
-    [R + 330, T + 436],
+    [R + 520, T + 258],
+    [R + 330, T + 258],
   ];
   const rt = (Math.max(0, b[3] - 24) % 100) / 100;
   return (
@@ -325,6 +325,9 @@ export const LayersScene: React.FC = () => {
         </Card>
       </div>
 
+      {/* beat 0: where the two diagrams will go */}
+      <Ghost x={L} y={T + 40} w={W} h={420} f={b[0]} gone={b[1]} delay={8} radius={8} />
+      <Ghost x={R} y={T + 40} w={800} h={420} f={b[0]} gone={b[3]} delay={14} radius={8} />
       {/* divider */}
       <div style={{position: 'absolute', left: 960, top: 210, width: 1.5, height: 640, background: K.hair, opacity: r}} />
 

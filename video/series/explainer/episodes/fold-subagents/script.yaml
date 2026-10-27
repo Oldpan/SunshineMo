@@ -1,7 +1,7 @@
 # 何时把 subagent 并回主循环 · Claude Platform 官方文章（2026-10-22）+ 配套迁移套件 single-agent-loop-kit
 # 完整出处见 source/article.md（复核只认这份资料）
 meta:
-  title: 快约 2 倍：Claude 官方教你把 subagent 并回主循环
+  title: Agent 别急着拆 subagent：Claude 官方教你并回一个主循环
   topic: subagent 并回主循环
   source: https://claude.com/blog/building-agents-when-to-fold-subagents-into-your-main-agent-loop
   voice: qwen-longanhuan
@@ -158,6 +158,7 @@ scenes:
       - 然后一步步减少 subagent，有三种做法。
       - 合并：经常前后连着跑、碰同一份数据的两个 subagent，先合成一个。
       - 当工具调：主 agent 调用它，拿回结构化结果，对话仍然握在自己手里。
+      - 只有它必须直接跟用户对话时，才让它完整接手。
       - 并进来：它的提示词变成 skill，API 调用变成 MCP 工具，一次只并一个。
 
   - id: flip
@@ -173,7 +174,7 @@ scenes:
     theme: claudeblog
     beats:
       - 多个团队怎么一起维护一个 agent？从拥有 agent，改成拥有 skill 和工具。
-      - 工具管动作和实时数据，要按用户意图分组，别一个 API 一个工具。
+      - 工具管动作和实时数据，要按用户意图分组，别一个 API 一个工具；权限检查也放进工具。
       - 定义超过 30 到 50 个，选工具就会变差，所以用工具搜索延迟加载。
       - skill 装的是团队的做事方法，每个团队有负责人，还要配上评测。
       - 用 skill-creator 写新 skill，用 skill-doctor 看用量、删掉没人用的。
@@ -184,7 +185,7 @@ scenes:
     theme: claudeblog
     beats:
       - 配套的迁移套件叫 single-agent-loop-kit，在 GitHub 上开源。
-      - 思路三步：测量、合并、折叠；每次改动，前后都用同一套评测打分。
+      - 思路三步：测量、合并、并入；每次改动，前后都用同一套评测打分。
       - 它串起 Claude API 的四个 skill：build-eval 建评测，prompt-audit 揪出给老模型写的规则。
       - hillclimb 对着评测反复改进，cost-optimize 一次一项地压成本和延迟。
       - 套件自带一个客服示例：一个路由加六个 subagent，免费检查不用 API key。

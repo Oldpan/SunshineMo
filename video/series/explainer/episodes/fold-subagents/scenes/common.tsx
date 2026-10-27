@@ -284,6 +284,13 @@ export const ToolSq: React.FC<{x: number; y: number; s?: number; dashed?: boolea
   />
 );
 
+/** Dashed placeholder that shows where a card will land; visible from `f` until `gone` (both beat-relative frames). */
+export const Ghost: React.FC<{x: number; y: number; w: number; h: number; f: number; gone: number; delay?: number; radius?: number}> = ({x, y, w, h, f, gone, delay = 0, radius = 16}) => {
+  const o = prog(f, 12, delay) * (1 - prog(gone, 10));
+  if (o <= 0.01) return null;
+  return <div style={{position: 'absolute', left: x, top: y, width: w, height: h, borderRadius: radius, border: `2px dashed ${K.line}`, opacity: o, boxSizing: 'border-box'}} />;
+};
+
 /** Rounded pill like the "skill" / "tool" chips in the article's third figure. */
 export const Pill: React.FC<{children: React.ReactNode; bg?: string; color?: string; style?: React.CSSProperties; border?: string}> = ({
   children,

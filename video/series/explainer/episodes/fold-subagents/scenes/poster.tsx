@@ -1,5 +1,5 @@
 // Publishing covers (16:9 and 3:4), rendered by renderer/covers.mjs. Same ivory + clay look as the video.
-// A: 「并回主循环 / 快约 2 倍」 with the runtime bar pair. B: 「5 层结构 / 换成 1 个循环」 with the before/after figure.
+// A: 「别急着拆 / subagent」 with the runtime bar pair. B: 「5 层结构 / 换成 1 个循环」 with the before/after figure.
 import React from 'react';
 import {AbsoluteFill} from 'remotion';
 import {ClaudeSpark} from '@atv/lib/brand/claude';
@@ -101,7 +101,7 @@ export const Poster: React.FC<{w: number; h: number}> = ({w, h}) => {
   useFonts();
   useSerifFonts();
   const tall = h > w;
-  const [l1, l2] = VARIANT === 'A' ? ['并回主循环', '快约 2 倍'] : ['5 层结构', '换成 1 个循环'];
+  const [l1, l2] = VARIANT === 'A' ? ['别急着拆', 'subagent'] : ['5 层结构', '换成 1 个循环'];
   const titleSize = tall ? 140 : 150;
   const cardW = tall ? 920 : VARIANT === 'A' ? 700 : 760;
   return (
@@ -121,8 +121,8 @@ export const Poster: React.FC<{w: number; h: number}> = ({w, h}) => {
         <div style={{marginTop: 40, display: 'flex', gap: 14, flexWrap: 'wrap'}}>
           {VARIANT === 'A' ? (
             <>
-              <Pill hot>subagent 何时该并</Pill>
-              <Pill>何时该留</Pill>
+              <Pill hot>并回一个主循环</Pill>
+              <Pill>有客户快约 2 倍</Pill>
               <Pill>迁移套件</Pill>
             </>
           ) : (

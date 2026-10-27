@@ -2,7 +2,7 @@
 import React from 'react';
 import {useCurrentFrame} from 'remotion';
 import {useBeats} from '@atv/lib/timing';
-import {Box, Card, clamp01, FONT_SERIF, Head, Illus, K, Lab, lerp, Mo, NumBadge, Packet, Pill, prog, rise, Serif, Shell, SrcLine, ToolSq, usePopIn, Wire, Zh} from './common';
+import {Box, Card, clamp01, FONT_SERIF, Ghost, Head, Illus, K, Lab, lerp, Mo, NumBadge, Packet, Pill, prog, rise, Serif, Shell, SrcLine, ToolSq, usePopIn, Wire, Zh} from './common';
 
 // ------------------------------------------------------------------ progressive disclosure
 const SKILLS = [
@@ -271,6 +271,9 @@ export const Keep: React.FC = () => {
   for (let x = 0; x <= 400; x += 10) curve.push([x, 30 + (x < 220 ? 0 : Math.pow((x - 220) / 180, 2) * 130)]);
   return (
     <Shell part="何时留着">
+      {[0, 1, 2].map((i) => (
+        <Ghost key={`g${i}`} x={col(i)} y={280} w={W} h={540} f={b[0]} gone={b[i + 1]} delay={10 + i * 5} radius={18} />
+      ))}
       <Head kicker="KEEP A SUBAGENT WHEN" title="这三种情况，subagent 该留着" />
       {[0, 1, 2].map((i) => (
         <div key={i} style={{position: 'absolute', left: col(i), top: 280, width: W, ...pop(b[i + 1], 0, 0.92)}}>

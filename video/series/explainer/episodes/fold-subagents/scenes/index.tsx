@@ -1,4 +1,4 @@
-// Scene registry for "快约 2 倍：Claude 官方教你把 subagent 并回主循环". Scene files sit beside this one and import the
+// Scene registry for "Agent 别急着拆 subagent：Claude 官方教你并回一个主循环". Scene files sit beside this one and import the
 // renderer as '@atv/lib/...'. common.tsx registers the episode theme `claudeblog`.
 import type {NavGroup} from '@atv/lib/chrome';
 import {defaultTipOf, SceneComponent} from '@atv/lib/Video';

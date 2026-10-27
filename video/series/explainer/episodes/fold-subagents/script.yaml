@@ -1,0 +1,200 @@
+# 何时把 subagent 并回主循环 · Claude Platform 官方文章（2026-10-22）+ 配套迁移套件 single-agent-loop-kit
+# 完整出处见 source/article.md（复核只认这份资料）
+meta:
+  title: Agent 别急着拆 subagent：Claude 官方教你并回一个主循环
+  topic: subagent 并回主循环
+  source: https://claude.com/blog/building-agents-when-to-fold-subagents-into-your-main-agent-loop
+  voice: qwen-longanhuan
+  fps: 30
+  width: 1920
+  height: 1080
+  gap: 0.1
+  scene_tail: 0.3
+
+readings:
+  调度: diào
+  调用: diào
+  重叠: chóng
+  还该: hái
+  还有: hái
+  传话: chuán
+  只有: zhǐ
+  分桶: fēn
+  分权限: fēn
+  分组: fēn
+  多数: shù
+  大都: dà dōu
+  直觉: jué
+  协调: tiáo
+  擅长: cháng
+  来回传: chuán
+  回合数: shù
+  校验: jiào
+  调对: diào
+  工具调: diào
+  降了: jiàng
+  变差: chà
+  更差: chà
+
+lexicon:
+  "subagent": "sub agent"
+  "Subagent": "sub agent"
+  "Applied AI": "Applied A I"
+  "Claude Opus 4.5": "Claude Opus 四点五"
+  "Opus 4.5": "Opus 四点五"
+  "Claude Code": "Claude Code"
+  "Claude API": "Claude A P I"
+  "MCP": "M C P"
+  "build-eval": "build eval"
+  "prompt-audit": "prompt audit"
+  "hillclimb": "hill climb"
+  "cost-optimize": "cost optimize"
+  "single-agent-loop-kit": "single agent loop kit"
+  "skill-creator": "skill creator"
+  "skill-doctor": "skill doctor"
+  "API key": "A P I key"
+  "GitHub": "GitHub"
+  "2 倍": "两倍"
+  "80%": "八成"
+  "30 到 50": "三十到五十"
+
+scenes:
+  # ------------------------------------------------------------------ intro
+  - id: cover
+    theme: claudeblog
+    beats:
+      - Claude 官方 10 月 22 号发了一篇文章，讲 Applied AI 团队搭 agent 的实战建议。
+      - 结论有点反直觉：很多企业 agent，把 subagent 并回一个主循环，效果反而更好。
+      - 有客户实测，单循环比多 agent 架构快了约 2 倍。
+
+  - id: whatis
+    theme: claudeblog
+    beats:
+      - 先说 subagent：它有自己的上下文窗口、工具和指令，由一个协调者调度。
+      - 它擅长验证、并行和按模块分权限，Anthropic 自己的多 agent 研究系统也在用。
+      - 但团队发现，不少企业把路由、规划和各领域 subagent 并回主循环之后，表现更好。
+      - 几家企业的对比里，带 skills 的单 agent 常常质量更高，单个任务的成本和延迟也更低。
+
+  # ------------------------------------------------------------------ part 1 · why
+  - id: layers
+    theme: claudeblog
+    beats:
+      - 他们常看到的方案，是一层层叠起来的。
+      - 意图分类器、固定的多步推理流水线、用户分桶、推荐分支，顶上再加编排器。
+      - 反馈常常是：这些结构，大都在替模型做它已经不需要别人代劳的事。
+      - 一个清楚的系统提示词，四五个精简的数据工具，加上严格的输出护栏，就能覆盖大部分场景。
+
+  - id: orgchart
+    theme: claudeblog
+    beats:
+      - 大公司还有一个典型搭法：每个团队先做自己的 agent，平台团队再在上面加一个编排器。
+      - 结果，agent 架构变成了组织架构图的翻版，这就是康威定律。
+
+  - id: ills
+    theme: claudeblog
+    beats:
+      - 看着简单，麻烦马上就来。第一，上下文在 agent 之间来回传，细节一路丢。
+      - 第二，subagent 泛滥：每个团队都发一个，几百个互相重叠，没有标准，也没人负责。
+      - 第三，拼凑提示词：每个团队往系统提示词里加一句，规则打架，语气也不统一。
+      - 第四，评测各管各的，只对自己的子任务优化，管理层看到的是被稀释的局部分数。
+      - 第五，延迟。那位客户把多 agent 换成单循环，运行时间快了约 2 倍。
+
+  - id: pd
+    theme: claudeblog
+    beats:
+      - 替代做法叫渐进式披露：上下文靠 skills 按需加载，工具靠工具搜索按需加载。
+      - agent 平时只看到简短的描述，真用到时才完整载入。
+
+  - id: why
+    theme: claudeblog
+    beats:
+      - 理由一，共享上下文：前面每一步的结果都在同一个窗口里，模型能把它们串起来。
+      - 这比 subagent 交回来的一堆摘要更完整，交接也更少。
+      - 理由二，不会撑爆上下文。Claude Code 给更强模型的系统提示词，砍掉了 80% 以上。
+      - 理由三，模型更强了。从 Claude Opus 4.5 开始，一个循环能管的事，远超多数团队的预期。
+      - 新模型会边做边汇报、边做边检查，框架里有些设计就多余了。
+      - 结构越简单，换下一代模型也越容易；僵硬的多 agent 结构，反而常常拖住新模型。
+
+  # ------------------------------------------------------------------ part 2 · when to keep
+  - id: keep
+    theme: claudeblog
+    beats:
+      - 当然，subagent 并没有过时。三种情况，还该留着它。
+      - 一，单循环因为上下文膨胀，出现了可测量的性能下降。
+      - 二，多个任务要并行，各自用干净的上下文窗口，做完就丢掉。
+      - 三，单个 agent 选不准工具，或者系统提示词里的指令互相冲突。
+
+  - id: split
+    theme: claudeblog
+    beats:
+      - 真要拆，就按上下文拆，别按问题类型拆。
+      - 按类型拆：写功能、写测试、做审查各一个 agent，每次交接都丢信息，像在玩传话游戏。
+      - 按上下文拆：一个 agent 写功能，也写测试，因为它本来就有上下文。
+      - 只跑测试、报结果的验证者，不需要实现细节，单独拆出去正合适。
+
+  # ------------------------------------------------------------------ part 3 · the loop
+  - id: loop
+    theme: claudeblog
+    beats:
+      - 目标形态是这样：一个模型、一个上下文窗口，跑一个开放式的工具循环。
+      - 每一轮，模型发出一批工具调用，框架并行执行，把原始结果交回同一个模型。
+      - 模型决定下一步：再来一批、问用户一句，或者直接回答。
+      - 答完或者预算用完就停；回合数、成本和写入审批，都由框架卡住。
+      - 最大的变化是：写计划的模型，就是执行计划的模型，可以半路改计划。
+      - 流程步骤放进 skills，校验和审批这类硬限制放进工具。
+
+  # ------------------------------------------------------------------ part 4 · migrate
+  - id: eval
+    theme: claudeblog
+    beats:
+      - 怎么迁移？第一步，先建端到端评测。
+      - 一套共享总评测归中心团队，各团队给自己的 skill 配小评测；十个黄金样例就能起步。
+      - 还有编排器时，看路由选对没有；并进来以后，看它加载对 skill、调对工具没有。
+      - 慢慢走向任务完成率评测，比较两种架构时，它最关键。
+
+  - id: steps
+    theme: claudeblog
+    beats:
+      - 然后一步步减少 subagent，有三种做法。
+      - 合并：经常前后连着跑、碰同一份数据的两个 subagent，先合成一个。
+      - 当工具调：主 agent 调用它，拿回结构化结果，对话仍然握在自己手里。
+      - 只有它必须直接跟用户对话时，才让它完整接手。
+      - 并进来：它的提示词变成 skill，API 调用变成 MCP 工具，一次只并一个。
+
+  - id: flip
+    theme: claudeblog
+    beats:
+      - 比较的时候，别只看总分，要看哪些任务翻车了。
+      - 他们在一个示例客服 agent 上试过：并掉一个 subagent，延迟降了。
+      - 但一个原本通过的流程坏了：主 agent 手里有订单查询工具，就自己回答了。
+      - 没去问物流专家要送达日期。
+      - 这个问题两次运行里只出现了一次。所以每条生产链路都要有任务，每个任务多跑几遍。
+
+  - id: teams
+    theme: claudeblog
+    beats:
+      - 多个团队怎么一起维护一个 agent？从拥有 agent，改成拥有 skill 和工具。
+      - 工具管动作和实时数据，要按用户意图分组，别一个 API 一个工具；权限检查也放进工具。
+      - 定义超过 30 到 50 个，选工具就会变差，所以用工具搜索延迟加载。
+      - skill 装的是团队的做事方法，每个团队有负责人，还要配上评测。
+      - 用 skill-creator 写新 skill，用 skill-doctor 看用量、删掉没人用的。
+      - 知识库放政策、指标定义这类参考资料，藏在检索工具后面，别让代码硬塞进提示词。
+      - 一个小的中心团队，负责系统提示词和端到端质量。
+
+  - id: kit
+    theme: claudeblog
+    beats:
+      - 配套的迁移套件叫 single-agent-loop-kit，在 GitHub 上开源。
+      - 思路三步：测量、合并、并入；每次改动，前后都用同一套评测打分。
+      - 它串起 Claude API 的四个 skill：build-eval 建评测，prompt-audit 揪出给老模型写的规则。
+      - hillclimb 对着评测反复改进，cost-optimize 一次一项地压成本和延迟。
+      - 套件自带一个客服示例：一个路由加六个 subagent，免费检查不用 API key。
+
+  # ------------------------------------------------------------------ outro
+  - id: outro
+    theme: claudeblog
+    hold: 0.5
+    beats:
+      - 总结一句：先测量，一次只改一处，留下站得住的。
+      - 建个小评测，并进一个 subagent；只有并进来更差，才把它留成 subagent。
+      - 模型越强、agent 跑得越久，就有越多 subagent 可以变成 skill 和工具。

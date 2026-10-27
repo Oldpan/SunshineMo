@@ -1,0 +1,19 @@
+# 第一座山（局部最优）— see `sm --help` for the fields
+title: 第一座山
+engine: code
+style: quiet_concept
+deliver:
+  drive: video_from_opus/一帧一理04_第一座山
+  files:
+    - {from: out/第一座山.mp4, as: 第一座山_LocalOptimum.mp4}
+    - {from: out/cover_16x9_B.png, as: 第一座山_封面_16x9.png}
+    - {from: out/cover_3x4_B.png, as: 第一座山_封面_3x4.png}
+    - {from: 介绍和文案.md}
+drive:
+  folder: video_from_opus/一帧一理04_第一座山
+  url: https://drive.google.com/drive/folders/1of_PhDKJjdWdbkcGMp4cWRmFDT_aZfcC
+  files:
+  - {name: 第一座山_LocalOptimum.mp4, id: 1VQDNjVXjDMCPMEGqT_2vD2pA-53MWrtb, bytes: 275664086}
+  - {name: 第一座山_封面_16x9.png, id: 1vtjy-Ba6mxZSAU_Bj7dlQ5wAoJhH1p3e, bytes: 2392332}
+  - {name: 第一座山_封面_3x4.png, id: 1uOBeT4wkc5iffFVgxMe3aOIaJxMaFTbC, bytes: 1414059}
+  - {name: 介绍和文案.md, id: 1sMk3rWQK1fkE_3h7ZwRJNf3mn828QIGE, bytes: 533}

@@ -36,5 +36,7 @@ source env.sh
 
 | 集 | 标题 | 成片 |
 |---|---|---|
+| kimi-k31-pro | 开源旗舰逼近 Opus：Kimi K3.1 Pro 全拆解 | Drive video_from_opus/Kimi K3.1 Pro 拆解 |
+| fold-subagents | 快约 2 倍：Claude 官方教你把 subagent 并回主循环 | Drive video_from_opus/subagent 并回主循环 |
 
 （之前的 10 期在 article-to-video 的 `projects/` 里，留在原处。）

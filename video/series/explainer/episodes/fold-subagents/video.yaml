@@ -1,0 +1,20 @@
+# Agent 别急着拆 subagent：Claude 官方教你并回一个主循环 — see `sm --help` for the fields
+title: Agent 别急着拆 subagent：Claude 官方教你并回一个主循环
+engine: narrated
+style: claudeblog  # episode theme registered in scenes/common.tsx (warm paper + clay, after the article's own diagrams)
+source: https://claude.com/blog/building-agents-when-to-fold-subagents-into-your-main-agent-loop
+deliver:
+  drive: video_from_opus/subagent 并回主循环
+  files:
+  - {from: out/fold-subagents.mp4, as: subagent 并回主循环_FoldSubagents.mp4}
+  - {from: out/封面_16x9.png, as: subagent 并回主循环_封面_16x9.png}
+  - {from: out/封面_3x4.png, as: subagent 并回主循环_封面_3x4.png}
+  - {from: source/video.md, as: 介绍和文案.md}
+drive:
+  folder: video_from_opus/subagent 并回主循环
+  url: https://drive.google.com/drive/folders/1-1WqC1edNAGqlTQIwXGWCeSSakGG9Nep
+  files:
+  - {name: subagent 并回主循环_FoldSubagents.mp4, id: 12vn1WI8mT70reDVWzuJXeGN7NQRnf5cN, bytes: 29815193}
+  - {name: subagent 并回主循环_封面_16x9.png, id: 13xJG2_1lfFo4kW7dt9fCq4VtavKbQw87, bytes: 161559}
+  - {name: subagent 并回主循环_封面_3x4.png, id: 1o7RBkLy2HeGVXd0FHpK8U_CEaeXpDqFC, bytes: 148331}
+  - {name: 介绍和文案.md, id: 1Yzj5BS7wtz_jy-U8lu7fD_fv8hrg2Iot, bytes: 505}

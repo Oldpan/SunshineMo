@@ -1,4 +1,4 @@
-"""回来的飞机 soundtrack (cold-open test, blueprint): 100 BPM, 10 bars, D minor.
+"""回来的飞机 soundtrack (blueprint): 100 BPM, 62 bars, D minor.
 
 Contrapuntal and mechanical, as the blueprint style asks: a harpsichord ostinato on sixteenths is the "gear",
 pizzicato bass under it, a celesta answers each hole with a note, pen scratches follow the strokes.
@@ -15,14 +15,20 @@ sys.path.insert(0, str(next(p for p in Path(__file__).resolve().parents if (p / 
 from core.paths import episode  # noqa: E402
 HERE, OUT = episode(__file__)
 from core.synth import *  # noqa: E402,F401,F403
-from cues import BPM, BARS, SECTIONS, HITS  # noqa: E402
+from cues import BPM, BARS, SECTIONS, HITS, SCENE_CUTS  # noqa: E402
 
 SONG = Song(bpm=BPM, bars=BARS, fps=60, sections=SECTIONS)
 bt, BAR, BEAT = SONG.bt, SONG.bar, SONG.beat
 
-Dm, Bb, F, Gm, A7 = [50, 53, 57], [46, 50, 53], [41, 45, 48], [43, 46, 50], [45, 49, 52]
-CHORDS = [Dm, Dm, Bb, F, Dm, Bb, Gm, A7, Dm, Bb]
+Dm, Bb, F, Gm, A7, C = [50, 53, 57], [46, 50, 53], [41, 45, 48], [43, 46, 50], [45, 49, 52], [48, 52, 55]
+CHORDS = ([Dm, Dm, Bb, F, Dm, Bb, Gm, A7] + [Dm, Bb] + [Dm, C, Bb, A7] * 2 + [Dm] + [Gm, A7]
+          + [Dm, Bb, F, C] + [F, C, Dm, Bb, F, C] + [Dm, Bb, F, C, Gm, Dm, A7, Bb, A7]
+          + [Bb, F, Gm, Dm, Bb, F, Gm, A7] + [Dm, Bb, Gm, A7, Dm] + [Bb, F, Gm, A7] + [Dm, Bb, F, A7, Dm])
+assert len(CHORDS) == BARS, len(CHORDS)
 SCALE = [62, 64, 65, 67, 69, 70, 72, 74, 76, 77, 79, 81]          # D natural minor, for the holes
+DRUMS = set(range(4, 8)) | set(range(10, 19)) | set(range(21, 25)) | set(range(26, 31)) | set(range(32, 40)) \
+    | set(range(49, 53))
+THIN = set(range(40, 48)) | set(range(53, 62)) | {19, 20}          # eighths only: the quiet acts, never silent
 
 BUS = make_buses(SONG, {"pad": 0.4, "pluck": 0.2, "foot": 0.1, "count": 0.35, "kick": 0.0, "clap": 0.15,
                         "hat": 0.05, "bass": 0.0, "fx": 0.25})
@@ -84,88 +90,102 @@ def g(key, fn):
     return cached(key, fn)
 
 
+def tone(bar, k, octave=24):
+    ch = CHORDS[bar]
+    return ch[k % 3] + octave + (12 if (k // 3) % 2 else 0)
+
+
+# hit name -> how it sounds (pen and paper foley plus a pitched voice on the chord)
+DRAWN = {"cline", "header", "draw", "armor", "srg", "cloud", "name", "memo", "memo2", "diag", "fig", "book", "venn",
+         "unrec", "chk", "contact", "rearmor", "ref", "sign", "empty", "ok", "find", "load", "friend", "pick", "say"}
+POPS = {"hole", "exp", "star", "msg", "post", "opt", "user", "pbook", "rehole", "clap", "tick"}
+TICKS = {"count", "pen", "zero", "miss", "lab", "cross", "status", "q", "tq", "en", "esub", "eq", "sub"}
+AIRY = {"ghost", "leave", "land", "flow", "ppost", "deaf", "seen", "learn", "glow"}
+
+
 def compose():
     for bar in range(BARS):
         notes = CHORDS[bar]
         BUS["pad"].add(bt(bar), g(("pad", tuple(notes)), lambda: string_pad(notes, BAR + 0.4, 0.5, 0.35,
                                                                             seed=notes[0])), 0.55)
-    # the gear: harpsichord ostinato from bar 1, thinner in bars 5-7, full in the title
-    for bar in range(1, BARS):
+    # the gear: harpsichord ostinato on sixteenths, eighths in the quiet acts; never stops
+    for bar in range(BARS):
         ch = CHORDS[bar]
         pat = [ch[0] + 12, ch[1] + 12, ch[2] + 12, ch[1] + 12]
         for s in range(16):
-            if bar in (5, 6) and s % 2:
+            if (bar in THIN or bar == 0) and s % 2:
                 continue
             m = pat[s % 4] + (12 if s in (6, 14) else 0)
-            BUS["pluck"].add(bt(bar) + s * SONG.s16, g(("hc", m), lambda: harpsichord(m, 0.32, seed=m)),
-                             0.5 if s % 4 == 0 else 0.32, pan=0.25 * np.sin(s * 1.3))
-        for beat in (0, 1.5, 2, 3) if bar >= 4 else (0, 2):
+            gain = (0.5 if s % 4 == 0 else 0.32) * (0.7 if bar in THIN else 1.0)
+            BUS["pluck"].add(bt(bar) + s * SONG.s16, g(("hc", m), lambda: harpsichord(m, 0.32, seed=m)), gain,
+                             pan=0.25 * np.sin(s * 1.3))
+        for beat in (0, 1.5, 2, 3) if bar in DRUMS else (0, 2):
             BUS["bass"].add(bt(bar, beat), g(("pz", ch[0] - 12), lambda: pizz(ch[0] - 12)), 0.8)
-    # drums from bar 4: soft kick, rim on 2 and 4, hats on eighths
-    for bar in range(4, BARS):
-        for beat in (0, 2) if bar < 8 else (0, 1, 2, 3):
-            if (bar, beat) in ((8, 0),):
-                continue
-            BUS["kick"].add(bt(bar, beat), g("kick", lambda: kick(soft=True)), 0.8)
-            KICKS.append((bt(bar, beat), 0.5))
-            EVENTS.add("kick", bt(bar, beat))
-        for beat in (1, 3):
-            BUS["clap"].add(bt(bar, beat), g("rim", rim), 0.6)
-        for s in range(0, 16, 2):
-            BUS["hat"].add(bt(bar) + s * SONG.s16, g(("bt", s % 4), lambda: brush_tap(1.0, seed=s % 4)), 0.35)
-    for b, beat in at("sheet"):
-        BUS["fx"].add(bt(b, beat), g("slap", slap), 0.9)
-        BUS["count"].add(bt(b, beat), g(("cel", 62), lambda: celesta(62, 2.5)), 0.5)
-    for b, beat in at("cline"):
-        BUS["fx"].add(bt(b, beat), g(("sc", 0), lambda: scratch(BEAT * 0.8, 0)), 0.8)
-    for b, beat in at("header"):
-        BUS["fx"].add(bt(b, beat), g(("sc", 1), lambda: scratch(BEAT * 0.9, 1)), 0.7)
-    for b, beat in at("land"):
-        BUS["fx"].add(bt(b, beat), g("land", lambda: whoosh(0.4, 0.8, 200, 2500, seed=2)), 0.5)
-        BUS["kick"].add(bt(b, beat), g("kick", lambda: kick(soft=True)), 0.7)
-    for k, (b, beat) in enumerate(at("draw")):
-        BUS["fx"].add(bt(b, beat), g(("sc", 2 + k), lambda: scratch(BEAT * 0.85, 2 + k)), 0.8)
-        BUS["count"].add(bt(b, beat), g(("hc", 74 + k), lambda: harpsichord([62, 65, 69, 74][k], 0.6, seed=k)), 0.7)
-    for k, (b, beat) in enumerate(at("hole")):
-        BUS["foot"].add(bt(b, beat), g(("pu", k % 3), lambda: punch(k % 3)), 0.7, pan=float(np.sin(k * 2.1) * 0.5))
-        m = SCALE[k % len(SCALE)]
-        BUS["count"].add(bt(b, beat), g(("cel", m), lambda: celesta(m, 1.0)), 0.5, pan=float(np.sin(k * 2.1) * 0.5))
-    for k, (b, beat) in enumerate(at("count")):
-        BUS["fx"].add(bt(b, beat), g("tk", lambda: tick(True)), 0.7)
-        BUS["count"].add(bt(b, beat), g(("cel", 81 - k * 3), lambda: celesta(81 - k * 3, 1.2)), 0.6)
-    for k, (b, beat) in enumerate(at("armor")):
-        BUS["fx"].add(bt(b, beat), g(("sc", 6 + k), lambda: scratch(BEAT * 0.8, 6 + k)), 0.8)
-        BUS["count"].add(bt(b, beat), g(("hca", k), lambda: harpsichord([50, 53, 57, 62][k], 0.6, seed=9)), 0.7)
-    for k, (b, beat) in enumerate(at("cloud")):
-        BUS["fx"].add(bt(b, beat), g(("sc", 10 + k), lambda: scratch(BEAT * 0.8, 10 + k)), 0.7)
-        BUS["count"].add(bt(b, beat), g(("cel", 69 + 5 * k), lambda: celesta(69 + 5 * k, 2.0)), 0.6)
-    for b, beat in at("name"):
-        BUS["fx"].add(bt(b, beat), g(("sc", 12), lambda: scratch(BEAT * 0.9, 12)), 0.6)
-    for b, beat in at("pen"):
-        BUS["fx"].add(bt(b, beat), g("tk2", lambda: tick(False)), 0.8)
-        BUS["count"].add(bt(b, beat), g(("cel", 76), lambda: celesta(76)), 0.6)
-    for k, (b, beat) in enumerate(at("zero")):
-        BUS["fx"].add(bt(b, beat), g("tk", lambda: tick(True)), 0.6)
-        BUS["count"].add(bt(b, beat), g(("pzz", 38), lambda: pizz(38, 0.6)), 0.9)
-    for k, (b, beat) in enumerate(at("ghost")):
-        BUS["fx"].add(bt(b, beat), g(("gw", k), lambda: whoosh(0.9, 0.5, 120, 1500, seed=10 + k)), 0.5,
-                      pan=[-0.5, 0.5, -0.4, 0.4][k])
-        m = [57, 55, 53, 50][k]
-        BUS["count"].add(bt(b, beat), g(("celg", m), lambda: celesta(m, 2.4)), 0.6, pan=[-0.5, 0.5, -0.4, 0.4][k])
-    BUS["fx"].add(bt(7), g("riser", lambda: riser(BAR)), 0.5)
-    for b, beat in at("title"):
-        BUS["fx"].add(bt(b, beat), g("imp", impact), 0.9)
-        BUS["kick"].add(bt(b, beat), g("kick", lambda: kick(soft=False)), 1.0)
-        BUS["bass"].add(bt(b, beat), g("sub", lambda: sub_tone(26, BAR)), 0.8)
-        BUS["fx"].add(bt(b, beat), g("crash", lambda: crash(2.0)), 0.4)
-    for k, (b, beat) in enumerate(at("char")):
-        BUS["count"].add(bt(b, beat), g(("hct", k), lambda: harpsichord([74, 77, 81, 86, 89][k], 0.8, seed=20 + k)),
-                         0.7)
-    for b, beat in at("stamp"):
-        BUS["fx"].add(bt(b, beat), g("stamp", lambda: stamp_thud(0)), 1.0)
-    for k, (b, beat) in enumerate(at("rearmor")):
-        BUS["fx"].add(bt(b, beat), g(("sc", 20 + k), lambda: scratch(BEAT * 0.6, 20 + k)), 0.7)
-        BUS["count"].add(bt(b, beat), g(("cel", 62 + 3 * k), lambda: celesta(62 + [0, 3, 7, 12][k], 1.6)), 0.6)
+    for bar in range(BARS):
+        if bar in DRUMS:
+            for beat in (0, 2):
+                BUS["kick"].add(bt(bar, beat), g("kick", lambda: kick(soft=True)), 0.8)
+                KICKS.append((bt(bar, beat), 0.5))
+                EVENTS.add("kick", bt(bar, beat))
+            for beat in (1, 3):
+                BUS["clap"].add(bt(bar, beat), g("rim", rim), 0.6)
+        if bar >= 1:
+            for s in range(0, 16, 2):
+                BUS["hat"].add(bt(bar) + s * SONG.s16, g(("bt", s % 4), lambda: brush_tap(1.0, seed=s % 4)),
+                               0.35 if bar in DRUMS else 0.22)
+    # risers into the section cuts
+    for b in SCENE_CUTS:
+        BUS["fx"].add(bt(b - 1), g("riser", lambda: riser(BAR)), 0.35)
+    counter = {}
+    for n, b, beat in HITS:
+        k = counter.get(n, 0)
+        counter[n] = k + 1
+        at_ = bt(b, beat)
+        pan = float(np.sin(k * 2.1) * 0.4)
+        if n == "sheet":
+            BUS["fx"].add(at_, g("slap", slap), 0.9)
+            BUS["count"].add(at_, g(("cel", 62), lambda: celesta(62, 2.5)), 0.5)
+        elif n in ("title", "end"):
+            BUS["fx"].add(at_, g("imp", impact), 0.9)
+            BUS["kick"].add(at_, g("kick", lambda: kick(soft=False)), 1.0)
+            BUS["bass"].add(at_, g("sub", lambda: sub_tone(26, BAR)), 0.8)
+            BUS["fx"].add(at_, g("crash", lambda: crash(2.0)), 0.4)
+        elif n in ("char", "echar", "concept"):
+            m = [74, 77, 81, 86, 89][k % 5]
+            BUS["count"].add(at_, g(("hct", m), lambda: harpsichord(m, 0.8, seed=20 + m)), 0.7)
+        elif n == "stamp":
+            BUS["fx"].add(at_, g("stamp", lambda: stamp_thud(0)), 1.0)
+            BUS["bass"].add(at_, g("sub2", lambda: sub_tone(26, BEAT * 2)), 0.6)
+        elif n == "settle":
+            BUS["fx"].add(at_, g("tk", lambda: tick(True)), 0.5)
+        elif n == "lights":
+            BUS["fx"].add(at_, g("off", lambda: whoosh(1.2, 0.6, 80, 900, seed=40)), 0.6)
+            BUS["count"].add(at_, g(("celL", 50), lambda: celesta(50, 3.0)), 0.6)
+        elif n == "gold":
+            m = tone(b, k, 24)
+            BUS["count"].add(at_, g(("celG", m), lambda: celesta(m, 2.4)), 0.65)
+            BUS["fx"].add(at_, g(("sc", 30 + k % 4), lambda: scratch(BEAT * 1.4, 30 + k % 4)), 0.5)
+        elif n in DRAWN:
+            BUS["fx"].add(at_, g(("sc", k % 12), lambda: scratch(BEAT * 0.8, k % 12)), 0.7, pan=pan)
+            m = tone(b, k, 12)
+            BUS["count"].add(at_, g(("hcd", m), lambda: harpsichord(m, 0.6, seed=m)), 0.6, pan=pan)
+        elif n in POPS:
+            if n in ("hole", "rehole"):
+                BUS["foot"].add(at_, g(("pu", k % 3), lambda: punch(k % 3)), 0.7, pan=pan)
+                m = SCALE[k % len(SCALE)]
+            else:
+                m = tone(b, k, 24)
+            BUS["count"].add(at_, g(("cel", m, 1.0), lambda: celesta(m, 1.0)), 0.5, pan=pan)
+        elif n in TICKS:
+            BUS["fx"].add(at_, g("tk", lambda: tick(True)), 0.6)
+            m = tone(b, k, 24)
+            BUS["count"].add(at_, g(("cel", m, 1.2), lambda: celesta(m, 1.2)), 0.45)
+        elif n in AIRY:
+            BUS["fx"].add(at_, g(("gw", k % 6), lambda: whoosh(0.9, 0.5, 120, 1500, seed=10 + k % 6)), 0.45, pan=pan)
+            m = tone(b, k, 12)
+            BUS["count"].add(at_, g(("celg", m), lambda: celesta(m, 2.4)), 0.5, pan=pan)
+        else:
+            raise SystemExit(f"no sound for hit {n}")
     for n, b, beat in HITS:
         EVENTS.add(n, bt(b, beat))
 

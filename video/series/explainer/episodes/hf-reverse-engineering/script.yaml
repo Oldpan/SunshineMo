@@ -1,0 +1,379 @@
+# DeepSeek 带 4 个 Qwen 小模型逆向程序 · Hugging Face 社区博文全文讲解
+# 来源：huggingface.co/blog/ybelkada/reverse-engineering-anything-with-small-local-mode（2026-10-26）
+# 正文、两张交互配图、两段录屏和核对记录都在 source/article.md（复核只认这份资料）
+meta:
+  title: DeepSeek 带 4 个 Qwen 小模型逆向程序：主管还给手下改了 harness
+  topic: 大模型带小模型逆向
+  source: https://huggingface.co/blog/ybelkada/reverse-engineering-anything-with-small-local-mode
+  voice: qwen-longanhuan
+  fps: 30
+  width: 1920
+  height: 1080
+  gap: 0.15
+  scene_tail: 0.35
+  nav:
+    intro: {label: 大模型带小模型逆向}
+    p1: {label: 第一部分 · 逆向在逆什么}
+    p2: {label: 第二部分 · 实验怎么搭}
+    p3: {label: 第三部分 · 题一 HF logo}
+    p4: {label: 第四部分 · 题二 太空射击}
+    p5: {label: 第五部分 · 结论}
+    end: {label: 收尾}
+
+readings:
+  还原: huán
+  还改造: hái
+  还过不了: hái
+  还少: hái
+  还点名: hái
+  还写下: hái
+  还加了: hái
+  还带了: hái
+  常量: liàng
+  空着: kòng
+  太空: kōng
+  个数: shù
+  参数: shù
+  重新: chóng
+  重做: chóng
+  调用: diào
+  长任务: cháng
+  长时间: cháng
+  行为: xíng
+  地址: dì
+  差一: chà
+  处理: chǔ
+  数据: shù
+
+lexicon:
+  "DeepSeek-V4.1-Flash-1017": "DeepSeek V4.1 Flash 1017"
+  "DeepSeek-V4.1-Flash": "DeepSeek V4.1 Flash"
+  "Qwen3.5-9B": "Qwen 三点五 9B"
+  "9B": "九 B"
+  "REA": "R E A"
+  "HF": "H F"
+  "IPython": "I Python"
+  "diff_test": "diff test"
+  "call_address": "call address"
+  "rodata": "R O data"
+  "disasm": "dis asm"
+  "draw_particles": "draw particles"
+  "lookup": "look up"
+  "b.ls": "B 点 L S"
+  "b.hi": "B 点 H I"
+  "cmp": "C M P"
+  "AArch64": "A arch 六十四"
+  "ARM": "A R M"
+  "harness": "harness"
+  "token": "token"
+
+scenes:
+  # ------------------------------------------------------------------ intro
+  - id: cover
+    theme: yellow
+    style: flat
+    nav: intro
+    beats:
+      - 一个大模型带四个 9B 小模型，去逆向一个编译好的程序。
+      - 这是 Hugging Face 三位作者 10 月 26 号发的一篇社区博文。
+      - 主管是 DeepSeek-V4.1-Flash-1017，工人是 Qwen3.5-9B。
+      - 两道题，函数全部还原；但团队并不总比主管单干划算。
+      - 更有意思的是，主管中途改了工人的提示词，还给它们写了个工具。
+      - 下面按原文顺序讲完。
+
+  - id: rea
+    theme: yellow
+    style: flat
+    nav: intro
+    beats:
+      - 起因是最近很火的逆向项目 REA。
+      - 原文写，它在 GitHub 上已经超过 37 万星。
+      - 接上强模型，几乎什么软件都能逆向。
+      - 社区已经用它重做了 Adobe 的产品、Linux 扩展，还改造了热门游戏。
+      - 作者想知道：换成本地的开源小模型，组成一个团队，能做到什么程度？
+      - 原文说，这些是初步实验和结果。
+
+  # ------------------------------------------------------------------ part 1
+  - id: ch1
+    theme: mint
+    style: flat
+    nav: p1
+    layout: chapter
+    data: {part: 1, title: 逆向在逆什么, items: ["01 二进制里能看到什么", "02 这次抓哪一样"]}
+    beats:
+      - 第一部分：逆向到底在逆什么。
+
+  - id: binary
+    theme: mint
+    style: pixel
+    nav: p1
+    beats:
+      - 闭源软件发出来的是编译好的二进制，拿不回源代码。
+      - 但能从里面提取不少信息和结构。
+      - 第一，机器码和控制流：循环、函数调用、条件跳转。
+      - 第二，写死的字符串和数据，比如路径、报错信息、常量。
+      - 第三，符号和函数名：没去掉符号的程序，会留下函数名和全局变量。
+      - 第四，依赖的链接库；第五，文件格式和目标架构。
+      - 第六，安全漏洞，比如写死的密钥、内存安全问题。
+
+  - id: names
+    theme: mint
+    style: pixel
+    nav: p1
+    beats:
+      - 原文说，这次主要利用的就是第三样：符号和函数名。
+      - 原文配了一个交互图，用的是 HF logo 那道题的二进制。
+      - 反汇编扫出 40 个函数，38 个属于程序本身。
+      - 按发布时的样子去掉符号以后，只剩 4 个导出函数还有名字。
+      - 其余的都只是一串地址。
+      - 给这些函数起名、猜用途，就是主管要做的第一件事。
+
+  # ------------------------------------------------------------------ part 2
+  - id: ch2
+    theme: blue
+    style: flat
+    nav: p2
+    layout: chapter
+    data: {part: 2, title: 实验怎么搭, items: ["01 两道题", "02 主管和工人", "03 判卷 diff_test", "04 极简 harness"]}
+    beats:
+      - 第二部分：实验是怎么搭的。
+
+  - id: setup
+    theme: blue
+    style: flat
+    nav: p2
+    beats:
+      - 作者设计了两道很简单的练习题。
+      - 两道题的 C 代码都是让 Claude Code 写的。
+      - 编译好的程序，就是逆向流水线的输入。
+      - 目标是把每个函数改写成 Python，行为和原程序一模一样。
+
+  - id: roles
+    theme: blue
+    style: flat
+    nav: p2
+    beats:
+      - 主管要足够强，用的是 DeepSeek-V4.1-Flash-1017。
+      - 它负责反汇编，找出函数并起名，猜出参数签名。
+      - 还要还原内存布局和数据表。
+      - 然后把任务连同提示贴到一块共享看板上。
+      - 工人是 4 个 Qwen3.5-9B，谁空着谁就自己去领任务。
+
+  - id: oracle
+    theme: blue
+    style: pixel
+    nav: p2
+    beats:
+      - 工人手里有一个判卷工具，叫 diff_test。
+      - 它用大约 600 个用例，同时跑原程序的函数和 Python 版本。
+      - 返回值要一样，游戏状态的每一个字节也要一样。
+      - 它报告留出用例的通过率，再指出第一处对不上的字节或像素。
+      - 全部通过，工人才能提交。
+      - 试了一定次数还过不了，任务就升级给主管，由主管自己来做。
+
+  - id: harness
+    theme: blue
+    style: pixel
+    nav: p2
+    beats:
+      - 所有 agent 都跑在一个基于 IPython 的极简 harness 里。
+      - 每个人起步都是同一套小工具。
+      - 读二进制：disasm、rodata 这些。
+      - 看它运行：trace、call_address。
+      - 拿改写去和原版比：diff_test，再 submit。
+      - 主管多两样：记录共享地图，发布任务。
+      - 而且允许主管改工人的 harness：加工具，或者改核心部分。
+      - 作者想借此观察，工人的 harness 会怎么演化。
+
+  - id: pipeline
+    theme: blue
+    style: flat
+    nav: p2
+    beats:
+      - 原文用第二道题画了整条流水线。
+      - 去掉符号的二进制先交给主管。
+      - 主管把任务贴上看板，工人领走。
+      - 工人写好的版本交给 diff_test 判。
+      - 通过的代码进 Python 移植版。
+      - 全部函数到齐以后，整个游戏再和原程序逐帧对一遍。
+      - 虚线是两条回路：工人卡住就升级给主管，主管也可以回头改工人的 harness。
+
+  # ------------------------------------------------------------------ part 3
+  - id: ch3
+    theme: peach
+    style: flat
+    nav: p3
+    layout: chapter
+    data: {part: 3, title: 题一 · HF logo 动画, items: ["01 38 个函数", "02 团队 vs 单干"]}
+    beats:
+      - 第三部分：第一道题，HF logo 动画。
+
+  - id: logorun
+    theme: peach
+    style: pixel
+    nav: p3
+    beats:
+      - 第一道题，是把编译进二进制的一段动画还原出来。
+      - 画面是像素版的 Hugging Face logo。
+      - 一共 38 个函数要改写成 Python。
+      - 原文录了一段过程：工人每写好一个函数，画面就多画出一部分。
+
+  - id: logotable
+    theme: peach
+    style: flat
+    nav: p3
+    beats:
+      - 结果在这张表里，团队和主管单干放在一起比。
+      - 两种跑法，38 个函数都全部通过。
+      - 团队这边，有 15 个函数退回给了主管。
+      - 主管一次都没改过工人的 harness。
+      - 成本：团队 2.97 美元，单干 0.87 美元。
+      - 时间：团队 86 分钟，分两次启动；单干只要 14 分钟。
+      - token 也一样：团队里主管自己就用了 779 万输入，单干只用 253 万。
+
+  - id: logowhy
+    theme: peach
+    style: flat
+    nav: p3
+    beats:
+      - 原文的结论很直接：这条流水线更慢，也更贵。
+      - 那 15 个函数，是工人自己判断太难，退回去的。
+      - 作者的猜测有两条。
+      - 一是题太简单，主管一口气就能自己做完。
+      - 二是函数对小模型来说还是太难，可能拆得不够细。
+      - 那如果函数再多一点呢？作者换了第二道题。
+
+  # ------------------------------------------------------------------ part 4
+  - id: ch4
+    theme: lavender
+    style: flat
+    nav: p4
+    layout: chapter
+    data: {part: 4, title: 题二 · 太空射击, items: ["01 56 个函数", "02 draw_particles", "03 提示词 v0 → v2", "04 lookup 工具"]}
+    beats:
+      - 第四部分：第二道题，太空射击游戏。
+
+  - id: shootertable
+    theme: lavender
+    style: flat
+    nav: p4
+    beats:
+      - 这次是一个简单的太空射击游戏，原代码有 56 个函数。
+      - 两种跑法，56 个函数都全部通过。
+      - 团队这边，20 个退回主管；主管改了 3 次 harness。
+      - 两次改工人的提示词，一次加了个 lookup 工具。
+      - 成本：团队 3.60 美元，单干 3.28 美元。
+      - 时间：团队 100 分钟，单干 54 分钟，但单干启动了 4 次。
+      - 团队里主管用了 896 万输入，比单干的 969 万还少一点。
+
+  - id: shooterwhy
+    theme: lavender
+    style: flat
+    nav: p4
+    beats:
+      - 原文说，按绝对成本，流水线开始和单干打平。
+      - 单干很难在一次长时间运行里处理完这么大的任务。
+      - 作者把两道题放在一起看：函数一多，这种流水线的优势就显出来了。
+      - 当然，时间上团队还是更慢。
+
+  - id: particles
+    theme: lavender
+    style: pixel
+    nav: p4
+    beats:
+      - 原文举了一个例子，说明主管为什么重要：draw_particles。
+      - 工人们一直写不对这个函数。
+      - Python 结构看着没错，diff_test 却一直报不一致。
+      - 问题不在逻辑，在于怎么读 ARM 指令。
+      - 汇编先用 cmp 比较，再用 b.ls 跳转。
+      - 在 AArch64 上，b.ls 是无符号的「小于或等于」。
+      - 工人一直把它翻译成普通的有符号小于。
+      - 边界差一个，每次提交都失败。
+      - 主管发现好几个工人犯同一个错。
+      - 它没有自己接手，而是改了工人的系统提示词，写清 b.ls 和 b.hi 怎么读。
+      - 有了这条，工人自己把任务做完了。
+
+  - id: promptv1
+    theme: lavender
+    style: paper
+    nav: p4
+    beats:
+      - 这道题里，主管两次修改了工人的系统提示词。
+      - 原始版本 v0 很短：只改写一个函数，直到留出用例 100% 通过。
+      - 先早点提交，看不一致的地方，再改，再提交。
+      - v1 在后面加了 5 条。
+      - 一，去 layout.py 查每个状态字段的偏移，直接按字节索引。
+      - 二，只能调用地图里有的函数，不许自己编函数名。
+      - 三，提交的必须是一个函数，参数照登记的签名来。
+      - 四，提示照字面写；还点名了 b.hi、b.ls 是无符号比较。
+      - 五，只错一两个像素时，先怀疑符号或循环边界差一。
+      - 主管还写下了改的理由：工人总在同样的杂活上失败。
+
+  - id: promptv2
+    theme: lavender
+    style: paper
+    nav: p4
+    beats:
+      - v2 在 v1 的基础上又补了几处。
+      - 字段偏移，用 lookup 确认，不要手算基址加偏移。
+      - 调用别的函数前，先用 lookup 查参数个数和顺序。
+      - b.ls 讲得更细：和 12 比较，意思是无符号小于等于 12，不是小于 12。
+      - 还加了第 6 条：不要自己编签名去调用 call_address。
+      - 理由是工人反复犯三种错。
+      - 把无符号的小于等于读成小于；调用函数时参数个数不对；手算字段偏移算错。
+      - 原文列了算错的例子：593 和 625，581 和 565。
+
+  - id: lookup
+    theme: lavender
+    style: pixel
+    nav: p4
+    beats:
+      - v2 还带了一个新工具：lookup。
+      - 这是主管给工人写的小工具。
+      - 团队已经记录过的东西，工人直接查，不用重新推一遍。
+      - 能查任意函数的签名，也能查某个字节偏移上是哪个状态字段。
+      - 原文配图里的分步演示，也用 draw_particles 讲了一遍。
+      - 不过那里写的是，工人卡在 56% 后升级给主管，由主管改到 100%。
+      - 和正文的说法不太一样，这里两种都列出来。
+
+  # ------------------------------------------------------------------ part 5
+  - id: ch5
+    theme: mint
+    style: flat
+    nav: p5
+    layout: chapter
+    data: {part: 5, title: 结论和开放问题, items: ["01 小模型要条件", "02 约四成要主管", "03 只有两个数据点"]}
+    beats:
+      - 第五部分：结论和开放问题。
+
+  - id: conclusion
+    theme: mint
+    style: crayon
+    nav: p5
+    beats:
+      - 作者的第一条结论：小模型条件给对了，也能做出关键的东西。
+      - 条件是两样：提示词给它一个做得了的范围，再给一个合适的 harness。
+      - 第二条：两道题里，都有大约四成函数需要主管。
+      - HF logo 是 38 个里 15 个，太空射击是 56 个里 20 个。
+      - 一个方向是，换成不同大小、不同家族的工人池。
+      - 甚至由一个或几个主管，带一群小模型。
+
+  - id: open
+    theme: mint
+    style: crayon
+    nav: p5
+    beats:
+      - 第三条：函数数量和团队收益之间，好像有关联。
+      - 但作者自己说，只有两个数据点，很难下结论。
+      - 他们认为，这种做法可能更适合需要大量规划的长任务。
+      - 也适合能拆成很细小任务的问题。
+      - 工人的 harness 在这种设置下怎么演化，也值得继续观察。
+      - 另外要记住：两道题都是 Claude Code 生成的小程序。
+
+  - id: outro
+    theme: night
+    style: flat
+    nav: end
+    beats:
+      - 这就是 Hugging Face 这篇逆向实验的全部内容。
+      - 原文地址放在画面上，想看交互配图的可以去原文点一点。

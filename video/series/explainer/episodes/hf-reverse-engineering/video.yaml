@@ -1,0 +1,12 @@
+# DeepSeek 带 4 个 Qwen 小模型逆向程序：主管还给手下改了 harness — see `sm --help` for the fields
+title: DeepSeek 带 4 个 Qwen 小模型逆向程序：主管还给手下改了 harness
+engine: narrated
+style: flat  # article-to-video default mix: flat + pixel (binary, oracle, harness) + paper (prompts) + crayon (conclusion)
+source: https://huggingface.co/blog/ybelkada/reverse-engineering-anything-with-small-local-mode
+deliver:
+  drive: video_from_opus/大模型带小模型逆向
+  files:
+  - {from: out/hf-reverse-engineering.mp4, as: 大模型带小模型逆向_HFReverseEngineering.mp4}
+  - {from: out/封面_16x9.png, as: 大模型带小模型逆向_封面_16x9.png}
+  - {from: out/封面_3x4.png, as: 大模型带小模型逆向_封面_3x4.png}
+  - {from: source/video.md, as: 介绍和文案.md}

@@ -1,0 +1,12 @@
+# Anthropic 把 Agent 的脑和手拆开了：Managed Agents 架构全拆解 — see `sm --help` for the fields
+title: Anthropic 把 Agent 的脑和手拆开了：Managed Agents 架构全拆解
+engine: narrated
+style: claudeblog  # provisional, pending user approval of the plan
+source: https://www.latent.space/p/opus55
+deliver:
+  drive: video_from_opus/脑手分离
+  files:
+  - {from: out/managed-agents.mp4, as: 脑手分离_ManagedAgents.mp4}
+  - {from: out/封面_16x9.png, as: 脑手分离_封面_16x9.png}
+  - {from: out/封面_3x4.png, as: 脑手分离_封面_3x4.png}
+  - {from: source/video.md, as: 介绍和文案.md}

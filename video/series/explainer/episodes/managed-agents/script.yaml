@@ -1,0 +1,109 @@
+# Narration script — one file per video. Copied by scripts/new_project.py; edit everything below.
+#
+# scene = one picture. Rendered by the custom component registered for its id in
+#         renderer/src/projects/<id>/index.tsx, else by its generic `layout` (+ `data`), else a placeholder.
+# beat  = one narration line = one subtitle + one TTS clip; animations key off when each beat starts.
+#         Plain string, or {text: 字幕, say: 读法} when TTS should read something different.
+meta:
+  title: Anthropic 把 Agent 的脑和手拆开了：Managed Agents 架构全拆解
+  topic: Anthropic 把 Agent 的脑和手拆开了：Managed Agents 架构全拆解         # stable, unique folder name under zmt/video/
+  source: https://www.latent.space/p/opus55
+  voice: qwen-longanhuan   # 默认：云端 Qwen 龙安欢 ×1.2（voices/voices.yaml）；本地播音女声用 f-anchor
+  fps: 30
+  width: 1920
+  height: 1080
+  gap: 0.15                # silence between lines (s)
+  scene_tail: 0.35         # silence after a scene's last line (s)
+  nav:                     # top-right progress: group -> label and the tip numbers it contains
+    intro: {label: Anthropic 把 Agent 的脑和手拆开了：Managed Agents 架构全拆解}
+    part1: {label: 第一部分 · 示例, tips: [1, 2]}
+    end: {label: 总结}
+
+readings:                  # 多音字读音: word -> reading of its polyphone(s); check with scripts/polyphones.py
+  长什么样: zhǎng
+
+lexicon:                   # how TTS should say tricky words (longest key first); digits/commands are automatic
+  "GPT-5": "GPT 五"
+
+scenes:
+  - id: cover
+    theme: yellow           # yellow mint lavender pink blue peach night
+    nav: intro
+    layout: cover
+    data:
+      kicker: 来源 · 2026.10
+      highlight: GPT-5      # optional big accent word above the title
+      title: 上手指南
+      subtitle: 一句话说明这期讲什么
+      points:               # cards on the right; `beat` = which line makes it pop in (0-based)
+        - {title: 要点一, text: 补充说明, beat: 1}
+        - {title: 要点二, text: 补充说明, beat: 2}
+    beats:
+      - 开场第一句，点明主题。
+      - 第一个要点。
+      - 第二个要点。
+
+  - id: ch1
+    theme: mint
+    nav: part1
+    layout: chapter
+    data: {part: 1, title: 示例部分, items: ["01 第一条", "02 第二条"]}
+    beats:
+      - 第一部分：示例部分。
+
+  - id: tip01
+    theme: mint
+    nav: part1
+    layout: tip
+    data:
+      num: 1
+      title: 每句一张卡片
+      # no `cards`: every line after the first becomes a card on its own beat
+    beats:
+      - 第 1 条：每句一张卡片。
+      - 第一张卡片的内容。
+      - 第二张卡片的内容。
+      - 第三张卡片的内容。
+
+  - id: tip02
+    theme: mint
+    nav: part1
+    layout: tip
+    data:
+      num: 2
+      title: 对比好坏
+      tags: [对比]
+      cards:
+        - {title: 别这样, text: 反面做法, tone: bad, beat: 1}
+        - {title: 这样做, text: 正面做法, tone: good, beat: 2}
+    beats:
+      - 第 2 条：对比好坏。
+      - 别这样做。
+      - 应该这样做。
+
+  - id: example         # custom component: renderer/src/projects/<id>/scenes/example.tsx
+    theme: blue
+    nav: end
+    data: {num: 3, title: 自定义场景, command: "claude --resume", result: 接着上次继续}
+    beats:
+      - 需要更具体的画面时，就写一个自定义场景。
+      - 比如终端里输入一条命令，
+      - 右边弹出结果。
+
+  - id: summary
+    theme: lavender
+    nav: end
+    layout: checklist
+    data: {title: 检查清单}
+    beats:
+      - 最后用一张清单收尾。
+      - 第一项。
+      - 第二项。
+
+  - id: outro
+    theme: night
+    nav: end
+    layout: outro
+    data: {title: 下期见, subtitle: 一句收尾}
+    beats:
+      - 这期就到这里，下期见。

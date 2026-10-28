@@ -1,0 +1,11 @@
+# 老鼠尾巴（古德哈特定律）— see `sm --help` for the fields
+title: 老鼠尾巴
+engine: code
+style: quiet_concept
+deliver:
+  drive: video_from_opus/一帧一理06_老鼠尾巴
+  files:
+    - {from: out/老鼠尾巴.mp4, as: 老鼠尾巴_GoodhartsLaw.mp4}
+    - {from: out/cover_16x9_A.png, as: 老鼠尾巴_封面_16x9.png}
+    - {from: out/cover_3x4_A.png, as: 老鼠尾巴_封面_3x4.png}
+    - {from: 介绍和文案.md}

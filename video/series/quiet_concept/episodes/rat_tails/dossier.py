@@ -259,7 +259,7 @@ def hud(c, t, case, exhibit, date, dark=False):
     pill = skia.Rect.MakeLTRB(1860 - dw - rw - 70, 50, 1878, 92)
     c.drawRRect(skia.RRect.MakeRectXY(pill, 21, 21), paint(PAPER if dark else INK))
     c.drawString(date, 1860 - dw, 78, f, paint(INK if dark else PAPER))
-    rec = RED if dark else (1.0, 0.42, 0.36)
+    rec = RED if dark else (1.0, 0.58, 0.48)
     if int(t * 2) % 2 == 0:
         c.drawCircle(1860 - dw - 22, 70, 8, paint(rec))
     c.drawString("REC", 1860 - dw - rw - 44, 78, f, paint(rec))

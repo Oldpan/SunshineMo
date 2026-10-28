@@ -21,10 +21,18 @@ SONG = Song(bpm=BPM, bars=BARS, fps=60, sections=SECTIONS)
 bt, BAR, BEAT = SONG.bt, SONG.bar, SONG.beat
 
 Am, F, C, G, Dm, E7 = [57, 60, 64], [53, 57, 60], [48, 52, 55], [55, 59, 62], [50, 53, 57], [52, 56, 59]
-CHORDS = [Am, F, C, G, Am, Dm, E7, F, Am, E7]
+CHORDS = ([Am, F, C, G, Am, Dm, E7, F, Am, E7]
+          + [Am, F, C, G, Am, F, Dm, E7, F, E7]
+          + [C, G, Am, F, C, G, Am, F, E7]
+          + [Dm, Am, E7, Am, Dm, Am, F, G, E7]
+          + [F, C, G, Am, F, C, G, Am, Dm, E7]
+          + [Am, F, Dm, E7, Am]
+          + [F, G, E7, Am]
+          + [Am, F, C, G, Am])
 assert len(CHORDS) == BARS, len(CHORDS)
-THIN = {0, 7}                                                     # sewer and the twist: bass + marimba only
-SNARE = set(range(2, 7)) | {8, 9}
+THIN = {0, 7, 46, 47, 53, 54, 55, 56, 60, 61}                   # bass + marimba only, never silent
+SNARE = (set(range(2, 7)) | {8, 9} | set(range(11, 19)) | set(range(21, 28)) | set(range(31, 37))
+         | set(range(39, 45)) | {49, 50, 51, 57, 58})
 
 BUS = make_buses(SONG, {"pad": 0.4, "mar": 0.2, "pop": 0.15, "kick": 0.0, "snare": 0.12, "hat": 0.05,
                         "bass": 0.0, "fx": 0.2})
@@ -99,7 +107,7 @@ def compose():
             BUS["mar"].add(bt(bar, e * 0.5), g(("mo", m), lambda: marimba(m, 0.4, 0.7)), 0.35,
                            pan=0.3 * np.sin(e * 1.7))
         if bar not in THIN:
-            for beat in (0, 2) if bar < 8 else (0, 1, 2, 3):
+            for beat in (0, 1, 2, 3) if bar in (8, 9, 18, 19, 34, 36, 57, 58) else (0, 2):
                 BUS["kick"].add(bt(bar, beat), g("kick", lambda: kick(soft=False)), 0.85)
                 KICKS.append((bt(bar, beat), 0.5))
                 EVENTS.add("kick", bt(bar, beat))
@@ -114,9 +122,10 @@ def compose():
             BUS["hat"].add(bt(bar, 1), g("sh", lambda: hat(False, seed=9)), 0.18)
             BUS["hat"].add(bt(bar, 3), g("sh", lambda: hat(False, seed=9)), 0.18)
     for b in SCENE_CUTS:
-        if b not in (8,):
+        if b not in (8, 57):
             BUS["fx"].add(bt(b - 1, 3), g("wsh", lambda: whoosh(BEAT, 0.5, 300, 4000, seed=3)), 0.35)
-    BUS["fx"].add(bt(7), g("riser", lambda: riser(BAR)), 0.4)
+    for b in (7, 17, 56):
+        BUS["fx"].add(bt(b), g("riser", lambda: riser(BAR)), 0.4)
     counter = {}
     for n, b, beat in HITS:
         k = counter.get(n, 0)
@@ -179,6 +188,60 @@ def compose():
         elif n == "pulse":
             m = [81, 84, 88][k % 3]
             BUS["pop"].add(at_, g(("bP", m), lambda: fm_bell(m, 1.8, idx=1.0, ratio=4.0)), 0.5)
+        elif n in ("tag", "fig", "row", "box", "line", "match", "win", "neq", "chipw", "soft"):
+            if n == "fig" and k % 4 == 0:
+                BUS["fx"].add(at_, g("rus2", lambda: rustle(0.4, seed=5)), 0.7)
+                BUS["fx"].add(at_, g("thudF", lambda: stamp_thud(4)), 0.4)
+            m = tone(b, k, 24)
+            BUS["pop"].add(at_, g(("mB", m), lambda: marimba(m, 0.6, 0.9)), 0.6, pan=pan)
+            BUS["fx"].add(at_, g(("pp", k % 3), lambda: chip_pop(88 + k % 3)), 0.15, pan=pan)
+        elif n in ("link", "pull", "sync"):
+            m = tone(b, k, 12 if n != "sync" else 24)
+            BUS["pop"].add(at_, g(("pl", m), lambda: plop(m + 12, seed=m)), 0.5, pan=pan)
+            BUS["pop"].add(at_, g(("mT", m), lambda: marimba(m + 12, 0.35, 0.8)), 0.4, pan=pan)
+        elif n == "split":
+            hi_, lo_ = 76 + 2 * k % 8, 69 - k % 4
+            BUS["pop"].add(at_, g(("mH", hi_), lambda: marimba(hi_, 0.5)), 0.5, pan=0.4)
+            BUS["pop"].add(at_, g(("mH", lo_), lambda: marimba(lo_, 0.5)), 0.5, pan=-0.4)
+        elif n in ("type", "ref", "ticket"):
+            BUS["fx"].add(at_, g(("ty", k % 5), lambda: type_key(k % 5)), 0.6 if n != "ref" else 0.4, pan=pan)
+            if n == "ticket":
+                BUS["fx"].add(at_, g(("rs", k % 3), lambda: rustle(0.2, seed=k % 3)), 0.5, pan=pan)
+            m = tone(b, k, 24)
+            BUS["pop"].add(at_, g(("mY", m), lambda: marimba(m, 0.3, 0.6)), 0.3, pan=pan)
+        elif n in ("close", "tear"):
+            BUS["fx"].add(at_, g(("stC", k % 2), lambda: stamp_thud(5 + k % 2)), 0.65)
+            if n == "tear":
+                BUS["fx"].add(at_, g(("rsT", k % 3), lambda: rustle(0.25, seed=7 + k % 3)), 0.6)
+        elif n in ("aim", "mark", "q", "chip"):
+            BUS["fx"].add(at_, g("tk", lambda: tick(True)), 0.5)
+            m = tone(b, k, 24)
+            BUS["pop"].add(at_, g(("mQ", m), lambda: marimba(m, 0.7)), 0.55, pan=pan)
+        elif n in ("qchar", "gold"):
+            m = [76, 79, 81, 84, 88, 86][k % 6]
+            BUS["pop"].add(at_, g(("cp", m), lambda: chip_pop(m)), 0.3 if n == "gold" else 0.45, pan=pan)
+            BUS["pop"].add(at_, g(("mC", m), lambda: marimba(m, 0.5)), 0.5, pan=pan)
+        elif n in ("score", "stepc", "like"):
+            BUS["fx"].add(at_, g(("ty", k % 5), lambda: type_key(k % 5)), 0.35)
+            m = 72 + (k * 2) % 24
+            BUS["pop"].add(at_, g(("cpS", m), lambda: chip_pop(m)), 0.4, pan=pan)
+        elif n == "beep":
+            m = [84, 84, 88, 91][k % 4]
+            BUS["pop"].add(at_, g(("bp", m), lambda: chip_pulse(m, 0.12, duty=0.25, decay=0.08)), 0.35)
+        elif n in ("buoy", "flag"):
+            m = tone(b, k, 24)
+            BUS["pop"].add(at_, g(("bB", m), lambda: fm_bell(m, 1.2, idx=1.0, ratio=4.0)), 0.45, pan=pan)
+        elif n == "lap":
+            BUS["fx"].add(at_, g(("wl", k % 4), lambda: whoosh(0.35, 0.5, 600, 5000, seed=20 + k % 4)), 0.3, pan=pan)
+            m = tone(b, k, 24)
+            BUS["pop"].add(at_, g(("mL2", m), lambda: marimba(m, 0.4)), 0.5, pan=pan)
+        elif n == "bonk":
+            BUS["fx"].add(at_, g(("rt", k % 4), lambda: rattle(k % 4)), 0.5, pan=pan)
+            BUS["pop"].add(at_, g(("plB", k % 3), lambda: plop(48 + k % 3 * 3, seed=k)), 0.6, pan=pan)
+        elif n in ("light", "glow"):
+            m = tone(b, k, 24)
+            BUS["pop"].add(at_, g(("bG", m), lambda: fm_bell(m, 1.8, idx=0.8, ratio=4.0)), 0.4, pan=pan)
+            BUS["fx"].add(at_, g(("air", k % 3), lambda: whoosh(0.6, 0.5, 200, 2500, seed=30 + k % 3)), 0.2)
         else:
             raise SystemExit(f"no sound for hit {n}")
     for n, b, beat in HITS:

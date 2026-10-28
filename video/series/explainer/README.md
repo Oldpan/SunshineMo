@@ -38,5 +38,13 @@ source env.sh
 |---|---|---|
 | kimi-k31-pro | 开源旗舰逼近 Opus：Kimi K3.1 Pro 全拆解 | Drive video_from_opus/Kimi K3.1 Pro 拆解 |
 | fold-subagents | 快约 2 倍：Claude 官方教你把 subagent 并回主循环 | Drive video_from_opus/subagent 并回主循环 |
+| managed-agents | Anthropic 把 Agent 的脑和手拆开了：Managed Agents 架构全拆解 | Drive video_from_opus/脑手分离 |
 
 （之前的 10 期在 article-to-video 的 `projects/` 里，留在原处。）
+
+## 共用场景套件
+
+`shared/claudeblog.tsx`：Claude 博客风（象牙底 + 陶土色）的版式和小组件，fold-subagents 和 managed-agents 都从这里取，每期的 `scenes/common.tsx` 只做 re-export 再加本期专用的零件。
+
+- `Shell` 的 `drift` 让点阵底纹和内容整场缓慢移动，长句停留时画面也不会被 freezedetect 判成静帧；`bg` / `dots` 换底色，夜景主题 `claudenight` 用它。大块白卡片会盖住点阵，这类场景要靠内容自己动（数字滚动、进度条用线性填满整句），别指望底纹。漂移幅度很小，成片不能再转码：拼接修补过的片段再压一次，点阵的亚像素移动会被压掉，静帧检测一下冒出几十处，只能整片重渲。
+- `rise()` / `pop()` 返回的 style 自带 `opacity`。同一个对象里再写淡出的 `opacity` 要放在展开**之后**，并乘上入场进度；写在前面会被覆盖，元素永远不消失（managed-agents 的报错卡片就压在了下一拍的代码上）。

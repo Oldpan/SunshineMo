@@ -1,109 +1,238 @@
-# Narration script — one file per video. Copied by scripts/new_project.py; edit everything below.
-#
-# scene = one picture. Rendered by the custom component registered for its id in
-#         renderer/src/projects/<id>/index.tsx, else by its generic `layout` (+ `data`), else a placeholder.
-# beat  = one narration line = one subtitle + one TTS clip; animations key off when each beat starts.
-#         Plain string, or {text: 字幕, say: 读法} when TTS should read something different.
+# Latent Space 播客（2026-10-27）：Anthropic 的 Claude 平台工程负责人 Katelyn Lesse、产品负责人 Angela Jiang 谈 Managed Agents
+# 「脑手分离」和 Dreaming；数字和细节对照 Anthropic 工程博客《Scaling Managed Agents》、《How we contain Claude across
+# products》和 Managed Agents 的 Dreams / Memory 文档。完整出处见 source/article.md（复核只认这份资料）。
 meta:
   title: Anthropic 把 Agent 的脑和手拆开了：Managed Agents 架构全拆解
-  topic: Anthropic 把 Agent 的脑和手拆开了：Managed Agents 架构全拆解         # stable, unique folder name under zmt/video/
+  topic: 脑手分离
   source: https://www.latent.space/p/opus55
-  voice: qwen-longanhuan   # 默认：云端 Qwen 龙安欢 ×1.2（voices/voices.yaml）；本地播音女声用 f-anchor
+  voice: qwen-longanhuan
   fps: 30
   width: 1920
   height: 1080
-  gap: 0.15                # silence between lines (s)
-  scene_tail: 0.35         # silence after a scene's last line (s)
-  nav:                     # top-right progress: group -> label and the tip numbers it contains
-    intro: {label: Anthropic 把 Agent 的脑和手拆开了：Managed Agents 架构全拆解}
-    part1: {label: 第一部分 · 示例, tips: [1, 2]}
-    end: {label: 总结}
+  gap: 0.1
+  scene_tail: 0.3
 
-readings:                  # 多音字读音: word -> reading of its polyphone(s); check with scripts/polyphones.py
-  长什么样: zhǎng
+readings:
+  重试: chóng
+  重读: chóng
+  重复: chóng
+  重启: chóng
+  调用: diào
+  调好: tiáo
+  还能: hái
+  还有: hái
+  只需要: zhǐ
+  只保证: zhǐ
+  只见过: zhǐ
+  长任务: cháng
+  中位数: shù
+  随便: biàn
+  降了: jiàng
+  调 MCP: diào
+  还专门: hái
+  这一觉: jiào
+  相对: xiāng
+  还聊: hái
+  别处: chù
 
-lexicon:                   # how TTS should say tricky words (longest key first); digits/commands are automatic
-  "GPT-5": "GPT 五"
+lexicon:
+  "Claude Managed Agents": "Claude Managed Agents"
+  "Managed Agents": "Managed Agents"
+  "managed agent": "managed agent"
+  "Latent Space": "Latent Space"
+  "Katelyn Lesse": "Katelyn Less"
+  "Angela Jiang": "Angela 江"
+  "Messages API": "Messages A P I"
+  "Opus 5.5": "Opus 五点五"
+  "Claude Code": "Claude Code"
+  "harness": "harness"
+  "session": "session"
+  "MCP": "M C P"
+  "SSD": "S S D"
+  "AWS": "A W S"
+  "P95": "P 九十五"
+  "best-of-N": "best of N"
+  "thinking block": "thinking block"
+  "read()": "read"
+  "token": "token"
+  "Dreaming": "Dreaming"
+  "dream": "dream"
 
 scenes:
+  # ------------------------------------------------------------------ intro
   - id: cover
-    theme: yellow           # yellow mint lavender pink blue peach night
-    nav: intro
-    layout: cover
-    data:
-      kicker: 来源 · 2026.10
-      highlight: GPT-5      # optional big accent word above the title
-      title: 上手指南
-      subtitle: 一句话说明这期讲什么
-      points:               # cards on the right; `beat` = which line makes it pop in (0-based)
-        - {title: 要点一, text: 补充说明, beat: 1}
-        - {title: 要点二, text: 补充说明, beat: 2}
+    theme: claudeblog
     beats:
-      - 开场第一句，点明主题。
-      - 第一个要点。
-      - 第二个要点。
+      - 你肯定经历过：电脑突然死机，三个小时的活，一下全没了。
+      - Anthropic 第一版托管 agent 也是这样：容器一挂，整个 agent 跟着没了。
+      - 后来，他们把 agent 拆成了两半：脑，和手。
+      - 这期就讲这次拆分：它为什么更快、更稳，也更安全。
 
-  - id: ch1
-    theme: mint
-    nav: part1
-    layout: chapter
-    data: {part: 1, title: 示例部分, items: ["01 第一条", "02 第二条"]}
+  - id: who
+    theme: claudeblog
     beats:
-      - 第一部分：示例部分。
+      - 素材来自 Latent Space 播客，10 月 27 号这一期。
+      - 嘉宾是 Claude 平台的工程负责人 Katelyn Lesse，和产品负责人 Angela Jiang。
+      - 节目录在 Opus 5.5 发布的第二天。
+      - 里面提到的数字，我都对照了 Anthropic 的工程博客和官方文档。
 
-  - id: tip01
-    theme: mint
-    nav: part1
-    layout: tip
-    data:
-      num: 1
-      title: 每句一张卡片
-      # no `cards`: every line after the first becomes a card on its own beat
+  - id: whatis
+    theme: claudeblog
     beats:
-      - 第 1 条：每句一张卡片。
-      - 第一张卡片的内容。
-      - 第二张卡片的内容。
-      - 第三张卡片的内容。
+      - 先说 Claude Managed Agents 是什么。
+      - Messages API 给你的是原始 token，循环、工具、运行环境，都要自己搭。
+      - Managed Agents 高一层：定义一个 agent，开一个 session，harness 现成就有。
+      - 每次发新模型，新参数和破坏性改动，官方先在自己的 harness 里调好。
+      - 你拿到手，直接就能用。
 
-  - id: tip02
-    theme: mint
-    nav: part1
-    layout: tip
-    data:
-      num: 2
-      title: 对比好坏
-      tags: [对比]
-      cards:
-        - {title: 别这样, text: 反面做法, tone: bad, beat: 1}
-        - {title: 这样做, text: 正面做法, tone: good, beat: 2}
+  # ------------------------------------------------------------------ part 1 · the split
+  - id: parts
+    theme: claudeblog
     beats:
-      - 第 2 条：对比好坏。
-      - 别这样做。
-      - 应该这样做。
+      - 官方把一个 agent，拆成三个零件。
+      - session，是一份只追加的日志，发生过的每件事都记在里面。
+      - harness，是一个循环：调用 Claude，再把它的工具调用送到该去的地方。
+      - sandbox，是沙箱，Claude 在里面跑代码、改文件。
+      - 思路来自操作系统：read() 不管底下是七十年代的磁盘，还是今天的 SSD。
+      - 接口稳住，背后的实现就能随便换。
 
-  - id: example         # custom component: renderer/src/projects/<id>/scenes/example.tsx
-    theme: blue
-    nav: end
-    data: {num: 3, title: 自定义场景, command: "claude --resume", result: 接着上次继续}
+  - id: pet
+    theme: claudeblog
     beats:
-      - 需要更具体的画面时，就写一个自定义场景。
-      - 比如终端里输入一条命令，
-      - 右边弹出结果。
+      - 但一开始，他们把三样东西塞进了同一个容器。
+      - 好处是简单：改文件就是一次系统调用，不用设计服务之间的边界。
+      - 代价是，他们养了一只宠物。
+      - 宠物有名字、要人照顾、丢不起；牛群里的牛，却可以互相替换。
+      - 容器一挂，session 就没了；容器卡住，只能想办法把它救回来。
+      - 想排查问题，就要进到容器里，可里面还有用户数据，等于没法查。
+      - 客户想让 Claude 连自己的私有网络，要么把网络和 Anthropic 打通，要么自己跑这套 harness。
 
-  - id: summary
-    theme: lavender
-    nav: end
-    layout: checklist
-    data: {title: 检查清单}
+  - id: split
+    theme: claudeblog
     beats:
-      - 最后用一张清单收尾。
-      - 第一项。
-      - 第二项。
+      - 解法是：把脑和手分开。
+      - 脑是 Claude 加 harness，手是沙箱和工具，日志单独存放。
+      - harness 搬出了容器，调用容器，就像调用任何一个工具。
+      - 给一个名字和输入，拿回一段字符串。
+      - 容器死了，在 harness 看来只是一次工具报错，交给 Claude 决定要不要重试。
+      - 要重试，就按标准配方再起一个。容器从宠物，变成了牛。
 
+  - id: wake
+    theme: claudeblog
+    beats:
+      - 脑也一样，可以倒下。
+      - 日志在 harness 外面，所以 harness 里没有什么必须活下来。
+      - 一个 harness 崩了，就唤醒一个新的，取回这个 session 的日志。
+      - 从最后一条事件接着跑。
+      - 跑的时候，每一步都写进日志，留下一份可靠的记录。
+
+  # ------------------------------------------------------------------ part 2 · faster
+  - id: speed
+    theme: claudeblog
+    beats:
+      - 拆开以后，第一个收获是快。
+      - 以前，每个 session 都要先起容器、克隆仓库、启动进程，才能开始推理。
+      - 哪怕这个 session，根本用不到沙箱。
+      - 现在，用到才起容器；用不到的 session，拿到任务就开始想。
+      - 首 token 延迟，中位数降了约 60%。
+      - 最慢的那一头，P95，降了九成以上。
+
+  # ------------------------------------------------------------------ part 3 · safer
+  - id: keys
+    theme: claudeblog
+    beats:
+      - 第二个收获是安全，也可能是最重要的一个。
+      - 你不会把家门钥匙，交给来修水管的人。活照样干，钥匙不在他手上。
+      - 老设计里，Claude 写出来的代码，和凭证住在同一个容器。
+      - 提示注入只需要说服 Claude，读一下自己的环境。
+      - 拿到 token，攻击者就能开新的 session，把活派出去。
+      - 新设计里，凭证要么跟着资源配好，要么锁在沙箱外面的保险库。
+      - Git 的 token 在沙箱初始化时就配进本地仓库的 remote，agent 自己碰不到。
+      - 调 MCP 工具，走一个专门的代理，由代理去保险库取凭证。
+      - agent 只见过占位符，harness 也不知道凭证是什么。
+      - 沙箱的出网也能管：只放行白名单里的域名，或者干脆断网。
+
+  - id: wall
+    theme: claudeblog
+    beats:
+      - 为什么非这样不可？Anthropic 另一篇文章，讲过一次内部红队演练。
+      - 研究员用钓鱼邮件，让一位员工把一段恶意提示，交给 Claude Code 去跑。
+      - 提示里夹着一步：读取 AWS 凭证，编码以后，发到外部地址。
+      - 同一段提示跑 25 次，24 次都把凭证发了出去。
+      - 人工把关也靠不住：遥测显示，Claude Code 用户批准了约 93% 的权限弹窗。
+      - 模型层看不出异常的时候，挡得住的只有环境：出网被拦，钥匙不在手边。
+
+  - id: pm
+    theme: claudeblog
+    beats:
+      - 节目里有个小插曲。
+      - 从一开始就参与这套架构的产品经理，几个月来一直在说：它最重要的性质，是安全。
+      - 当时大家更在意的，是延迟和可靠性。
+      - 现在嘉宾见人就讲这件事，录节目前一天，还专门向这位同事道了歉。
+
+  # ------------------------------------------------------------------ part 4 · memory
+  - id: log
+    theme: claudeblog
+    beats:
+      - 另一个容易忽略的设计：session 不是 Claude 的上下文窗口。
+      - 长任务会超出窗口。压缩也好，裁剪也好，都要决定扔掉什么，而且扔了就回不来。
+      - 可你很难提前知道，后面会用到哪一段。
+      - 所以日志完整地留在窗口外面，脑可以按位置取一段。
+      - 接着上次读，倒回去看前因，或者重读某一步之前发生了什么。
+      - 取出来怎么整理、怎么提高缓存命中，交给 harness；日志只保证一件事：不丢，随时可查。
+
+  - id: hands
+    theme: claudeblog
+    beats:
+      - 拆开以后，一个脑还能连很多只手。
+      - 每只手都是同一个接口：名字和输入进去，字符串出来。
+      - harness 不在乎这只手是容器、手机，还是宝可梦模拟器。
+      - 而且手不绑在哪个脑上，脑和脑之间，可以把手递来递去。
+      - 早期的模型管不了这么多环境，所以一开始才把脑放进单个容器。
+      - 模型变强以后，单个容器反倒成了限制。
+
+  - id: dream
+    theme: claudenight
+    beats:
+      - 最后说 Dreaming，做梦。
+      - 人睡着以后，大脑会把白天的事回放一遍，留下重要的，放掉杂音。
+      - agent 也需要这一觉：它边干活边写记忆，用久了，重复、矛盾、过期的条目越堆越多。
+      - 一次 dream，读进现有的记忆库，再加上 1 到 100 个过去的 session。
+      - 合并重复，用最新的值换掉过期的，再提炼出新的洞见，写成一个新的记忆库。
+      - 原来的库一个字都不改。看完结果，你可以用，也可以扔。
+      - 它怎么实现？再起一个 managed agent，去检查上一个的工作，把整理好的记忆写进一个新的库。
+      - 嘉宾的原话是：一路往下，全是 managed agent。
+      - 目前它还是研究预览，跑一次通常要几分钟到几个小时。
+
+  - id: blocks
+    theme: claudeblog
+    beats:
+      - 同一套积木，还能拼出别的：best-of-N，多跑几次挑最好的；或者加一个验证 agent。
+      - 官方的 harness 故意做得很简单，复杂的策略，放在上面一层去爬坡优化。
+      - 他们说，很快会开放底层原语，让开发者自己搭多 agent 策略，也会给出 Dreaming 的模板。
+      - 不过，这还是计划，不是已经上线的功能。
+      - 嘉宾也坦白：比起年初，团队在 skills、记忆、Dreaming 这些功能上相对放慢了，更多精力转向了安全。
+
+  # ------------------------------------------------------------------ aside · distillation
+  - id: distill
+    theme: claudeblog
+    beats:
+      - 节目里还聊了一个发布细节：防蒸馏。
+      - 把模型的推理过程套出来，是蒸馏模型最有效的办法之一。
+      - 他们说，担心的主要不是生意，而是安全：蒸馏出来的模型，可能没有安全分类器把关。
+      - 所以最近几代模型，逐步加强了一条要求：多轮对话里，要保留 thinking block。
+      - 这会弄坏一些已有的 harness，比如客户自己写的上下文压缩。
+      - 官方提前找了开源 harness 的维护者，还在 API 里补了一个新的压缩功能。
+      - 效果呢？他们说，从能测到的指标看，蒸馏明显更难了。
+
+  # ------------------------------------------------------------------ outro
   - id: outro
-    theme: night
-    nav: end
-    layout: outro
-    data: {title: 下期见, subtitle: 一句收尾}
+    theme: claudeblog
+    hold: 0.6
     beats:
-      - 这期就到这里，下期见。
+      - 换成你自己的 agent，可以问三件事。
+      - 哪些部分，必须活下来？
+      - 哪些部分，在跑不可信的东西？
+      - 哪些钥匙，真的需要出现在代码运行的地方？
+      - 好的系统，不是哪里都不会坏，而是坏掉的那一块，不会带走别的。
+      - 就像那台死机的电脑，如果文件早就存在别处，重启以后，你还能接着写下去。

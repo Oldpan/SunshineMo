@@ -99,41 +99,41 @@ export const Names: React.FC = () => {
   const b = useBeats();
   const frame = useCurrentFrame();
   const pop = usePopIn();
-  const shown = Math.round(40 * prog(b[2], 40));
-  const dim = prog(b[3], 16);
+  const shown = Math.round(40 * prog(b[3], 40));
+  const dim = prog(b[4], 16);
   return (
     <AbsoluteFill>
       <SceneTitle kicker="这次抓哪一样">符号和函数名</SceneTitle>
       {/* left: the quote */}
-      <div style={{position: 'absolute', left: 84, top: 250, width: 560, ...pop(b[0], 0, 0.9)}}>
+      <div style={{position: 'absolute', left: 84, top: 250, width: 560, ...pop(b[0], 0, 0.9), opacity: pop(b[0], 0, 0.9).opacity * (1 - prog(b[1], 10))}}>
         <PixelPanel w={560} h={250} bg="#FFF1F3" border={PX.red}>
           <PixelText size={24} color={PX.red}>原文</PixelText>
           <div style={{marginTop: 8}}>
             <PixelText size={36}>This is the main piece we will exploit.</PixelText>
           </div>
         </PixelPanel>
-        <div style={{marginTop: 30, ...appear(b[1], 0)}}>
-          <PixelPanel w={560} h={300}>
-            <PixelText size={24} color={PX.dim}>原文交互配图</PixelText>
-            <div>
-              <PixelText size={36}>Inside a compiled binary</PixelText>
-            </div>
-            <div style={{display: 'flex', gap: 10, marginTop: 18}}>
-              <div style={{padding: '6px 12px', background: PX.ink}}>
-                <PixelText size={24} color="#fff">stripped</PixelText>
-              </div>
-              <div style={{padding: '6px 12px', border: `3px solid ${PX.ink}`}}>
-                <PixelText size={24}>unstripped</PixelText>
-              </div>
-            </div>
-            <div style={{marginTop: 14}}>
-              <PixelText size={24} color={PX.dim}>默认是 as shipped（发布时的样子）</PixelText>
-            </div>
-          </PixelPanel>
-        </div>
       </div>
+      <div style={{position: 'absolute', left: 84, top: 530, width: 560, zIndex: 3, ...appear(b[2], 0)}}>
+        <PixelPanel w={560} h={300}>
+          <PixelText size={24} color={PX.dim}>原文交互配图</PixelText>
+          <div>
+            <PixelText size={36}>Inside a compiled binary</PixelText>
+          </div>
+          <div style={{display: 'flex', gap: 10, marginTop: 18}}>
+            <div style={{padding: '6px 12px', background: PX.ink}}>
+              <PixelText size={24} color="#fff">stripped</PixelText>
+            </div>
+            <div style={{padding: '6px 12px', border: `3px solid ${PX.ink}`}}>
+              <PixelText size={24}>unstripped</PixelText>
+            </div>
+          </div>
+          <div style={{marginTop: 14}}>
+            <PixelText size={24} color={PX.dim}>默认是 as shipped（发布时的样子）</PixelText>
+          </div>
+        </PixelPanel>
+        </div>
       {/* right: 40 functions */}
-      <div style={{position: 'absolute', left: 700, top: 250, ...appear(b[1], 10)}}>
+      <div style={{position: 'absolute', left: 700, top: 250, ...appear(b[2], 10)}}>
         <PixelWindow w={1136} h={600} title="objdump -d hugface.so" progress={shown / 40}>
           <div style={{display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 10}}>
             {FNS.map(([addr, exp], i) => {
@@ -141,28 +141,40 @@ export const Names: React.FC = () => {
               const named = !!exp;
               const op = on ? (named ? 1 : 1 - 0.55 * dim) : 0;
               return (
-                <div key={addr} style={{height: 40, background: named && dim > 0 ? PX.green : '#E9E4FA', border: `3px solid ${PX.ink}`, display: 'flex', alignItems: 'center', padding: '0 8px', opacity: op, transform: named ? `scale(${1 + 0.06 * dim})` : undefined}}>
+                <div key={addr} style={{height: 40, background: named && dim > 0 ? PX.green : '#E9E4FA', border: `3px solid ${PX.ink}`, display: 'flex', alignItems: 'center', padding: '0 8px', opacity: op}}>
                   <span style={{fontFamily: FONT_MONO, fontWeight: 700, fontSize: 17, color: named && dim > 0 ? '#fff' : PX.ink, whiteSpace: 'nowrap'}}>{named && dim > 0.5 ? exp : `sub_${addr}`}</span>
                 </div>
               );
             })}
           </div>
           <div style={{display: 'flex', gap: 30, marginTop: 20}}>
-            <div style={appear(b[2], 30)}>
+            <div style={appear(b[3], 30)}>
               <PixelText size={36}>40 个函数</PixelText>
               <PixelText size={24} color={PX.dim}>（38 个属于程序，2 个编译器桩）</PixelText>
             </div>
-            <div style={{marginLeft: 'auto', ...appear(b[3], 8)}}>
+            <div style={{marginLeft: 'auto', ...appear(b[4], 8)}}>
               <PixelText size={36} color={PX.green}>只剩 4 个有名字</PixelText>
             </div>
           </div>
         </PixelWindow>
       </div>
+      {/* the article contradicts itself here: say so on screen */}
+      <div style={{position: 'absolute', left: 84, top: 250, width: 560, ...pop(b[1], 0, 0.9), zIndex: 2}}>
+        <PixelPanel w={560} h={250} bg="#FFF8E1" border={PX.ink}>
+          <PixelText size={24} color={PX.red}>注意 · 原文前后不一致</PixelText>
+          <div style={{marginTop: 6}}>
+            <PixelText size={24}>正文：主要利用符号和函数名</PixelText>
+          </div>
+          <div>
+            <PixelText size={24}>配图和录屏：用的是去掉符号的二进制，只剩导出函数有名字，其余由主管起名</PixelText>
+          </div>
+        </PixelPanel>
+      </div>
       {/* the lead's first job */}
-      <div style={{position: 'absolute', left: 84, top: 840, width: 560, opacity: clamp01(prog(b[5], 14))}}>
+      <div style={{position: 'absolute', left: 84, top: 840, width: 560, opacity: clamp01(prog(b[6], 14))}}>
         <PixelText size={24} color={PX.blue}>→ 起名、猜用途：主管的第一件事</PixelText>
       </div>
-      <Src style={{position: 'absolute', left: 700, bottom: 184, opacity: prog(frame, 12, 20)}}>原文交互配图「Inside a compiled binary: hugface.so」（stripped 模式）；地址为反汇编给出的函数入口</Src>
+      <Src style={{position: 'absolute', left: 700, bottom: 184, opacity: prog(frame, 12, 20)}}>原文交互配图「Inside a compiled binary: hugface.so」（stripped 模式）；地址取自配图数据</Src>
     </AbsoluteFill>
   );
 };

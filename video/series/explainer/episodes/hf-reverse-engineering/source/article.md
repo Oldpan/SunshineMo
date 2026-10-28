@@ -82,9 +82,24 @@ In this setup, we designed a simple Space Shooter game and tasked the models wit
 
 In absolute cost, the pipeline now starts to tie with the solo run. A solo run struggles handling this big task in a single long run. Interestingly, putting this side by side with the first run shows that scaling the number of functions to rewrite, highlights the advantage of using such pipeline.
 
-A good example of why the lead's oversight matters is `draw_particles`. The workers kept failing to reverse-engineer it. Their Python looked structurally right, but `diff_test` kept reporting mismatches. The problem was not the logic but how they read the ARM instructions. The disassembly compares a value with `cmp` and then branches with `b.ls`, which on AArch64 means "lower or same" as an **unsigned** comparison. The workers kept translating it as a plain signed ` s[469+i]; a u16 signed field -> (s[o] | s[o+1]=32768 else v.
+A good example of why the lead's oversight matters is `draw_particles`. The workers kept failing to reverse-engineer it. Their Python looked structurally right, but `diff_test` kept reporting mismatches. The problem was not the logic but how they read the ARM instructions. The disassembly compares a value with `cmp` and then branches with `b.ls`, which on AArch64 means "lower or same" as an **unsigned** comparison. The workers kept translating it as a plain signed `<`. That one misread off-by-one boundary was enough to make every attempt fail. The lead noticed the same mistake across several workers. It did not take the function over itself. Instead, it edited the workers' system prompt to spell out exactly how to read `b.ls`/`b.hi`. With that guidance in place, the workers could finish the task on their own.
+
+Note also that the lead agent modified the `ipython-harness` twice for this problem. It performed two system prompt modifications:
+
+#### Base system prompt (v0) 
+
+``` md
+You are a worker on a reverse-engineering team. Rebuild exactly one function in Python until it passes 100% on the held-out cases. Read its disassembly, submit a first version early with the submit tool, read the mismatches, fix, submit again. Keep edits small. If the map entry looks wrong, tell the lead with map_note.
+```
+
+#### System prompt v1 
+
+Base prompt +
+
+``` md
+1. Read port/layout.py for the offset of every state field and port/constants.py for tables. Index the bytearray directly: e.g. alien_alive at 469 -> s[469+i]; a u16 signed field -> (s[o] | s[o+1]<<8); if it is listed as s16 use v = v-65536 if v>=32768 else v.
 2. Only call fn('name') for functions that exist in port/map.json (check the names listed in the board/map). Never invent helper names like star_x/star_y.
-3. Your submission is exactly one function def (s, ...) with the arguments of the mapped signature, mutating the bytearray in place. Import helpers with from experiments.rebuild.runtime import fn and tables with from port.constants import *.
+3. Your submission is exactly one function def <name>(s, ...) with the arguments of the mapped signature, mutating the bytearray in place. Import helpers with from experiments.rebuild.runtime import fn and tables with from port.constants import *.
 4. Follow the hint literally: the hints are transcribed from the disassembly. Do not "improve" constants. AArch64 traps: b.hi/b.ls compare UNSIGNED (negative args are > 23!), ldrsh/ldrsb are signed, strb stores value & 0xFF.
 5. If the diff_test mismatch is in one or two pixels/cells only, suspect a signedness or off-by-one in a loop bound, not the overall structure. Report what you could not explain rather than guessing wildly.
 ```
@@ -98,10 +113,17 @@ We also record the motivation of the lead on why it made this change:
 v1 +
 
 ``` md
-1. … if it is listed as s16 use v = v-65536 if v>=32768 else v. Confirm an offset with lookup("") instead of recomputing base-pointer arithmetic by hand: ldrsh w1,[x23,x19,lsl #1] with a negative-offset base resolves to a plain field offset.
+1. … if it is listed as s16 use v = v-65536 if v>=32768 else v. Confirm an offset with lookup("<offset>") instead of recomputing base-pointer arithmetic by hand: ldrsh w1,[x23,x19,lsl #1] with a negative-offset base resolves to a plain field offset.
 2. … Never invent helper names like star_x/star_y. Before calling a callee run lookup('callee') and pass exactly the recorded number and order of arguments - a wrong argument count throws and burns the attempt.
 3. (unchanged)
-4. … b.hi/b.ls compare UNSIGNED (negative args are > 23!) so cmp w,#0xc + b.ls means x  *Workers repeat three mistakes: they translate cmp/b.ls as \< instead of unsigned \<= (draw_particles, update_shots), they call callees with the wrong argument count (update_ufo/boxes_overlap TypeErrors), and they hand-derive field offsets from base-pointer arithmetic instead of reading the layout (593 vs 625, 581 vs 565).*
+4. … b.hi/b.ls compare UNSIGNED (negative args are > 23!) so cmp w,#0xc + b.ls means x <= 12 unsigned, not < 12; b.lt/b.gt/b.le/b.ge after cmp are signed. ldrsh/ldrsb are signed, strb stores value & 0xFF (mask negative values before storing).
+5. (unchanged)
+6. Never use call_address yourself with an invented signature; rely on the mapped signature. If a mismatch names fields you do not recognise, run lookup on the offset.
+```
+
+We also record the motivation of the lead on why it made this change:
+
+> *Workers repeat three mistakes: they translate cmp/b.ls as \< instead of unsigned \<= (draw_particles, update_shots), they call callees with the wrong argument count (update_ufo/boxes_overlap TypeErrors), and they hand-derive field offsets from base-pointer arithmetic instead of reading the layout (593 vs 625, 581 vs 565).*
 
 The v2 harness also includes a new tool `lookup`, a small tool the lead wrote for its workers so they can look up facts the team had already recorded instead of re-deriving them: the signature of any function, or which state field sits at a given byte offset.
 
@@ -127,6 +149,7 @@ GitHub 仓库 `rea`（Public），Watch 1315 · Fork 92.5k · Star 370k；About�
 - 六个标签页：Machine code & control flow · Strings & data · Symbols & names · Linked libraries · Format & architecture · Security。
 - 机器码页：「The instructions the CPU runs, recovered by a disassembler: 40 functions, found by scanning the code section (38 belong to the game, 2 are compiler start-up stubs).」命令 `objdump -d hugface.so`。stripped 模式下函数显示为 `sub_<地址>`，只有导出的 4 个有名字。
 - 符号页：stripped 版只剩 4 个导出符号：`hf_state_size`、`hf_palette`、`hf_new`、`hf_step`；unstripped 版有 63 个符号（含 `put_pixel`、`paint_over`、`hline`、`fill_circle`、`draw_face_fill`、`draw_eye_left` 等内部函数名）。
+- 配图数据里的 40 个函数入口地址（stripped 模式只显示导出名，其余显示为 sub_<地址>）：0x580, 0x5a0, 0x664, 0x68c, 0x6d4, 0x73c, 0x7ec, 0x8a4, 0x998, 0xa3c, 0xa8c, 0xab0, 0xad4, 0xaf8, 0xb1c, 0xb8c, 0xbf4, 0xc40, 0xc78, 0xca4, 0xcd0, 0xcfc, 0xd28, 0xda0, 0xe40, 0xed0, 0xeec, 0xf24, 0xf84, 0xfb8, 0x1014, 0x1054, 0x1148, 0x1200, 0x1284, 0x1308, 0x1374=hf_state_size, 0x137c=hf_palette, 0x13a0=hf_new, 0x1400=hf_step。
 - 头信息：ELF64，little endian，Type DYN (Shared object file)，Machine AArch64，25 个 section。
 - 链接库：`libc.so.6`；导入 `memset` 等。编译器注释：`GCC: (Debian 12.2.0-14+deb12u1) 12.2.0`。
 - 安全页：NX 开、RELRO 开、canary 关、PIC 开。
@@ -249,10 +272,12 @@ escalated20 needed the lead
 ### 录屏 1（HF logo，mP2OwuXgjFP7tAz3hao9h.mp4，32 秒）
 
 标题「REbuild: the Hugging Face logo, rebuilt from a stripped binary by a team of models」。左边像素画面逐步画出 logo，右上 lead + worker-1..4 状态，中间 38 个函数砖块（灰 → 黄 = 在做 → 绿 = 通过），底部 `n/38 functions rebuilt  t = … min  tokens = …`。结尾：「38/38 functions rebuilt · 24 functions rebuilt by the small workers, 14 by the lead when a worker got stuck.」t = 86 min，tokens = 11.7M。
+- 录屏最后一帧的 38 个函数砖块名（团队给函数起的名字；和配图 1 unstripped 版的源码符号名不同）：clear_screen, draw_sprite0, draw_sprite1, draw_sprite2, draw_sprite3, draw_player, draw_player2, draw_ship3, draw_logo, draw_wing_a1, draw_wing_a2, draw_wing_b1, draw_wing_b2, draw_shots, draw_objects, put_pixel, put_pixel_if, draw_hline, draw_disc, draw_sprite, draw_sprite_scaled, draw_glyph, render_frame, rng_next, rng_range, timers_tick, bob_update, counter_update, wing_x_update, spawn_explosion, apply_input, update_objects, spawn_shot, update_shots, hf_state_size, hf_palette, hf_new, hf_step。
 
 ### 录屏 2（太空射击，IipIIiH6lDo7H9yVRulq7.mp4，41 秒）
 
 标题「REbuild: a space shooter, rebuilt from a stripped binary by a team of models」。56 个函数砖块（开始时不少是 `sub_17bc` 这类无名函数，后来都有了名字）。结尾：「identical on every frame so far (540/540)」「56/56 functions rebuilt · 33 functions rebuilt by the small workers, 23 by the lead when a worker got stuck.」t = 100 min，tokens = 14.5M。
+- 录屏最后一帧的 56 个函数砖块名：draw_background, draw_starfield, draw_stars_layer0, draw_stars_layer1, draw_stars_layer2, draw_planet, draw_player, draw_player_thruster, draw_aliens, draw_player_bullets, draw_bombs, draw_ship_tiles, draw_particles, draw_ufo, draw_score, draw_hiscore, draw_lives, draw_power_bar, draw_wave_panel, put_pixel, draw_hline, draw_vline, draw_rect, draw_glyph, draw_glyph_mirror, draw_circle, draw_digit, draw_number, draw_alien, draw_frame, rand_next, rand_max, update_stars, move_player, spawn_bullet, player_fire, update_shots, spawn_wave, update_formation, update_dives, spawn_bombs, boxes_overlap, spawn_particles, add_score, update_bullet_hits, particle_hit, update_particles_hit, player_hit, update_collisions, update_particles, update_ufo, respawn_wave, vr_state_size, vr_palette, vr_new, vr_step。录屏第 7 分钟一帧：worker-1 在做 draw_hline（best 91%），worker-2 在做 vr_palette（80%），worker-4 在做 draw_vline（93%），draw_glyph 由 worker-3 两次尝试后 100% 通过。
 
 ---
 
@@ -261,6 +286,10 @@ escalated20 needed the lead
 - 模型：Hugging Face API `deepseek-ai/DeepSeek-V4.1-Flash-1017`（创建 2026-10-17，license MIT，image-text-to-text）；`Qwen/Qwen3.5-9B`（创建 2026-02-27，license apache-2.0，约 9.65B 参数）。
 - r/LocalLLaMA 帖 1xgoxvu（2026-10-27）转发了这篇；Reddit 接口在本环境取不到，视频不引用。
 - `huggingface/ipython-harness` 仓库网页本环境 403，公开情况未知；视频只说「基于 IPython 的极简 harness」。
+
+## 视频里由我们计算或补充的
+
+- 团队成本 ÷ 单干成本：题一 2.97 / 0.87 ≈ 3.4 倍，题二 3.60 / 3.28 ≈ 1.1 倍（open 场景，屏幕注明「按原文两张表算」）。
 
 ## 原文内部对不上的地方（视频照正文 + 表格讲，屏幕上注明）
 

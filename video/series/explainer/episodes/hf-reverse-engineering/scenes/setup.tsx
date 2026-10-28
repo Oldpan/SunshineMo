@@ -75,7 +75,7 @@ export const Roles: React.FC = () => {
     {t: '还原内存布局', beat: 2},
     {t: '还原数据表', beat: 2},
   ];
-  const tasks = ['draw_particles', 'update_shots', 'draw_glyph', 'move_player'];
+  const tasks = ['draw_particles', 'update_shots', 'update_ufo', 'boxes_overlap'];
   return (
     <AbsoluteFill>
       <SceneTitle kicker="分工">主管和工人</SceneTitle>
@@ -110,7 +110,7 @@ export const Roles: React.FC = () => {
               return (
                 <div key={t} style={{background: '#fff', borderRadius: 10, border: `2px solid ${taken ? GREEN : '#EADFC0'}`, padding: '10px 14px', ...appear(b[3], 8 + i * 6), opacity: appear(b[3], 8 + i * 6).opacity * (taken ? 0.6 : 1)}}>
                   <MonoT size={22}>{t}</MonoT>
-                  <Zh size={18} w={700} color={C.faint}>{taken ? `已被 worker-${i + 1} 领走` : 'hint：照反汇编写…'}</Zh>
+                  <Zh size={18} w={700} color={C.faint}>{taken ? '已被领走' : 'hint：照反汇编写…'}</Zh>
                 </div>
               );
             })}
@@ -136,7 +136,7 @@ export const Roles: React.FC = () => {
       </div>
       <Arrow from={[650, 520]} to={[690, 520]} p={prog(b[3], 14)} color="#4D6BFE" />
       <Arrow from={[1226, 520]} to={[1268, 520]} p={prog(b[4], 14)} color={th.accent} />
-      <Src style={{position: 'absolute', left: 84, bottom: 184, opacity: prog(frame, 12, 20)}}>{SRC_BLOG} · Experimental design（任务名取自原文太空射击题）</Src>
+      <Src style={{position: 'absolute', left: 84, bottom: 184, opacity: prog(frame, 12, 20)}}>{SRC_BLOG} · Experimental design（任务名取自原文第二题，领取过程为示意）</Src>
     </AbsoluteFill>
   );
 };
@@ -181,7 +181,7 @@ export const Oracle: React.FC = () => {
               <PixelPanel w={480} h={150} bg={pass ? '#E9F8EF' : '#FFF1F3'} border={pass ? PX.green : PX.red}>
                 <PixelText size={24} color={PX.dim}>留出用例通过率</PixelText>
                 <div>
-                  <PixelText size={48} color={pass ? PX.green : PX.red}>{pass ? '100%' : '96%'}</PixelText>
+                  <PixelText size={48} color={pass ? PX.green : PX.red}>{pass ? '100%' : '56%'}</PixelText>
                 </div>
               </PixelPanel>
             </div>
@@ -189,10 +189,7 @@ export const Oracle: React.FC = () => {
               <PixelPanel w={500} h={150}>
                 <PixelText size={24} color={PX.dim}>第一处不一致</PixelText>
                 <div>
-                  <PixelText size={24}>{pass ? '无' : 'byte 9: 期望 0，得到 9'}</PixelText>
-                </div>
-                <div>
-                  <PixelText size={24} color={PX.dim}>（示意）</PixelText>
+                  <PixelText size={24}>{pass ? '无' : 'fb[x=71, y=2]: 期望 0，得到 9'}</PixelText>
                 </div>
               </PixelPanel>
             </div>
@@ -229,7 +226,7 @@ export const Oracle: React.FC = () => {
           </PixelPanel>
         </div>
       </div>
-      <Src style={{position: 'absolute', left: 84, bottom: 184, opacity: prog(frame, 12, 20)}}>{SRC_BLOG} · Experimental design；字节比对画面为示意</Src>
+      <Src style={{position: 'absolute', left: 84, bottom: 184, opacity: prog(frame, 12, 20)}}>{SRC_BLOG} · Experimental design；56% 和不一致位置取自原文配图第 4 步，字节格子为示意</Src>
     </AbsoluteFill>
   );
 };
@@ -248,8 +245,8 @@ export const Harness: React.FC = () => {
   const evo = prog(b[7], 30);
   return (
     <AbsoluteFill>
-      <SceneTitle kicker="harness">基于 IPython 的极简 harness</SceneTitle>
-      <div style={{position: 'absolute', left: 84, top: 250, ...pop(b[1], 0, 0.92)}}>
+      <SceneTitle kicker="harness">基于 IPython 的 harness（扩展版）</SceneTitle>
+      <div style={{position: 'absolute', left: 84, top: 250, ...pop(b[0], 0, 0.92)}}>
         <PixelWindow w={1060} h={580} title="每个 agent 的工具箱" tag="所有人起步相同">
           <div style={{display: 'flex', flexDirection: 'column', gap: 40, marginTop: 12}}>
             {TOOLS.map((t) => (
@@ -344,7 +341,7 @@ export const Pipeline: React.FC = () => {
         const lead = q.id === 'lead';
         const worker = q.id === 'worker';
         return (
-          <div key={q.id} style={{position: 'absolute', left: q.x, top: q.y, ...pop(b[q.beat], q.id === 'board' || q.id === 'lead' ? 8 : 0, 0.8)}}>
+          <div key={q.id} style={{position: 'absolute', left: q.x, top: q.y, ...pop(b[q.beat], q.id === 'board' || q.id === 'lead' ? 8 : 0, 0.8), opacity: b[q.beat] > 0 ? pop(b[q.beat], q.id === 'board' || q.id === 'lead' ? 8 : 0, 0.8).opacity : 0.3 * prog(b[0], 14), transform: b[q.beat] > 0 ? pop(b[q.beat], q.id === 'board' || q.id === 'lead' ? 8 : 0, 0.8).transform : undefined}}>
             <Panel w={NW} h={NH} pad={14} accent={lead ? '#4D6BFE' : worker ? '#615CED' : undefined} style={{display: 'flex', alignItems: 'center', gap: 14}}>
               {lead && <DeepSeekWhale size={60} bob={false} />}
               {worker && <QwenMark size={58} />}

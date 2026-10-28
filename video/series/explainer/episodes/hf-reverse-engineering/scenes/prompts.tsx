@@ -112,7 +112,7 @@ const V1: {n: number; zh: string; en: string}[] = [
   {n: 2, zh: '只调用 map.json 里有的函数，不许编函数名', en: "Never invent helper names like star_x/star_y."},
   {n: 3, zh: '提交恰好一个函数，参数照登记的签名', en: 'exactly one function def <name>(s, ...) …'},
   {n: 4, zh: '照提示字面写；b.hi / b.ls 是无符号比较', en: 'AArch64 traps: b.hi/b.ls compare UNSIGNED'},
-  {n: 5, zh: '只错一两个像素：先查符号或循环边界差一', en: 'suspect a signedness or off-by-one in a loop bound'},
+  {n: 5, zh: '只错一两个像素：先查有无符号或循环边界差一', en: 'suspect a signedness or off-by-one in a loop bound'},
 ];
 
 export const PromptV1: React.FC = () => {
@@ -123,7 +123,7 @@ export const PromptV1: React.FC = () => {
     <AbsoluteFill>
       <SceneTitle kicker="题二 · 主管改提示词">工人提示词 v0 → v1</SceneTitle>
       {/* v0 */}
-      <div style={{position: 'absolute', left: 84, top: 250, ...pop(b[1], 0, 0.9)}}>
+      <div style={{position: 'absolute', left: 84, top: 250, ...pop(b[0], 0, 0.9)}}>
         <TornSheet w={620} h={560} seed={3} rotate={-1.2}>
           <Tape w={110} rotate={-6} style={{left: 250, top: -16}} />
           <Zh size={30} w={900}>v0 · 原始提示词</Zh>

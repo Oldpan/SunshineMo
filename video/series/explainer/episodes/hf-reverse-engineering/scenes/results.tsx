@@ -66,7 +66,7 @@ export const LogoRun: React.FC = () => {
           </div>
         </div>
       </div>
-      <Src style={{position: 'absolute', left: 760, top: 830, opacity: prog(frame, 12, 20)}}>原文录屏「REbuild: the Hugging Face logo …」重画；砖块变绿的顺序为示意</Src>
+      <Src style={{position: 'absolute', left: 760, top: 830, opacity: prog(frame, 12, 20)}}>原文录屏「REbuild: the Hugging Face logo …」重画，函数名取自录屏；砖块变绿的顺序为示意</Src>
     </AbsoluteFill>
   );
 };
@@ -253,7 +253,7 @@ export const ShooterTable: React.FC = () => {
         <Bars label="成本" team={3.6} solo={3.28} unit="美元" fmt={(v) => `$${v.toFixed(2)}`} f={b[4]} />
         <Bars label="时间" team={100} solo={54} unit="分钟" fmt={(v) => `${v}`} f={b[5]} note="单干：4 次启动；团队：2 次启动" />
       </div>
-      <Src style={{position: 'absolute', left: 84, bottom: 150, opacity: prog(frame, 12, 20)}}>{SRC_BLOG} · Problem 2 结果表</Src>
+      <Src style={{position: 'absolute', left: 84, bottom: 150, opacity: prog(frame, 12, 20)}}>{SRC_BLOG} · Problem 2 结果表；小模型 token 只有团队有</Src>
     </AbsoluteFill>
   );
 };

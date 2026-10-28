@@ -22,7 +22,7 @@ export const Cover: React.FC = () => {
         <div style={{fontFamily: FONT_ZH, fontWeight: 900, fontSize: 92, color: th.accent, lineHeight: 1.08}}>逆向二进制</div>
         <div style={{width: 640, height: 8, background: th.accent, borderRadius: 4, marginTop: 22, transformOrigin: 'left', transform: `scaleX(${prog(b[0], 20, 6)})`}} />
         <Zh size={30} w={700} color={C.sub} style={{marginTop: 24, ...appear(b[1], 0)}}>
-          作者：Younes Belkada · Nathan Habib · Lysandre
+          作者：Younes B · Nathan Habib · Lysandre
         </Zh>
         <div style={{display: 'flex', gap: 14, marginTop: 34, ...appear(b[3], 0)}}>
           {[

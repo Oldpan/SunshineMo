@@ -97,13 +97,16 @@ export const Open: React.FC = () => {
           {pts.map(([n, r, l], i) => (
             <div key={l} style={{position: 'absolute', left: X(n) - 16, top: Y(r) - 16, ...pop(b[0], 8 + i * 10, 0.4)}}>
               <div style={{width: 32, height: 32, borderRadius: 16, background: CR.orange, border: '4px solid #fff'}} />
-              <div style={{position: 'absolute', left: i ? -330 : 40, top: i ? -56 : -6, whiteSpace: 'nowrap'}}>
+              <div style={{position: 'absolute', left: i ? -420 : 40, top: i ? 30 : -6, whiteSpace: 'nowrap'}}>
                 <CrayonText size={28}>{l}：{n} 个函数 · 团队成本 {r.toFixed(1)} 倍</CrayonText>
               </div>
             </div>
           ))}
-          <div style={{position: 'absolute', left: 560, top: Y(1) + 8}}>
+          <div style={{position: 'absolute', left: 80, top: Y(1) - 30}}>
             <Zh size={20} w={700} color={CR.blue}>持平线（团队 = 单干）</Zh>
+          </div>
+          <div style={{position: 'absolute', left: 84, top: 14}}>
+            <Zh size={22} w={800} color={C.sub}>↑ 团队成本 ÷ 单干成本</Zh>
           </div>
           <div style={{position: 'absolute', left: 300, top: 450}}>
             <Zh size={22} w={800} color={C.sub}>要还原的函数个数 →</Zh>
@@ -127,7 +130,7 @@ export const Open: React.FC = () => {
           </div>
         ))}
         <div style={{...appear(b[5], 0)}}>
-          <CrayonText size={32} color={CR.brown}>注意：两道题都是 Claude Code 生成的小程序</CrayonText>
+          <CrayonText size={32} color={CR.brown}>原文也写了：两道都是很简单的练习题，代码由 Claude Code 生成</CrayonText>
         </div>
       </div>
       <Src style={{position: 'absolute', left: 84, bottom: 150, opacity: prog(frame, 12, 20)}}>{SRC_BLOG} · Conclusion and open questions</Src>
@@ -144,7 +147,7 @@ export const Outro: React.FC = () => {
     <AbsoluteFill style={{alignItems: 'center', justifyContent: 'center'}}>
       <div style={{display: 'flex', alignItems: 'center', gap: 34, ...pop(b[0], 0, 0.7)}}>
         <HFLogo size={120} />
-        <DeepSeekWhale size={130} color="#8EA2FF" />
+        <DeepSeekWhale size={130} />
         <div style={{display: 'flex', gap: 10}}>
           {[0, 1, 2, 3].map((i) => (
             <div key={i} style={{transform: `translateY(${Math.sin((frame + i * 15) / 13) * 6}px)`}}>

@@ -44,7 +44,7 @@ export const Poster: React.FC<{w: number; h: number}> = ({w, h}) => {
       <AbsoluteFill style={{background: bg, padding: 70, boxSizing: 'border-box'}}>
         <div style={{display: 'flex', alignItems: 'center', gap: 14}}>
           <HFLogo size={56} />
-          <span style={{fontFamily: FONT_ZH, fontWeight: 800, fontSize: 30, color: '#6B6B78'}}>Hugging Face 实验</span>
+          <span style={{fontFamily: FONT_ZH, fontWeight: 800, fontSize: 30, color: '#6B6B78'}}>Hugging Face 社区博文</span>
         </div>
         <div style={{fontFamily: FONT_ZH, fontWeight: 900, fontSize: 118, color: INK, lineHeight: 1.08, marginTop: 40}}>大模型带</div>
         <div style={{fontFamily: FONT_ZH, fontWeight: 900, fontSize: 118, color: INK, lineHeight: 1.08}}>小模型</div>
@@ -65,7 +65,7 @@ export const Poster: React.FC<{w: number; h: number}> = ({w, h}) => {
       <div style={{position: 'absolute', left: 90, top: 110}}>
         <div style={{display: 'flex', alignItems: 'center', gap: 14}}>
           <HFLogo size={56} />
-          <span style={{fontFamily: FONT_ZH, fontWeight: 800, fontSize: 30, color: '#6B6B78'}}>Hugging Face 实验 · DeepSeek × Qwen</span>
+          <span style={{fontFamily: FONT_ZH, fontWeight: 800, fontSize: 30, color: '#6B6B78'}}>Hugging Face 社区博文 · DeepSeek × Qwen</span>
         </div>
         <div style={{fontFamily: FONT_ZH, fontWeight: 900, fontSize: 150, color: INK, lineHeight: 1.06, marginTop: 40}}>大模型带小模型</div>
         <div style={{fontFamily: FONT_ZH, fontWeight: 900, fontSize: 150, color: '#EE6420', lineHeight: 1.06}}>逆向二进制</div>

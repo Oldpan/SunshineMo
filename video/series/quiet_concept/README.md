@@ -16,6 +16,7 @@
 | 4 | 第一座山（局部最优），水墨 | 153.6 s | `episodes/first_hill/` |
 | 5 | 回来的飞机（幸存者偏差），蓝图 | 148.8 s | `episodes/returning_planes/` |
 | 6 | 老鼠尾巴（古德哈特定律），复古半调案卷 | 148.8 s | `episodes/rat_tails/` |
+| 7 | 787 人猜牛（群体智慧），50s 扁平卡通 | 132.0 s | `episodes/guess_the_ox/` |
 
 ## 结构（每集都一样）
 

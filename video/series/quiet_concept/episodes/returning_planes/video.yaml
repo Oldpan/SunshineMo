@@ -1,0 +1,19 @@
+# 回来的飞机（幸存者偏差）— see `sm --help` for the fields
+title: 回来的飞机
+engine: code
+style: quiet_concept
+deliver:
+  drive: video_from_opus/一帧一理05_回来的飞机
+  files:
+    - {from: out/回来的飞机.mp4, as: 回来的飞机_SurvivorshipBias.mp4}
+    - {from: out/cover_16x9_B.png, as: 回来的飞机_封面_16x9.png}
+    - {from: out/cover_3x4_B.png, as: 回来的飞机_封面_3x4.png}
+    - {from: 介绍和文案.md}
+drive:
+  folder: video_from_opus/一帧一理05_回来的飞机
+  url: https://drive.google.com/drive/folders/1jZCIHQ_9jQzFJhOko5mWq2z3agLBtns5
+  files:
+  - {name: 回来的飞机_SurvivorshipBias.mp4, id: 1GIjzppxnQZUENyp15f1Bli1eNa476caO, bytes: 267813060}
+  - {name: 回来的飞机_封面_16x9.png, id: 162h3TnWCZZA7-HTwlBOzSFBRp4cgFhMT, bytes: 2435019}
+  - {name: 回来的飞机_封面_3x4.png, id: 1dQgo42eueSKy6r5yyiT6qIM_uu1vswkv, bytes: 1523019}
+  - {name: 介绍和文案.md, id: 1uXjtexzRAy0CQ54zWK8QK2qgZ3FIg0jP, bytes: 580}

@@ -1,0 +1,12 @@
+# 加快 LLM 速度最快 6 倍，五种投机解码全解析 — see `sm --help` for the fields
+title: 加快 LLM 速度最快 6 倍，五种投机解码全解析
+engine: narrated
+style: flat
+source: https://arxiv.org/abs/2602.06036
+deliver:
+  drive: video_from_opus/五种投机解码
+  files:
+  - {from: out/spec-decoding.mp4, as: 五种投机解码.mp4}
+  - {from: out/封面_16x9.png, as: 五种投机解码_封面_16x9.png}
+  - {from: out/封面_3x4.png, as: 五种投机解码_封面_3x4.png}
+  - {from: source/video.md, as: 介绍和文案.md}

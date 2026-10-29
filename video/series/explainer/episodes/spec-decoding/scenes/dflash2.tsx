@@ -65,7 +65,7 @@ export const Dflash2Obs: React.FC<{scene: Scene}> = () => (
     draw={({iso, f, b}) => {
       board(iso, -11, -3, 20, 12);
       token(iso, -7.4, 2, 0, '', T3d.bonus, {s: 1.3});
-      const rise = clamp((f - b[1]) / 30);
+      const rise = clamp((f - 10) / 40);
       for (let i = 0; i < COLS; i++)
         for (let r = 0; r < CAND; r++) {
           const p = clamp(rise * 2.2 - i * 0.12 - (CAND - 1 - r) * 0.03);

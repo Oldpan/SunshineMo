@@ -64,7 +64,7 @@ export const DsparkMarkov: React.FC<{scene: Scene}> = () => (
       board(iso, -12, -3, 22, 12);
       const t = f - (b[3] ?? 1e9);
       const drop = t < 0 ? 0 : t < 12 ? eo(t / 12) : t < 22 ? 1 : 1 - eio((t - 22) / 16);
-      press(iso, {...PRESS, drop, a: clamp((f - b[1]) / 16)});
+      press(iso, {...PRESS, drop, a: clamp(f / 16)});
       // the Markov head rides a rail in front of the row, left to right, once the block's scores exist
       const ra = clamp((f - b[2]) / 16);
       if (ra > 0) {
@@ -235,7 +235,7 @@ export const DsparkSched: React.FC<{scene: Scene}> = () => (
     }}
     over={({iso, g, f, b}) => {
       CH(g, f);
-      pin(iso, 8.5, -5, 2.2, {title: '③ 调度器', dir: 1, up: 50, len: 40, a: clamp(f / 30), ts: 24});
+      pin(iso, 8.5, -5, 2.2, {title: '③ 调度器', dir: 1, up: 50, len: 40, a: clamp(f / 30), ts: 24, fade: 1 - clamp((f - b[4]) / 16)});
       const fade = 1 - clamp((f - b[4]) / 20);
       const sort = eio(clamp((f - b[1]) / 40));
       if (sort < 0.5) ['请求 A', '请求 B', '请求 C'].forEach((s, ri) => label(iso, s, -12.4, -6 + ri * 2.4 + 0.6, 0.3, {size: 22, weight: 700, a: clamp(f / 14) * fade * (1 - sort * 2), align: 'right', dy: 6}));
@@ -376,13 +376,13 @@ export const DsparkNum: React.FC<{scene: Scene}> = () => (
       // single-user speed at equal throughput: MTP-1 = 1, DSpark 1.60–1.85
       const sb = clamp((f - b[1]) / 30);
       if (sb > 0) {
-        cubeBar(iso, 2, -6.6, 2, GREY, sb, {s: 1.4, h: 1});
-        cubeBar(iso, 2, -1.8, 3.2, T3.drafter, sb, {s: 1.4, h: 1});
+        cubeBar(iso, 4.5, -6.6, 2, GREY, sb, {s: 1.4, h: 1});
+        cubeBar(iso, 4.5, -1.8, 3.2, T3.drafter, sb, {s: 1.4, h: 1});
         const r = clamp((f - b[1] - 30) / 20);
         if (r > 0) {
           const a0 = iso.alpha;
           iso.alpha = 0.45;
-          iso.box(2, -1.8, 3.2, 1.4, 1.4, 0.5 * r, T3.drafter);
+          iso.box(4.5, -1.8, 3.2, 1.4, 1.4, 0.5 * r, T3.drafter);
           iso.alpha = a0;
         }
       }
@@ -393,10 +393,10 @@ export const DsparkNum: React.FC<{scene: Scene}> = () => (
       if (f > 20 && f < 60) label(iso, 'MTP-1', -9.5, -3.5, 7 * 1.08 + 1.4 + eio(clamp((f - 20) / 30)) * 3, {size: 24, weight: 700, a: 1 - clamp((f - 30) / 24), color: R.dim, dy: -10});
       pin(iso, -4.4, -1.6, 2, {title: 'DSpark', dir: -1, up: -70, len: 40, a: clamp((f - 60) / 24), ts: 24});
       if (f >= b[1]) {
-        label(iso, '1', 2.7, -5.9, 2, {size: 32, weight: 400, dy: -18, a: clamp((f - b[1] - 20) / 12), color: R.dim});
-        label(iso, 'MTP-1', 2.7, -5.9, 0, {size: 20, weight: 700, dy: 40, a: clamp((f - b[1]) / 12), color: R.dim});
-        label(iso, '+60%～85%', 2.7, -1.1, 3.7, {size: 30, weight: 600, dy: -18, a: clamp((f - b[1] - 40) / 12)});
-        label(iso, 'DSpark', 2.7, -1.1, 0, {size: 20, weight: 700, dy: 40, a: clamp((f - b[1]) / 12)});
+        label(iso, '1', 5.2, -5.9, 2, {size: 32, weight: 400, dy: -18, a: clamp((f - b[1] - 20) / 12), color: R.dim});
+        label(iso, 'MTP-1', 5.2, -5.9, 0, {size: 20, weight: 700, dy: 40, a: clamp((f - b[1]) / 12), color: R.dim});
+        label(iso, '+60%～85%', 5.2, -1.1, 3.7, {size: 30, weight: 600, dy: -18, a: clamp((f - b[1] - 40) / 12)});
+        label(iso, 'DSpark', 5.2, -1.1, 0, {size: 20, weight: 700, dy: 40, a: clamp((f - b[1]) / 12)});
       }
       legend(
         g,

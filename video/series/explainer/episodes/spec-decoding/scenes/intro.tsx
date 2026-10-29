@@ -377,6 +377,8 @@ export const Lossless: React.FC<{scene: Scene}> = () => (
 );
 
 // ------------------------------------------------------------------ knobs: L = (T_draft + T_verify) / τ
+/** Five drafter boxes in a screen-horizontal row (x − y = KD(i), x + y = 4.5). */
+const KD = (i: number) => -12 + i * 5.4;
 export const Knobs: React.FC<{scene: Scene}> = () => (
   <IsoScene
     cam={camAt(0, 0, 0, 720, 690, 36)}
@@ -396,7 +398,7 @@ export const Knobs: React.FC<{scene: Scene}> = () => (
       if (a > 0)
         for (let i = 0; i < 5; i++) {
           const p = clamp(a * 5 - i);
-          if (p > 0) iso.box(-9 + i * 3.6, 3.2, 0, 2.2, 2.2, 1.6 * back(p, 2), T3.drafter);
+          if (p > 0) iso.box((4.5 + KD(i)) / 2 - 1.1, (4.5 - KD(i)) / 2 - 1.1, 0, 2.2, 2.2, 1.6 * back(p, 2), T3.drafter);
         }
     }}
     over={({iso, g, f, b}) => {
@@ -417,7 +419,7 @@ export const Knobs: React.FC<{scene: Scene}> = () => (
       text(g, '分母 τ：这一轮落下几个 token', PANEL_X - 12, 446, {size: 26, weight: 600, a: a1, halo: false});
       label(iso, '猜得准 · τ ↑', -6, -1, 1.4, {size: 30, weight: 700, dy: -70, a: clamp((f - b[2]) / 14), color: '#476F37'});
       label(iso, '猜得便宜 · T_draft ↓', 1, -6, 1.4, {size: 30, weight: 700, dy: -70, a: clamp((f - b[3]) / 14), color: '#2D6F6D'});
-      if (f >= b[4]) ['MTP', 'EAGLE-3', 'DFlash', 'DSpark', 'DFlash 2'].forEach((n, i) => label(iso, n, -7.9 + i * 3.6, 4.3, 0, {size: 24, weight: 700, dy: 74, a: clamp((f - b[4]) / 10 - i * 0.25)}));
+      if (f >= b[4]) ['MTP', 'EAGLE-3', 'DFlash', 'DSpark', 'DFlash 2'].forEach((n, i) => label(iso, n, (4.5 + KD(i)) / 2, (4.5 - KD(i)) / 2, 0, {size: 24, weight: 700, dy: 54, a: clamp((f - b[4]) / 10 - i * 0.25)}));
     }}
   />
 );

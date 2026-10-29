@@ -133,7 +133,7 @@ const NUMS: [string, string, string][] = [
 ];
 const SLOPES: [string, number, number, string, string, string, number][] = [
   ['DFlash', 5.1, 2.8, '并发 1', '32', 'B200 · Math500', 0],
-  ['DFlash 2', 3.43, 1.45, '并发 1', '32', 'H200 · GSM8K（MT-Bench 只有 1.01×）', -40],
+  ['DFlash 2', 3.43, 1.45, '并发 1', '32', 'H200 · GSM8K', -40],
   ['EAGLE-3', 1.81, 1.38, '批量 2', '64', 'H100 · MT-Bench', 30],
 ];
 export const Caveat: React.FC<{scene: Scene}> = () => (
@@ -211,6 +211,7 @@ export const Caveat: React.FC<{scene: Scene}> = () => (
           text(g, `${v0}×`, x0 - 16, ya + 8, {size: 22, weight: 700, a: c * a, halo: false, align: 'right'});
           text(g, `${n}  ${v1}×`, x1 + 18, yb + 8 + dy, {size: 22, weight: 700, a: c * clamp(a * 2 - 1), halo: false, color: col});
           text(g, `${l0} → ${l1} · ${cap}`, x1 + 18, yb + 32 + dy, {size: 16, weight: 500, a: c * clamp(a * 2 - 1), halo: false, color: R.dim});
+          if (n === 'DFlash 2') text(g, 'MT-Bench 并发 32：只有 1.01×', x1 + 18, yb + 52 + dy, {size: 16, weight: 600, a: c * clamp(a * 2 - 1), halo: false, color: col});
         });
       }
       // 3. DSpark's scheduler aims right at this
@@ -259,7 +260,7 @@ export const Outro: React.FC<{scene: Scene}> = () => (
         text(g, s, 1290, 326 + i * 130, {size: 44, weight: 700, a, halo: false, color: [R.drafter, R.draft, R.target][i]});
       });
       const e = clamp((f - b[2]) / 16);
-      if (e > 0) text(g, '下期见', 1250, 720, {size: 56, weight: 700, a: e});
+      if (e > 0) text(g, '下期见', 1290, 740, {size: 56, weight: 700, a: e});
       text(g, '先猜后验，一字不差', 96, 150, {size: 64, weight: 700, a: clamp(f / 14)});
       text(g, '两年五代：MTP → EAGLE-3 → DFlash → DSpark → DFlash 2', 98, 206, {size: 26, weight: 600, color: R.dim, a: clamp((f - b[1]) / 14)});
     }}

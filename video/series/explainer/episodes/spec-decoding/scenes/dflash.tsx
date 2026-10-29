@@ -101,7 +101,7 @@ export const DflashPress: React.FC<{scene: Scene}> = () => (
       const t = f - (b[3] ?? 1e9);
       const drop = t < 0 ? 0 : t < 14 ? eo(t / 14) : t < 26 ? 1 : 1 - eio((t - 26) / 18);
       const lit = f >= b[5] ? Math.min(5, Math.floor((f - b[5]) / 8) + 1) : undefined;
-      press(iso, {drop, lit, a: clamp((f - b[1]) / 16)});
+      press(iso, {drop, lit, a: clamp(f / 16)});
       blockRow(iso, {pop: clamp((f - b[2]) / 30), fill: t >= 12 ? 1 : 0});
     }}
     over={({iso, g, f, b}) => {

@@ -58,10 +58,10 @@ export const ground = (g: CanvasRenderingContext2D, f: number, W = 1920, H = 108
   g.fillStyle = R.ground;
   g.fillRect(0, 0, W, H);
   const sp = 36,
-    dx = (f * 0.18) % (sp * 2),
-    dy = (f * 0.104) % sp;
+    dx = (f * 0.4) % (sp * 2),
+    dy = (f * 0.2) % (sp * 2);
   g.fillStyle = 'rgba(46,37,34,0.10)';
-  for (let j = -2; j < H / sp + 2; j++)
+  for (let j = -3; j < H / sp + 2; j++)
     for (let i = -2; i < W / (sp * 2) + 2; i++) {
       const x = i * sp * 2 + (j % 2 ? sp : 0) + dx - sp * 2,
         y = j * sp + dy - sp;

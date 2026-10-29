@@ -4,7 +4,7 @@
 // red (first miss, knocked off) or grey (discarded after the miss); the big model's own token is violet.
 import React from 'react';
 import {AbsoluteFill, useCurrentFrame} from 'remotion';
-import {useBeats} from '@atv/lib/timing';
+import {useBeats, useScene} from '@atv/lib/timing';
 import {back, clamp, eio, eo, FONT, haloText, hex, IsoCanvas, lerp, mix, PAL, pin, R, seg, ss, T3, title, token, tower, tri} from '../../../shared/iso/iso';
 
 export {back, clamp, eio, eo, FONT, haloText, hex, lerp, mix, PAL, pin, R, seg, ss, T3, title, token, tower, tri};
@@ -259,7 +259,10 @@ export const IsoScene: React.FC<{
   const f = useCurrentFrame();
   // useBeats() gives frames since each beat started; scenes here want each beat's start frame
   const b = useBeats().map((v) => f - v);
-  const c = typeof cam === 'function' ? cam(f, b) : cam;
+  const c0 = typeof cam === 'function' ? cam(f, b) : cam;
+  // a slow push-in over the whole scene keeps long holds alive (house rule: freezedetect n=0.0005 d=0.5 stays quiet)
+  const p = f / Math.max(useScene().duration, 1);
+  const c = {...c0, k: c0.k * (1 + 0.03 * p)};
   return (
     <AbsoluteFill>
       <IsoCanvas cam={c} draw={(iso, g, ff) => draw({iso, g, f: ff, b})} over={over ? (iso, g, ff) => over({iso, g, f: ff, b}) : undefined} />

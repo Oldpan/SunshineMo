@@ -111,11 +111,11 @@ export const EagleArch: React.FC<{scene: Scene}> = () => (
       eagleDrafter(iso, -12, 1, 1, f >= b[2]);
       if (f >= b[1]) [LOW, MID, HIGH].forEach((fl, k) => pipe(iso, tops[fl], k, [-10.6 + k * 0.6, 2.4 + k * 0.6, 1.8], clamp((f - b[1] - k * 6) / 24), {f}));
       // prefix on the board, then step 1 / step 2 drafts beside the drafter
-      PREFIX.forEach((w, i) => token(iso, -12 + i * 2, 7, 0, w, T3d.ok, {s: 1.6, size: 0.3}));
+      PREFIX.forEach((w, i) => token(iso, -12 + i * 2, 8.4, 0, w, T3d.ok, {s: 1.6, size: 0.34}));
       const s1 = clamp((f - b[3] - 20) / 14),
         s2 = clamp((f - b[5] - 10) / 14);
-      if (s1 > 0) token(iso, -6, 7, 0, 'do', T3d.draft, {pop: s1, s: 1.6, size: 0.34});
-      if (s2 > 0) token(iso, -4, 7, 0, 'it', T3d.draft, {pop: s2, s: 1.6, size: 0.34});
+      if (s1 > 0) token(iso, -6, 8.4, 0, 'do', T3d.draft, {pop: s1, s: 1.6, size: 0.34});
+      if (s2 > 0) token(iso, -4, 8.4, 0, 'it', T3d.draft, {pop: s2, s: 1.6, size: 0.34});
       // step 2+: the drafter's own output loops back to its input
       if (f >= b[4]) {
         const a = clamp((f - b[4]) / 20);
@@ -124,12 +124,12 @@ export const EagleArch: React.FC<{scene: Scene}> = () => (
     }}
     over={({iso, g, f, b}) => {
       CH(g, f);
-      pin(iso, -9.8, 5.4, 0.6, {title: '1 层 decoder', dir: -1, up: -110, len: 40, a: clamp((f - b[0]) / 30), ts: 24});
+      pin(iso, -12, 3, 0.6, {title: '1 层 decoder', dir: -1, up: 40, len: 40, a: clamp((f - b[0]) / 30), ts: 24});
       ['低', '中', '高'].forEach((s, k) => label(iso, s, 4.4, -2, [1, 4, 7][k] * 1.08 + 0.45, {size: 24, weight: 700, a: clamp((f - b[1] - k * 6) / 12), align: 'left', dy: 10}));
       legend(g, 230, [
         {c: R.drafter, t: '低 / 中 / 高三层特征', sub: '各 k 维', a: clamp((f - b[1]) / 14)},
         {c: '#57B3B0', t: '拼成 3k → FC 压回 k', a: clamp((f - b[2]) / 14)},
-        {c: R.ok, t: '第 1 步：真特征 + 刚采样的「I」→ 猜「do」', a: clamp((f - b[3]) / 14)},
+        {c: R.ok, t: '第 1 步：真特征 + 刚采样的「I」', sub: '→ 猜出「do」', a: clamp((f - b[3]) / 14)},
         {c: R.bad, t: '第 2 步：没有「do」的特征', sub: '用草稿机上一步的输出 a 顶上 → 猜「it」', a: clamp((f - b[4]) / 14)},
       ]);
       src(g, 'EAGLE-3 论文 §3.1 Figure 5（How can I → do → it）· 楼层位置为示意', clamp((f - b[1]) / 14));
@@ -188,9 +188,9 @@ export const EagleTtt: React.FC<{scene: Scene}> = () => (
         text(g, '按论文 Figure 6 重画', 668, 806, {size: 18, weight: 500, color: R.dim, a: am, halo: false});
       }
       legend(g, 230, [
-        {c: '#B8B2A6', t: '原生一步：吃真特征，因果 mask', a: clamp((f - b[1]) / 14)},
-        {c: '#5A9BCB', t: '再走一步：吃自己的输出', a: clamp((f - b[2]) / 14)},
-        {c: '#E3B04B', t: '再走一步：只看对角线', a: clamp((f - b[2] - 30) / 14)},
+        {c: '#B8B2A6', t: '原序列：吃真特征，因果 mask', a: clamp((f - b[1]) / 14)},
+        {c: '#5A9BCB', t: '多走一步：吃自己上一步的输出', a: clamp((f - b[2]) / 14)},
+        {c: '#E3B04B', t: '再走一步：自己的输出只看对角线', a: clamp((f - b[2] - 30) / 14)},
       ]);
       const q = clamp((f - b[3]) / 16);
       if (q > 0) {
@@ -247,7 +247,7 @@ export const EagleTree: React.FC<{scene: Scene}> = () => (
   <IsoScene
     cam={camAt(-3, 3, 1.5, 560, 600, 30)}
     draw={({iso, f, b}) => {
-      board(iso, -15, -6, 22, 16);
+      board(iso, -15, -8, 23, 18);
       eagleDrafter(iso, -14, -4, 1, true);
       const grow = clamp((f - b[0]) / 40);
       const verified = f >= b[1] + 20;
@@ -278,8 +278,8 @@ export const EagleTree: React.FC<{scene: Scene}> = () => (
       // numbers as stacked cubes: EAGLE-2 vs EAGLE-3 on Llama-3.1-8B
       const nb = clamp((f - b[3]) / 30);
       if (nb > 0) {
-        cubeBar(iso, 4, -4, 3.23, GREY, clamp((f - b[4]) / 30), {s: 1.4, h: 0.9});
-        cubeBar(iso, 4, -1.6, 4.44, T3d.ok, nb, {s: 1.4, h: 0.9});
+        cubeBar(iso, 4.6, -6.6, 3.23, GREY, clamp((f - b[4]) / 30), {s: 1.4, h: 0.9});
+        cubeBar(iso, 4.6, -1.6, 4.44, T3d.ok, nb, {s: 1.4, h: 0.9});
       }
     }}
     over={({iso, g, f, b}) => {
@@ -287,12 +287,12 @@ export const EagleTree: React.FC<{scene: Scene}> = () => (
       pin(iso, -12, -2, 1.8, {title: '草稿机', dir: -1, up: 90, len: 40, a: clamp(f / 20), ts: 24});
       if (f >= b[1]) pin(iso, 2, 3.6, 1.2, {title: '树形注意力：一次前向核完整棵树', dir: 1, up: -170, len: 40, a: clamp((f - b[1]) / 30), ts: 24});
       if (clamp((f - b[3]) / 30) > 0) {
-        label(iso, '4.44×', 4.7, -0.9, 4.44 * 0.9, {size: 34, weight: 400, dy: -20, a: clamp((f - b[3] - 20) / 12)});
-        label(iso, 'EAGLE-3', 4.7, -0.9, 0, {size: 20, weight: 700, dy: 40, a: clamp((f - b[3]) / 12)});
+        label(iso, '4.44×', 5.3, -0.9, 4.44 * 0.9, {size: 34, weight: 400, dy: -20, a: clamp((f - b[3] - 20) / 12)});
+        label(iso, 'EAGLE-3', 5.3, -0.9, 0, {size: 20, weight: 700, dy: 40, a: clamp((f - b[3]) / 12)});
       }
       if (f >= b[4]) {
-        label(iso, '3.23×', 4.7, -3.3, 3.23 * 0.9, {size: 34, weight: 400, dy: -20, a: clamp((f - b[4] - 20) / 12), color: R.dim});
-        label(iso, 'EAGLE-2', 4.7, -3.3, 0, {size: 20, weight: 700, dy: 40, a: clamp((f - b[4]) / 12), color: R.dim});
+        label(iso, '3.23×', 5.3, -5.9, 3.23 * 0.9, {size: 34, weight: 400, dy: -20, a: clamp((f - b[4] - 20) / 12), color: R.dim});
+        label(iso, 'EAGLE-2', 5.3, -5.9, 0, {size: 20, weight: 700, dy: 40, a: clamp((f - b[4]) / 12), color: R.dim});
       }
       legend(
         g,

@@ -5,6 +5,11 @@ import type {NavGroup} from '@atv/lib/chrome';
 import {defaultTipOf, SceneComponent} from '@atv/lib/Video';
 import * as intro from './intro';
 import * as mtp from './mtp';
+import * as eagle from './eagle';
+import * as dflash from './dflash';
+import * as dspark from './dspark';
+import * as dflash2 from './dflash2';
+import * as end from './end';
 
 /** Composition id: must equal the project directory name (render.sh checks). */
 export const id = 'spec-decoding';
@@ -24,4 +29,24 @@ export const registry: Record<string, SceneComponent> = {
   mtp_meta: mtp.MtpMeta,
   mtp_ds: mtp.MtpDs,
   mtp_num: mtp.MtpNum,
+  eagle_intro: eagle.EagleIntro,
+  eagle_arch: eagle.EagleArch,
+  eagle_ttt: eagle.EagleTtt,
+  eagle_tree: eagle.EagleTree,
+  dflash_press: dflash.DflashPress,
+  dflash_inject: dflash.DflashInject,
+  dflash_num: dflash.DflashNum,
+  dspark_markov: dspark.DsparkMarkov,
+  dspark_conf: dspark.DsparkConf,
+  dspark_sched: dspark.DsparkSched,
+  dspark_num: dspark.DsparkNum,
+  dflash2_obs: dflash2.Dflash2Obs,
+  dflash2_path: dflash2.Dflash2Path,
+  dflash2_num: dflash2.Dflash2Num,
+  compare: end.Compare,
+  caveat: end.Caveat,
+  outro: end.Outro,
 };
+
+/** Cover still for covers.mjs (16:9 and 3:4). */
+export const poster = end.Poster;

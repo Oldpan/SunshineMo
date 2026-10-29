@@ -71,11 +71,13 @@ export const ground = (g: CanvasRenderingContext2D, f: number, W = 1920, H = 108
     }
 };
 
-export const IsoCanvas: React.FC<{draw: Draw; over?: Draw; cam?: {x: number; y: number; z: number; k: number}; bg?: boolean}> = ({
+export const IsoCanvas: React.FC<{draw: Draw; over?: Draw; cam?: {x: number; y: number; z: number; k: number}; bg?: boolean; W?: number; H?: number}> = ({
   draw,
   over,
   cam,
   bg = true,
+  W = 1920,
+  H = 1080,
 }) => {
   const ref = useRef<HTMLCanvasElement>(null);
   const f = useCurrentFrame();
@@ -92,15 +94,15 @@ export const IsoCanvas: React.FC<{draw: Draw; over?: Draw; cam?: {x: number; y: 
     if (!c || !ready) return;
     const g = c.getContext('2d')!;
     g.setTransform(1, 0, 0, 1, 0, 0);
-    g.clearRect(0, 0, 1920, 1080);
-    if (bg) ground(g, f);
-    const iso = new Iso(g, 1920, 1080);
+    g.clearRect(0, 0, W, H);
+    if (bg) ground(g, f, W, H);
+    const iso = new Iso(g, W, H);
     if (cam) iso.cam = {...cam};
     draw(iso, g, f);
     iso.flush();
     if (over) over(iso, g, f);
   });
-  return <canvas ref={ref} width={1920} height={1080} style={{position: 'absolute', inset: 0, width: 1920, height: 1080}} />;
+  return <canvas ref={ref} width={W} height={H} style={{position: 'absolute', inset: 0, width: W, height: H}} />;
 };
 
 // ------------------------------------------------------------------ world helpers

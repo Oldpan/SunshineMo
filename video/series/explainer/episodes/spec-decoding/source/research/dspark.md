@@ -26,7 +26,7 @@
 - 目标模型冻结；共享冻结的 embedding 与 LM head；只训 backbone、sequential block、confidence head。
 - L = 0.1·L_ce + 0.9·L_tv + 1.0·L_conf；位置权重 w_k = exp(−(k−1)/γ)（沿用 DFlash）。L_tv = ‖p_d − p_t‖₁；L_conf 软标签 c*_k = 1 − ½‖p_d − p_t‖₁。
 - 离线数据：Open-PerfectBlend 130 万条 prompt，回复由目标模型重新生成，10 epoch。
-- V4.1：MTP 随主干预训练联合训练；DSpark 在预训练后单独阶段训练、backbone 冻结；后训练时一起继续训，但梯度不回传 backbone。
+- V4.1（报告 §2.4.3）：V3 的 MTP 随主干预训练联合训练；V4.1 预训练不再带 MTP，DSpark 在预训练后单独阶段训练、backbone 冻结；后训练时一起继续训，但梯度不回传 backbone。
 
 ## 关键数字
 Table 1（accepted length τ，含 bonus token，temperature 1.0，关闭 scheduler，chain，γ=7）：

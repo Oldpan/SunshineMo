@@ -265,7 +265,7 @@ export const IsoScene: React.FC<{
   const c = {...c0, k: c0.k * (1 + 0.03 * p)};
   return (
     <AbsoluteFill>
-      <IsoCanvas cam={c} draw={(iso, g, ff) => draw({iso, g, f: ff, b})} over={over ? (iso, g, ff) => over({iso, g, f: ff, b}) : undefined} />
+      <IsoCanvas cam={c} sink={12 * p} draw={(iso, g, ff) => draw({iso, g, f: ff, b})} over={over ? (iso, g, ff) => over({iso, g, f: ff, b}) : undefined} />
     </AbsoluteFill>
   );
 };

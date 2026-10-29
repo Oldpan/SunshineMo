@@ -71,13 +71,15 @@ export const ground = (g: CanvasRenderingContext2D, f: number, W = 1920, H = 108
     }
 };
 
-export const IsoCanvas: React.FC<{draw: Draw; over?: Draw; cam?: {x: number; y: number; z: number; k: number}; bg?: boolean; W?: number; H?: number}> = ({
+/** `sink`: px the whole picture has slid up (a slow drift over the scene, so card-heavy holds are not frozen frames). */
+export const IsoCanvas: React.FC<{draw: Draw; over?: Draw; cam?: {x: number; y: number; z: number; k: number}; bg?: boolean; W?: number; H?: number; sink?: number}> = ({
   draw,
   over,
   cam,
   bg = true,
   W = 1920,
   H = 1080,
+  sink = 0,
 }) => {
   const ref = useRef<HTMLCanvasElement>(null);
   const f = useCurrentFrame();
@@ -102,7 +104,7 @@ export const IsoCanvas: React.FC<{draw: Draw; over?: Draw; cam?: {x: number; y: 
     iso.flush();
     if (over) over(iso, g, f);
   });
-  return <canvas ref={ref} width={W} height={H} style={{position: 'absolute', inset: 0, width: W, height: H}} />;
+  return <canvas ref={ref} width={W} height={H} style={{position: 'absolute', inset: 0, width: W, height: H, transform: sink ? `translateY(${-sink}px)` : undefined}} />;
 };
 
 // ------------------------------------------------------------------ world helpers

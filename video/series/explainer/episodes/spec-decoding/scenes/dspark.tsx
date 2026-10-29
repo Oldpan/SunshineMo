@@ -92,14 +92,14 @@ export const DsparkMarkov: React.FC<{scene: Scene}> = () => (
       );
       const q = clamp((f - b[4]) / 16) * (1 - clamp((f - b[7]) / 12));
       if (q > 0) {
-        card(g, PANEL_X, 470, PANEL_W, 130, q);
-        text(g, 'p_k = softmax( U_k + B(x_k−1, ·) )', PANEL_X + 28, 520, {size: 24, weight: 600, a: q, halo: false, mono: true});
-        text(g, 'U 并行分数 · B 低秩偏置（r = 256），只看前一个词', PANEL_X + 28, 566, {size: 20, weight: 500, color: R.dim, a: q, halo: false});
+        card(g, PANEL_X, 490, PANEL_W, 130, q);
+        text(g, 'p_k = softmax( U_k + B(x_k−1, ·) )', PANEL_X + 28, 540, {size: 24, weight: 600, a: q, halo: false, mono: true});
+        text(g, 'U 并行分数 · B 低秩偏置（r = 256），只看前一个词', PANEL_X + 28, 586, {size: 20, weight: 500, color: R.dim, a: q, halo: false});
       }
       // the paper's example: of / no, course / problem
       const e = clamp((f - b[5]) / 16);
       if (e > 0) {
-        const y0 = 626;
+        const y0 = 640;
         card(g, PANEL_X, y0, PANEL_W, 200, e);
         const boost = eo(clamp((f - b[6]) / 24));
         const col = (x: number, pos: string, rows: [string, number, boolean][]) => {
@@ -134,9 +134,9 @@ export const DsparkMarkov: React.FC<{scene: Scene}> = () => (
       }
       const q2 = clamp((f - b[7]) / 16);
       if (q2 > 0) {
-        card(g, PANEL_X, 470, PANEL_W, 130, q2);
-        text(g, '串行一遍：只多 0.2%–1.3%', PANEL_X + 28, 520, {size: 28, weight: 700, a: q2, halo: false});
-        text(g, '批量 128，草稿长度 4 → 16 时的整轮延迟', PANEL_X + 28, 566, {size: 20, weight: 500, color: R.dim, a: q2, halo: false});
+        card(g, PANEL_X, 490, PANEL_W, 130, q2);
+        text(g, '串行一遍：整轮只多 0.2%–1.3%', PANEL_X + 28, 540, {size: 28, weight: 700, a: q2, halo: false});
+        text(g, '批量 128 · 草稿从 4 个加到 16 个', PANEL_X + 28, 586, {size: 20, weight: 500, color: R.dim, a: q2, halo: false});
       }
       src(g, 'DSpark 论文 §3.1、式 (4)(5)', clamp((f - b[2]) / 14));
     }}
@@ -238,7 +238,7 @@ export const DsparkSched: React.FC<{scene: Scene}> = () => (
       pin(iso, 8.5, -5, 2.2, {title: '③ 调度器', dir: 1, up: 50, len: 40, a: clamp(f / 30), ts: 24, fade: 1 - clamp((f - b[4]) / 16)});
       const fade = 1 - clamp((f - b[4]) / 20);
       const sort = eio(clamp((f - b[1]) / 40));
-      if (sort < 0.5) ['请求 A', '请求 B', '请求 C'].forEach((s, ri) => label(iso, s, -12.4, -6 + ri * 2.4 + 0.6, 0.3, {size: 22, weight: 700, a: clamp(f / 14) * fade * (1 - sort * 2), align: 'right', dy: 6}));
+      if (sort < 0.5) ['请求 A', '请求 B', '请求 C'].forEach((s, ri) => label(iso, s, -13.4, -6 + ri * 2.4 + 0.6, 0.3, {size: 22, weight: 700, a: clamp(f / 14) * fade * (1 - sort * 2), align: 'right', dy: 6}));
       legend(
         g,
         230,
@@ -341,7 +341,7 @@ export const DsparkSched: React.FC<{scene: Scene}> = () => (
         g.setLineDash([]);
         g.restore();
         text(g, 'DSpark：约 4–6 个', x0 + 20, y0 - 6 * u - 16, {size: 22, weight: 700, color: '#476F37', a: q3, halo: false});
-        text(g, 'MTP-1：固定 2 个', x0 + 20, y0 - 2 * u - 12, {size: 20, weight: 600, color: R.dim, a: q3, halo: false});
+        text(g, 'MTP-1：每次核 2 个（1 草稿 + 1 补位）', x0 + 20, y0 - 2 * u - 12, {size: 20, weight: 600, color: R.dim, a: q3, halo: false});
         text(g, '200', x0 + 0.3 * w, y0 + 28, {size: 18, weight: 600, color: R.dim, a: q3, halo: false, align: 'center'});
         text(g, '并发 →（Figure 8，形状示意）', x0 + w, y0 + 28, {size: 18, weight: 500, color: R.dim, a: q3, halo: false, align: 'right'});
       }
@@ -404,7 +404,7 @@ export const DsparkNum: React.FC<{scene: Scene}> = () => (
         [
           {t: '线上替换 MTP-1', sub: 'MTP-1 固定只多猜 1 个', a: clamp(f / 14)},
           {t: '同样总吞吐下，单用户速度', sub: 'V4-Flash +60%～85%（V4-Pro +57%～78%）', a: clamp((f - b[1]) / 14)},
-          {t: '离线 Qwen3-4B · τ 宏平均', sub: '比 EAGLE-3 高 30.9%，比 DFlash 高 16.3%', a: clamp((f - b[2]) / 14)},
+          {t: '离线 Qwen3-4B · 链式猜 7 个 · τ 宏平均', sub: 'τ 比 EAGLE-3 高 30.9%，比 DFlash 高 16.3%', a: clamp((f - b[2]) / 14)},
           {t: 'V4.1：预训练不再带 MTP', sub: '改用 DSpark，块大小 5（config.json）', a: clamp((f - b[3]) / 14)},
         ],
         {head: '数字'},

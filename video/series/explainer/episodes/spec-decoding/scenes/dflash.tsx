@@ -312,8 +312,8 @@ export const DflashNum: React.FC<{scene: Scene}> = () => (
         g,
         230,
         [
-          {t: 'Qwen3-8B · 贪心（T = 0）· 平均', sub: 'DFlash 4.86 倍，τ 6.49', a: clamp(f / 14) * pre},
-          {t: '同条件 EAGLE-3', sub: '1.76 倍，τ 2.96', a: clamp((f - b[1]) / 14) * pre},
+          {t: 'Qwen3-8B · 非思考 · 贪心（T = 0）· 平均', sub: 'DFlash 4.86 倍，τ 6.49', a: clamp(f / 14) * pre},
+          {t: 'DFlash 论文自测的 EAGLE-3（第三方权重）', sub: '每轮核 16 个：1.76 倍，τ 2.96 · 核 60 个：2.02 倍', a: clamp((f - b[1]) / 14) * pre},
           {t: 'SGLang · B200 · Math500', sub: '单个请求 5.1 倍 · 并发 32 仍有 2.8 倍', a: clamp((f - b[2]) / 14) * pre},
         ],
         {head: 'Table 1 / Table 3', a: clamp(f / 14) * pre},
@@ -327,7 +327,7 @@ export const DflashNum: React.FC<{scene: Scene}> = () => (
         230,
         [
           {c: R.bad, t: '同时猜，看不到彼此猜出的词', a: clamp((f - b[3] - 10) / 14)},
-          {c: R.ok, t: '代码任务：条件接受率', sub: '第 1 位 0.87 → 第 7 位 0.78', a: clamp((f - b[4]) / 14)},
+          {c: R.ok, t: '代码任务：条件接受率', sub: '第 1 位 0.87 → 往后降到 0.78 · DSpark 论文测', a: clamp((f - b[4]) / 14)},
         ],
         {a: clamp((f - b[3] - 10) / 14)},
       );

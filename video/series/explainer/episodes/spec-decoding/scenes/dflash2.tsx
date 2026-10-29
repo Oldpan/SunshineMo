@@ -159,7 +159,7 @@ export const Dflash2Path: React.FC<{scene: Scene}> = () => (
       const q = clamp((f - b[3]) / 16);
       if (q > 0) {
         card(g, PANEL_X, 520, PANEL_W, 150, q);
-        text(g, '两抽头卷积：每层前后各一个', PANEL_X + 28, 566, {size: 24, weight: 700, a: q, halo: false});
+        text(g, '两抽头卷积：每层前后各一个 · 治块尾衰减', PANEL_X + 28, 566, {size: 24, weight: 700, a: q, halo: false});
         for (let i = 0; i < 8; i++) {
           const x = PANEL_X + 40 + i * 66;
           g.save();
@@ -212,7 +212,7 @@ export const Dflash2Num: React.FC<{scene: Scene}> = () => (
     cam={camAt(-1, 0, 2.5, 600, 640, 32)}
     draw={({iso, f, b}) => {
       board(iso, -10, -7, 18, 14);
-      BARS.forEach(([, v, c], i) => cubeBar(iso, -6 + i * 2.2, 1 - i * 2.2, v, tri(c), clamp((f - b[1] - i * 10) / 30), {s: 1.5, h: 0.75}));
+      BARS.forEach(([, v, c], i) => cubeBar(iso, -6 + i * 2.2, 1 - i * 2.2, v, tri(c), clamp((f - 16 - i * 10) / 40), {s: 1.5, h: 0.75}));
     }}
     over={({iso, g, f, b}) => {
       CH(g, f);
@@ -231,8 +231,8 @@ export const Dflash2Num: React.FC<{scene: Scene}> = () => (
         rr(g, PANEL_X + 10, 410, PANEL_W - 20, 100, 10);
         g.stroke();
         g.restore();
-        text(g, '对照模型是 Inco 按同样设置自己训的', PANEL_X + 28, 456, {size: 24, weight: 700, a: q, halo: false, color: R.bad});
-        text(g, '不是各家官方发布的草稿机', PANEL_X + 28, 492, {size: 20, weight: 500, a: q, halo: false, color: R.dim});
+        text(g, 'DFlash 和 DSpark 是 Inco 按同样设置自己训的', PANEL_X + 28, 456, {size: 24, weight: 700, a: q, halo: false, color: R.bad});
+        text(g, '不是官方发布的那两版草稿机', PANEL_X + 28, 492, {size: 20, weight: 500, a: q, halo: false, color: R.dim});
       }
       const q2 = clamp((f - b[3]) / 16);
       if (q2 > 0) {

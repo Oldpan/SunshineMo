@@ -100,6 +100,7 @@ MTP = 训练时让模型在每个位置除了下一个 token 外，再多预测�
 ## 8. 易错点
 - Meta 的 head 是并行独立的；DeepSeek 是顺序的、含因果链，不要混为一谈。
 - V3 的 MTP 首要目的是**训练目标**（densify 信号、pre-plan 表征），推理时可直接丢弃；用于推测解码是"另外可以"。
+  - DeepSeek-V3 §2.2 "MTP in Inference" 原句（2026-10-29 从 arxiv.org/html/2412.19437v2 核对）："Our MTP strategy mainly aims to improve the performance of the main model, so during inference, we can directly discard the MTP modules and the main model can function independently and normally. Additionally, we can also repurpose these MTP modules for speculative decoding to further improve the generation latency."
 - 1.8× 是 D=1、仅多一个草稿 token 的结果，来自 85–90% 接受率（理论上 1+0.85~0.9 ≈ 1.85~1.9，论文未给此推算，此为说明性算术，非原文）。
 - V3 config 中 num_hidden_layers=61，另有 num_nextn_predict_layers=1，MTP 权重与主模型一起发布。
 - Table 4 中 MTP 并非全部指标提升（如大模型 MMLU 下降）。

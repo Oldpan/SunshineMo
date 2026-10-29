@@ -173,8 +173,8 @@ export const EagleTtt: React.FC<{scene: Scene}> = () => (
     draw={({iso, f, b}) => {
       board(iso, -17, -2, 12, 10);
       eagleDrafter(iso, -14, 1, 1, true);
-      // output fed back in, a few times
-      const a = clamp((f - b[2]) / 20);
+      // output fed back in (the problem, from the first sentence on)
+      const a = clamp((f - 8) / 20);
       iso.line3([[-9.6, 3.2, 0.6], [-9.0, 3.2, 0.6], [-9.0, 3.2, 2.8], [-13.4, 3.2, 2.8], [-13.4, 3.2, 1.8]], R.bad, 4, {dash: [10, 6], off: -f, layer: 2, a});
     }}
     over={({g, f, b}) => {
@@ -278,7 +278,7 @@ export const EagleTree: React.FC<{scene: Scene}> = () => (
       // numbers as stacked cubes: EAGLE-2 vs EAGLE-3 on Llama-3.1-8B
       const nb = clamp((f - b[3]) / 30);
       if (nb > 0) {
-        cubeBar(iso, 4.6, -6.6, 3.23, GREY, clamp((f - b[4]) / 30), {s: 1.4, h: 0.9});
+        cubeBar(iso, 7.0, -4.0, 3.23, GREY, clamp((f - b[4]) / 30), {s: 1.4, h: 0.9});
         cubeBar(iso, 4.6, -1.6, 4.44, T3d.ok, nb, {s: 1.4, h: 0.9});
       }
     }}
@@ -291,8 +291,8 @@ export const EagleTree: React.FC<{scene: Scene}> = () => (
         label(iso, 'EAGLE-3', 5.3, -0.9, 0, {size: 20, weight: 700, dy: 40, a: clamp((f - b[3]) / 12)});
       }
       if (f >= b[4]) {
-        label(iso, '3.23×', 5.3, -5.9, 3.23 * 0.9, {size: 34, weight: 400, dy: -20, a: clamp((f - b[4] - 20) / 12), color: R.dim});
-        label(iso, 'EAGLE-2', 5.3, -5.9, 0, {size: 20, weight: 700, dy: 40, a: clamp((f - b[4]) / 12), color: R.dim});
+        label(iso, '3.23×', 7.7, -3.3, 3.23 * 0.9, {size: 34, weight: 400, dy: -20, a: clamp((f - b[4] - 20) / 12), color: R.dim});
+        label(iso, 'EAGLE-2', 7.7, -3.3, 0, {size: 20, weight: 700, dy: 40, a: clamp((f - b[4]) / 12), color: R.dim});
       }
       legend(
         g,
@@ -308,7 +308,7 @@ export const EagleTree: React.FC<{scene: Scene}> = () => (
       if (q > 0) {
         card(g, PANEL_X, 640, PANEL_W, 130, q);
         text(g, '草稿仍是一层一层猜的', PANEL_X + 28, 690, {size: 26, weight: 700, a: q, halo: false});
-        text(g, '树深 8 层 → 草稿机跑 8 次（§4 设置）', PANEL_X + 28, 732, {size: 24, weight: 500, a: q, halo: false});
+        text(g, '树深 8 层 → 草稿机跑 8 次（Appendix A）', PANEL_X + 28, 732, {size: 24, weight: 500, a: q, halo: false});
       }
       src(g, 'EAGLE-3 论文 Table 1、Appendix A · 树形为示意', clamp((f - b[0]) / 14));
     }}

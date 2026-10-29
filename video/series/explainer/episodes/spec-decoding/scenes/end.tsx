@@ -126,15 +126,15 @@ export const Compare: React.FC<{scene: Scene}> = () => (
 // ------------------------------------------------------------------ caveats
 const NUMS: [string, string, string][] = [
   ['MTP', '1.8× TPS', 'DeepSeek-V3 自家'],
-  ['EAGLE-3', '4.44×', 'Llama-3.1-8B'],
-  ['DFlash', '4.86×', 'Qwen3-8B · H200'],
-  ['DSpark', '+60%～85%', 'V4-Flash 线上'],
+  ['EAGLE-3', '4.44×', 'Llama-3.1-8B · T=0 平均'],
+  ['DFlash', '4.86×', 'Qwen3-8B · T=0 · H200'],
+  ['DSpark', '+60%～85%', '对 MTP-1 · 同吞吐 · V4-Flash'],
   ['DFlash 2', '3.43×', 'Qwen3.8-27B · H200'],
 ];
 const SLOPES: [string, number, number, string, string, string, number][] = [
-  ['DFlash', 5.1, 2.8, '并发 1', '32', 'B200 · Math500', 0],
-  ['DFlash 2', 3.43, 1.45, '并发 1', '32', 'H200 · GSM8K', -40],
-  ['EAGLE-3', 1.81, 1.38, '批量 2', '64', 'H100 · MT-Bench', 30],
+  ['DFlash', 5.1, 2.8, '并发 1', '32', 'B200 · Math500', -30],
+  ['DFlash 2', 3.43, 1.45, '并发 1', '32', 'H200 · GSM8K', -64],
+  ['EAGLE-3', 1.81, 1.38, '批量 2', '64', 'H100 · MT-Bench · 无树、链长 3', 18],
 ];
 export const Caveat: React.FC<{scene: Scene}> = () => (
   <IsoScene
@@ -143,7 +143,7 @@ export const Caveat: React.FC<{scene: Scene}> = () => (
     over={({g, f, b}) => {
       text(g, '两点提醒', 96, 128, {size: 56, weight: 700, a: clamp(f / 12)});
       // 1. numbers from different papers, models, machines
-      const q = clamp((f - b[1]) / 16);
+      const q = clamp((f - 12) / 24);
       NUMS.forEach(([n, v, sub], i) => {
         const a = clamp(q * 5 - i);
         if (a <= 0) return;
@@ -165,28 +165,28 @@ export const Caveat: React.FC<{scene: Scene}> = () => (
       const c = clamp((f - b[2]) / 16);
       if (c > 0) {
         const x0 = 240,
-          x1 = 760,
+          x1 = 720,
           y0 = 860,
           u = 72;
         card(g, 96, 380, 1020, 510, c);
-        text(g, '并发一高，加速都会缩水（均为 SGLang 实测）', 124, 430, {size: 28, weight: 700, a: c, halo: false});
+        text(g, '并发一高，加速都会缩水（SGLang 实测，各线终点不同）', 124, 430, {size: 28, weight: 700, a: c, halo: false});
         g.save();
         g.globalAlpha = c;
         g.strokeStyle = R.ink;
         g.lineWidth = 2;
         g.beginPath();
-        g.moveTo(x0 - 40, y0 - 5.6 * u);
-        g.lineTo(x0 - 40, y0);
+        g.moveTo(x0 - 90, y0 - 5.6 * u);
+        g.lineTo(x0 - 90, y0);
         g.lineTo(x1 + 60, y0);
         g.stroke();
         g.strokeStyle = 'rgba(46,37,34,.25)';
         g.setLineDash([6, 6]);
         g.beginPath();
-        g.moveTo(x0 - 40, y0 - u);
+        g.moveTo(x0 - 90, y0 - u);
         g.lineTo(x1 + 60, y0 - u);
         g.stroke();
         g.restore();
-        text(g, '1×（不投机）', x0 - 50, y0 - u - 8, {size: 18, weight: 600, color: R.dim, a: c, halo: false, align: 'right'});
+        text(g, '1×（不投机）', x0 - 82, y0 - u - 10, {size: 18, weight: 600, color: R.dim, a: c, halo: false});
         SLOPES.forEach(([n, v0, v1, l0, l1, cap, dy], i) => {
           const a = clamp((f - b[2] - 10 - i * 14) / 20);
           if (a <= 0) return;
@@ -262,7 +262,7 @@ export const Outro: React.FC<{scene: Scene}> = () => (
       const e = clamp((f - b[2]) / 16);
       if (e > 0) text(g, '下期见', 1290, 740, {size: 56, weight: 700, a: e});
       text(g, '先猜后验，一字不差', 96, 150, {size: 64, weight: 700, a: clamp(f / 14)});
-      text(g, '两年五代：MTP → EAGLE-3 → DFlash → DSpark → DFlash 2', 98, 206, {size: 26, weight: 600, color: R.dim, a: clamp((f - b[1]) / 14)});
+      text(g, '两年多，五种做法：MTP → EAGLE-3 → DFlash → DSpark → DFlash 2', 98, 206, {size: 26, weight: 600, color: R.dim, a: clamp((f - b[1]) / 14)});
     }}
   />
 );

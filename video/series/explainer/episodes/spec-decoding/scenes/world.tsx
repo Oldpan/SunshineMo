@@ -107,6 +107,8 @@ export type RoundOpts = {
   y?: number;
   s?: number; // cube size
   go?: number; // frame the tray starts moving (default: right after the drafts appear)
+  okAt?: number; // frame the accepted drafts turn green (default: as they pass the gate)
+  badAt?: number; // frame the miss and the rest turn red / grey (default: as they pass the gate)
   missAt?: number; // frame the miss leaves the belt
   fixAt?: number; // frame the big model's token lands
   keepAfter?: boolean; // keep the accepted cubes on the belt after the round (default true)
@@ -133,7 +135,8 @@ export const round = (iso: any, t: number, o: RoundOpts) => {
       z = L.beltZ;
     const passed = x + s / 2 > gateMid;
     let t3 = T3d.draft;
-    if (passed) t3 = i < o.ok ? T3d.ok : i === o.ok ? T3d.bad : T3d.grey;
+    if (passed && i < o.ok && t >= (o.okAt ?? -1e9)) t3 = T3d.ok;
+    if (passed && i >= o.ok && t >= (o.badAt ?? -1e9)) t3 = i === o.ok ? T3d.bad : T3d.grey;
     // the miss and everything after it leave the belt sideways
     if (i >= o.ok && passed) {
       const tc = (o.missAt ?? t1 + travel * 0.55) + (i - o.ok) * 2;

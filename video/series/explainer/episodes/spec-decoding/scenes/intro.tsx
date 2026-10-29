@@ -264,7 +264,7 @@ export const Loop: React.FC<{scene: Scene}> = () => (
       const scan = f >= b[1] && f < b[2] + 20 ? 0.5 + 0.5 * Math.sin(f * 0.4) : 0;
       gate(iso, scan);
       drafterBox(iso, f);
-      const r1 = {chars: ['天', '气', '很', '热'], ok: 3, fix: '好', emerge: 8, go: b[1] - b[0], missAt: b[3] - b[0], fixAt: b[4] - b[0]};
+      const r1 = {chars: ['天', '气', '很', '热'], ok: 3, fix: '好', emerge: 8, go: b[1] - b[0], okAt: b[2] - b[0], badAt: b[3] - b[0], missAt: b[3] - b[0] + 12, fixAt: b[4] - b[0]};
       if (f < b[5]) round(iso, f - b[0], r1);
       else round(iso, f - b[5], {chars: ['出', '门', '走', '走'], ok: 4, fix: '吧', mode: 'par', travel: 40});
       const n1 = f >= b[4] + 10 ? 4 : 0;
@@ -346,12 +346,12 @@ export const Lossless: React.FC<{scene: Scene}> = () => (
       belt(iso, -12, 15, f);
       bigTower(iso);
       gate(iso, f >= b[1] && f < b[3] ? 0.5 + 0.5 * Math.sin(f * 0.4) : 0);
-      // the draft "热" sits under the scanner; at b[2] it is rejected and the corrected token lands
+      // the draft "热" sits just past the scanner (in full view); at b[2] it is rejected and the corrected token lands
       const rej = clamp((f - b[2] - 30) / 16);
-      token(iso, L.gateX + 0.4, L.beltY + 0.3 + eo(rej) * 3.4, L.beltZ * (1 - rej), '热', rej > 0 ? T3d.bad : T3d.draft);
-      token(iso, L.gateX - 2.4, L.beltY + 0.3, L.beltZ, '很', T3d.ok);
+      token(iso, L.gateX + 4.6, L.beltY + 0.3 + eo(rej) * 3.4, L.beltZ * (1 - rej), '热', rej > 0 ? T3d.bad : T3d.draft);
+      token(iso, L.gateX + 2.4, L.beltY + 0.3, L.beltZ, '很', T3d.ok);
       const fp = clamp((f - b[2] - 46) / 16);
-      if (fp > 0) token(iso, L.gateX + 0.4, L.beltY + 0.3, L.beltZ, '好', T3d.bonus, {pop: fp, text: '#FBF4E6'});
+      if (fp > 0) token(iso, L.gateX + 4.6, L.beltY + 0.3, L.beltZ, '好', T3d.bonus, {pop: fp, text: '#FBF4E6'});
     }}
     over={({g, f, b}) => {
       title(g, '为什么一字不差', 96, 140, {size: 58, a: clamp(f / 10)});

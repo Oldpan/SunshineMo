@@ -128,6 +128,8 @@ export const MtpDs: React.FC<{scene: Scene}> = () => (
         // hidden state from the previous depth (main model or previous module)
         const hx = k === 0 ? 0 : 3.4 + (k - 1) * 6 + 3.6;
         iso.line3([[hx, 0, z + 0.4], [x, 0, z + 0.4]], R.target, 5, {layer: 2, a: p});
+        // module k−1 → module k, drawn over the block tops so the chain reads at a glance
+        if (k > 0) iso.line3([[hx - 1.8, -0.2, z + 1.75], [x + 1.6, -0.2, z + 1.75]], R.target, 7, {layer: 2, a: p});
         // embedding of token t+k comes up from the shared embedding floor
         if (f >= b[2]) {
           const a = clamp((f - b[2] - k * 8) / 14);
@@ -196,7 +198,7 @@ export const MtpNum: React.FC<{scene: Scene}> = () => (
         text(g, '85% – 90%', PANEL_X + 28, 356, {size: 60, weight: 400, a: q, halo: false});
         // 10 cubes, 8.5–9 lit
         for (let i = 0; i < 10; i++) {
-          const lit = i < 8.5 ? 1 : i < 9 ? 0.5 : 0;
+          const lit = i < 8 ? 1 : i < 9 ? 0.5 : 0;
           g.save();
           g.globalAlpha = q;
           g.fillStyle = lit === 1 ? R.ok : lit ? '#B6D3A8' : 'rgba(46,37,34,.12)';

@@ -10,3 +10,11 @@ deliver:
   - {from: out/封面_16x9.png, as: 五种投机解码_封面_16x9.png}
   - {from: out/封面_3x4.png, as: 五种投机解码_封面_3x4.png}
   - {from: source/video.md, as: 介绍和文案.md}
+drive:
+  folder: video_from_opus/五种投机解码
+  url: https://drive.google.com/drive/folders/1ScsfLNICqJDqcbe4k5irvMy9vUIM_pF0
+  files:
+  - {name: 五种投机解码.mp4, id: 1Bd805J1HGCkFEvZQnfSipTe6O3OsGmWJ, bytes: 148253765}
+  - {name: 五种投机解码_封面_16x9.png, id: 1oBTvdMqhWAFHd6olEIczV5JRgmlm9pNT, bytes: 295971}
+  - {name: 五种投机解码_封面_3x4.png, id: 1hAIRuD9McRT7GULJXEnT2qsVMgK_6EjS, bytes: 247418}
+  - {name: 介绍和文案.md, id: 1l5lC_HHgSnRaGfsP9-DK0XcJQgSUTOR2, bytes: 533}

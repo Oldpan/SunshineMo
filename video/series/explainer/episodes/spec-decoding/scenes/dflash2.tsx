@@ -159,7 +159,7 @@ export const Dflash2Path: React.FC<{scene: Scene}> = () => (
       const q = clamp((f - b[3]) / 16);
       if (q > 0) {
         card(g, PANEL_X, 520, PANEL_W, 150, q);
-        text(g, '两抽头卷积：每层前后各一个 · 治块尾衰减', PANEL_X + 28, 566, {size: 24, weight: 700, a: q, halo: false});
+        text(g, '两抽头卷积：每层前后各一个 · 缓解块尾衰减', PANEL_X + 28, 566, {size: 24, weight: 700, a: q, halo: false});
         for (let i = 0; i < 8; i++) {
           const x = PANEL_X + 40 + i * 66;
           g.save();
@@ -184,16 +184,16 @@ export const Dflash2Path: React.FC<{scene: Scene}> = () => (
         card(g, PANEL_X, 690, PANEL_W, 200, t);
         const row = (y: number, name: string, p: string, l: string, tau: string, a: number, hi: boolean) => {
           text(g, name, PANEL_X + 28, y, {size: 22, weight: 700, a, halo: false, color: hi ? '#3F7D3A' : R.ink});
-          text(g, p, PANEL_X + 290, y, {size: 22, weight: 600, a, halo: false, align: 'right'});
+          text(g, p, PANEL_X + 320, y, {size: 22, weight: 600, a, halo: false, align: 'right'});
           text(g, l, PANEL_X + 420, y, {size: 22, weight: 600, a, halo: false, align: 'right'});
           text(g, tau, PANEL_X + 550, y, {size: 22, weight: 700, a: a * (f >= b[6] ? 1 : 0.0), halo: false, align: 'right', color: hi ? '#3F7D3A' : R.ink});
         };
-        text(g, '参数', PANEL_X + 290, 728, {size: 18, weight: 500, color: R.dim, a: t, halo: false, align: 'right'});
+        text(g, '参数', PANEL_X + 320, 728, {size: 18, weight: 500, color: R.dim, a: t, halo: false, align: 'right'});
         text(g, '延迟', PANEL_X + 420, 728, {size: 18, weight: 500, color: R.dim, a: t, halo: false, align: 'right'});
         text(g, 'τ', PANEL_X + 550, 728, {size: 18, weight: 500, color: R.dim, a: t * clamp((f - b[6]) / 12), halo: false, align: 'right'});
         row(772, '路径选择器', '+2.0M', '+0.6%', '4.61', t, true);
         row(818, 'DSpark 式修正*', '+77.8M', '+9.6%', '4.49', clamp((f - b[5]) / 14), false);
-        text(g, '* Inco 按同样设置复现 · Qwen3-4B · GSM8K · T = 0', PANEL_X + 28, 862, {size: 17, weight: 500, color: R.dim, a: clamp((f - b[5]) / 14), halo: false});
+        text(g, '* 博客 Table 2 的 DSpark correction · Qwen3-4B · GSM8K · T = 0', PANEL_X + 28, 862, {size: 17, weight: 500, color: R.dim, a: clamp((f - b[5]) / 14), halo: false});
       }
       src(g, 'Inco AI 博客 Figure 1、Figure 4、Table 2 · 打分线粗细为示意', clamp((f - b[1]) / 14));
     }}

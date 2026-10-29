@@ -262,7 +262,7 @@ export const Outro: React.FC<{scene: Scene}> = () => (
       const e = clamp((f - b[2]) / 16);
       if (e > 0) text(g, '下期见', 1290, 740, {size: 56, weight: 700, a: e});
       text(g, '先猜后验，一字不差', 96, 150, {size: 64, weight: 700, a: clamp(f / 14)});
-      text(g, '两年多，五种做法：MTP → EAGLE-3 → DFlash → DSpark → DFlash 2', 98, 206, {size: 26, weight: 600, color: R.dim, a: clamp((f - b[1]) / 14)});
+      text(g, '两年多，五种做法', 98, 206, {size: 26, weight: 600, color: R.dim, a: clamp((f - b[1]) / 14)});
     }}
   />
 );

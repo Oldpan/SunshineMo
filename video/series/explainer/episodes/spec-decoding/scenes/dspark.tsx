@@ -245,7 +245,7 @@ export const DsparkSched: React.FC<{scene: Scene}> = () => (
         [
           {c: R.draft, t: '所有请求的草稿位，按存活概率排队', a: clamp((f - b[1]) / 14)},
           {c: R.target, t: '一个个放进核对门', sub: '总吞吐 Θ = τ × 每秒步数 SPS(B)', a: clamp((f - b[2]) / 14)},
-          {c: GREY[1], t: 'Θ 不再上升 → 停', a: clamp((f - b[3]) / 14)},
+          {c: GREY[1], t: 'Θ 不再上升 → 停', sub: '论文 Algorithm 1 的写法；线上改为全局搜索', a: clamp((f - b[3]) / 14)},
         ],
         {a: clamp((f - b[1]) / 14) * fade},
       );

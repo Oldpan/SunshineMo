@@ -190,6 +190,7 @@ def cmd_verify(a):
         need_atv()
         run([atv_py(), ATV / "scripts" / "check_beats.py", ep])
         run([atv_py(), ATV / "scripts" / "verify_video.py", ep])
+        stutter_check(ep, v)
         return
     times = [str(t) for t in (a.at or [5, 30, 60, 90, 120, 150])]
     run([PY, "render.py", "--still", *times], cwd=ep)
@@ -197,6 +198,10 @@ def cmd_verify(a):
     run([PY, ROOT / "video" / "tools" / "sheet.py", ep / "out" / "sheet.jpg", "3", *stills])
     scripts = [p for p in ep.glob("*.py")]
     run([PY, ROOT / "video" / "tools" / "glyphs.py", *scripts])
+    stutter_check(ep, v)
+
+
+def stutter_check(ep, v):
     # mid-film audio dropouts play back as stutters (一帧一理04 lesson); check every rendered film we deliver
     for f in (v.get("deliver") or {}).get("files") or []:
         src = ep / f["from"]

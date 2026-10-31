@@ -39,6 +39,7 @@ source env.sh
 | kimi-k31-pro | 开源旗舰逼近 Opus：Kimi K3.1 Pro 全拆解 | Drive video_from_opus/Kimi K3.1 Pro 拆解 |
 | fold-subagents | 快约 2 倍：Claude 官方教你把 subagent 并回主循环 | Drive video_from_opus/subagent 并回主循环 |
 | managed-agents | Anthropic 把 Agent 的脑和手拆开了：Managed Agents 架构全拆解 | Drive video_from_opus/脑手分离 |
+| hf-reverse-engineering | DeepSeek 带 4 个 Qwen 小模型逆向程序：主管还给手下改了 harness | Drive video_from_opus/大模型带小模型逆向 |
 
 （之前的 10 期在 article-to-video 的 `projects/` 里，留在原处。）
 

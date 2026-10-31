@@ -23,3 +23,4 @@ import nurse from '../assets.nosync/loc_nurse.jpg';
 export const A = {newsAmazon, newsBlock, newsOracle, newsMeta, newsStanford, newsMusk, mercy, court, surgery, assembly, assembly2, craft, dancer, football, lab, theater, office, office2, opera, nurse};
 export const LOC = '图：Carol M. Highsmith / 美国国会图书馆（公有领域）';
 export const LOCX = '图：美国国会图书馆（公有领域）';
+export const LOC_USN = '图：美国国会图书馆 · U.S. News & World Report 合集（无已知版权限制）';

@@ -33,7 +33,7 @@ const slotX = (i: number) => 110 + i * 430;
 
 type Item = {src: string; outlet: string; date: string; month: string; who: string; tag: string; focus: string};
 const ITEMS: Item[] = [
-  {src: A.newsAmazon, outlet: 'TechCrunch', date: '2026.1.28', month: '1 月', who: '亚马逊', tag: '约 1.6 万', focus: '50% 40%'},
+  {src: A.newsAmazon, outlet: 'TechCrunch', date: '2026.1.28', month: '1 月', who: '亚马逊', tag: '约 1.6 万', focus: '100% 40%'},
   {src: A.newsBlock, outlet: 'Fortune', date: '2026.2.27', month: '2 月', who: 'Block', tag: '4000+', focus: '0% 40%'},
   {src: A.newsOracle, outlet: 'The Next Web', date: '2026.3.31', month: '3 月', who: '甲骨文', tag: '估计 2–3 万', focus: '50% 30%'},
   {src: A.newsMeta, outlet: 'OPB / NPR', date: '2026.4.23', month: '4 月', who: 'Meta', tag: '约 8000', focus: '50% 9%'},
@@ -129,8 +129,8 @@ export const Open: React.FC = () => {
               )}
               <HeadBar f={b[4] - 14} />
               {b[5] >= 0 && (
-                <div style={{position: 'absolute', left: -40, top: 250, transform: `scale(${E.back(seg(b[5], 0, 9))})`, transformOrigin: '20% 50%', zIndex: 5}}>
-                  <Bubble w={560} tail="left" size={36}>
+                <div style={{position: 'absolute', left: -40, top: 150, transform: `scale(${E.back(seg(b[5], 0, 9))})`, transformOrigin: '20% 50%', zIndex: 5}}>
+                  <Bubble w={480} tail="left" size={34}>
                     多尔西：原因就是 AI 工具
                     <div style={{fontFamily: F_ROUND, fontWeight: 500, fontSize: 26, marginTop: 6}}>“Intelligence tools have changed what it means to build and run a company”</div>
                   </Bubble>

@@ -128,10 +128,8 @@ export const Test: React.FC = () => {
               <Bean x={960} y={FLOOR} scale={1.1} color={K.yellow} belly={K.cream} ant={ph === 1 ? 'q' : 'ball'} hop={ph === 1 ? 0 : 14} hey={ph === 1 ? 0.3 : 0.6} lean={ph === 1 ? 10 : 0} />
             </Layer>
             {ph === 1 && (
-              <Pop f0={at[1] + 14} x={1180} y={600}>
-                <Bubble w={560} tail="left" size={48}>
-                  好像离我有点远？
-                </Bubble>
+              <Pop f0={at[1] + 14} x={1160} y={640}>
+                <Sticker text="离多数人有点远？" size={50} col={K.white} rot={3} />
               </Pop>
             )}
           </>
@@ -154,7 +152,7 @@ export const Test: React.FC = () => {
             </Layer>
           </>
         )}
-        {q >= 0 && <QBar cur={ph === 11 ? -1 : q} answers={ph === 11 ? [null, '不是', '不是'] : [null, null, null]} />}
+        {q >= 0 && ph !== 11 && <QBar cur={q} answers={[null, null, null]} />}
         {ph === 3 && <At f0={at[3]}><QCard i={0} /><Pyramid f={b[3]} /></At>}
         {ph === 4 && <At f0={at[4]}><TopPros f={b[4]} /></At>}
         {ph === 5 && <At f0={at[5]}><QCard i={1} /><DeskOnly f={b[5]} /></At>}
@@ -299,6 +297,9 @@ const PieceRate: React.FC<{f: number}> = ({f}) => {
   return (
     <>
       {box(200, '你：干得越多挣得越多', hn, K.blue)}
+      <div style={{position: 'absolute', left: 1748, top: 330}}>
+        <Sticker text="示意" size={30} col={K.gray} rot={0} />
+      </div>
       {f >= 60 && box(1200, 'AI', bn, K.red)}
       <Layer>
         <Bean x={460} y={FLOOR} scale={0.8} color={K.blue} belly={K.sky} item="box" hop={14} />
@@ -401,26 +402,34 @@ const Surgeon: React.FC<{f: number}> = ({f}) => (
   </>
 );
 
-const Verdict: React.FC<{f: number}> = ({f}) => (
-  <>
-    {[1, 2].map((i, k) => (
-      <Pop key={i} f0={6 + k * 16} x={300} y={270 + k * 170} from="left">
-        <ShadowCard w={900} h={130} col={K.cream} r={26} off={10}>
-          <div style={{display: 'flex', alignItems: 'center', height: '100%', paddingLeft: 30}}>
-            <div style={{fontFamily: F_ROUND, fontWeight: 700, fontSize: 52, color: K.purple, width: 100}}>Q{i + 1}</div>
-            <div style={{fontFamily: F_CJK, fontWeight: 900, fontSize: 46, color: K.ol, flex: 1}}>{QS[i]}</div>
-            <div style={{marginRight: 26, fontFamily: F_CJK, fontWeight: 900, fontSize: 46, color: K.white, background: K.green, border: `6px solid ${K.ol}`, borderRadius: 20, padding: '0 18px'}}>不是</div>
-          </div>
-        </ShadowCard>
+const Verdict: React.FC<{f: number}> = ({f}) => {
+  const row = (i: number, ans: string, y: number, f0: number) => (
+    <Pop key={i} f0={f0} x={250} y={y} from="left">
+      <ShadowCard w={940} h={120} col={K.cream} r={26} off={10}>
+        <div style={{display: 'flex', alignItems: 'center', height: '100%', paddingLeft: 30}}>
+          <div style={{fontFamily: F_ROUND, fontWeight: 700, fontSize: 52, color: K.purple, width: 100}}>Q{i + 1}</div>
+          <div style={{fontFamily: F_CJK, fontWeight: 900, fontSize: 46, color: K.ol, flex: 1}}>{QS[i]}</div>
+          <div style={{marginRight: 26, fontFamily: F_CJK, fontWeight: 900, fontSize: 46, color: K.white, background: K.green, border: `6px solid ${K.ol}`, borderRadius: 20, padding: '0 18px'}}>{ans}</div>
+        </div>
+      </ShadowCard>
+    </Pop>
+  );
+  return (
+    <>
+      {row(0, '是', 240, 6)}
+      <Pop f0={30} x={640} y={392}>
+        <Sticker text="或者" size={44} col={K.yellow} rot={-3} />
       </Pop>
-    ))}
-    <Layer>
-      <Bean x={1500} y={FLOOR} scale={1.3} color={K.yellow} belly={K.cream} hey={f >= 40 ? 1 : 0.3} open={f >= 40} hop={22} ant="star" />
-      <Judge word="相对安全！" x={760} y={700} f0={40} col={K.lime} dur={200} size={120} />
-      <Confetti f0={40} dur={50} seed={41} />
-    </Layer>
-  </>
-);
+      {row(1, '不是', 490, 60)}
+      {row(2, '不是', 640, 74)}
+      <Layer>
+        <Bean x={1550} y={FLOOR} scale={1.3} color={K.yellow} belly={K.cream} hey={f >= 100 ? 1 : 0.3} open={f >= 100} hop={22} ant="star" />
+        <Judge word="相对安全！" x={1520} y={360} f0={100} col={K.lime} dur={200} size={110} />
+        <Confetti f0={100} dur={50} seed={41} />
+      </Layer>
+    </>
+  );
+};
 
 // ------------------------------------------------------------------ 世界经济论坛
 export const Wef: React.FC = () => {
@@ -502,13 +511,13 @@ const JobBars: React.FC<{f: number; b2: number; b3: number}> = ({f, b2, b3}) => 
         <rect x={260} y={base - up} width={240} height={up} rx={12} fill={K.green} {...SO} />
         <rect x={640} y={base} width={240} height={down} rx={12} fill={K.red} {...SO} />
         {f >= 24 && (
-          <Telop x={380} y={base - up - 30} size={64} fill={K.white} family={F_ROUND} weight={700}>
-            +1.7 亿
+          <Telop x={380} y={base - up - 30} size={60} fill={K.white} family={F_CJK} weight={900}>
+            约 +1.7 亿
           </Telop>
         )}
         {f >= 56 && (
-          <Telop x={900} y={base + down / 2 + 20} size={56} fill={K.white} family={F_ROUND} weight={700} anchor="start">
-            −0.92 亿
+          <Telop x={900} y={base + down / 2 + 20} size={52} fill={K.white} family={F_CJK} weight={900} anchor="start">
+            约 −0.92 亿
           </Telop>
         )}
         {f >= 24 && (
@@ -518,8 +527,16 @@ const JobBars: React.FC<{f: number; b2: number; b3: number}> = ({f, b2, b3}) => 
         )}
         {f >= 56 && (
           <Telop x={760} y={base - 30} size={36} fill={K.ol} sw={0}>
-            消失
+            被替代
           </Telop>
+        )}
+        {f >= 70 && (
+          <g transform={`translate(560 ${base - up - 10}) scale(${E.back(seg(f, 70, 80))})`}>
+            <rect x={-10} y={-50} width={330} height={70} rx={18} fill={K.yellow} {...SO} strokeWidth={6} />
+            <Telop x={155} y={-2} size={40} fill={K.ol} sw={0}>
+              净增 ≈0.78 亿
+            </Telop>
+          </g>
         )}
       </Layer>
       {b2 >= 0 &&
@@ -580,7 +597,7 @@ export const Outro: React.FC = () => {
                 “我的预测是，
                 <br />
                 工作会变成可选的。”
-                <div style={{fontFamily: F_CJK, fontWeight: 700, fontSize: 28, marginTop: 10, color: '#555'}}>马斯克 · 2025 年 11 月</div>
+                <div style={{fontFamily: F_CJK, fontWeight: 700, fontSize: 28, marginTop: 10, color: '#555', whiteSpace: 'nowrap'}}>马斯克 · 2025.11 · 预测 10–20 年后</div>
               </Bubble>
             </Pop>
           </>
@@ -679,7 +696,7 @@ const Garden: React.FC<{f: number}> = ({f}) => (
     </Pop>
     {f >= 60 && (
       <Stamp f0={60} x={1100} y={420} size={92} col={K.yellow}>
-        累一点，但开心
+        累一点，但有人乐在其中
       </Stamp>
     )}
   </>

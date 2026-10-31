@@ -1,5 +1,5 @@
 // Publishing covers (16:9 and 3:4), rendered by renderer/covers.mjs, in the video's gameshow look.
-// A: 「这 3 类工作 / 最难被 AI 替代」 with the three round cards and cheering beans.
+// A: 「这 3 类工作 / 不容易被 AI 替代」 with the three round cards and cheering beans.
 // B: 「自测 3 问 / 你的工作安全吗？」 with the quiz checklist.
 import React from 'react';
 import {AbsoluteFill} from 'remotion';
@@ -27,9 +27,9 @@ const QS = ['在不在金字塔尖？', '是不是全在电脑上？', '是不�
 export const Poster: React.FC<{w: number; h: number}> = ({w, h}) => {
   useKit();
   const tall = h > w;
-  const [l1, l2] = VARIANT === 'A' ? ['这 3 类工作', '最难被 AI 替代'] : ['自测 3 问', '你的工作安全吗？'];
+  const [l1, l2] = VARIANT === 'A' ? ['这 3 类工作', '不容易被 AI 替代'] : ['自测 3 问', '你的工作安全吗？'];
   const t1 = tall ? 120 : 130;
-  const t2 = tall ? (VARIANT === 'A' ? 124 : 104) : VARIANT === 'A' ? 150 : 130;
+  const t2 = tall ? (VARIANT === 'A' ? 116 : 104) : VARIANT === 'A' ? 140 : 130;
   return (
     <AbsoluteFill style={{overflow: 'hidden'}}>
       <Back w={w} h={h} />

@@ -1,4 +1,4 @@
-// 第一关 · 拍板兜底：拍板（调动钱、人、资源；决定权不交给工具）和兜底（出了事有人负责；Mercy；盯着 AI 的人）。
+// 第一关 · 拍板兜底：拍板（调动钱、人、资源；最后拍板的目前还是人）和兜底（出了事有人负责；Mercy；盯着 AI 的人）。
 import React from 'react';
 import {AbsoluteFill} from 'remotion';
 import {A, LOC} from './assets';
@@ -139,10 +139,10 @@ export const R1Power: React.FC = () => {
                         belly={K.sky}
                         ant={b[2] >= 0 ? 'bolt' : 'ball'}
                         item={i ? 'laptop' : 'box'}
-                        hop={b[3] >= 30 && i === 0 ? 0 : 16}
+                        hop={16}
                         phase={i * 0.5}
-                        hey={b[3] >= 30 && i === 0 ? 1 : 0.3}
-                        lean={b[3] >= 30 && i === 0 ? -14 : 0}
+                        hey={0.3}
+                        lean={0}
                       />
                     </g>
                   );
@@ -161,20 +161,12 @@ export const R1Power: React.FC = () => {
               ))}
             {b[3] >= 0 && (
               <Pop f0={at[3] + 12} x={680} y={250} origin="0 50%">
-                <Bubble w={420} tail="left" size={40}>
-                  决定权
+                <Bubble w={460} tail="none" size={40}>
+                  决定权：
                   <br />
-                  不交给工具
+                  目前还在人手里
                 </Bubble>
               </Pop>
-            )}
-            {b[3] >= 30 && (
-              <Layer>
-                <g transform={`translate(1020 520) scale(${E.back(seg(b[3], 30, 38))})`}>
-                  <circle r={62} fill={K.red} {...SO} />
-                  <path d="M -26 -26 L 26 26 M 26 -26 L -26 26" stroke={K.white} strokeWidth={14} strokeLinecap="round" />
-                </g>
-              </Layer>
             )}
             {b[2] >= 0 && <Layer><Burst x={1300} y={480} f0={at[2] + 8} /></Layer>}
           </>
@@ -306,10 +298,8 @@ export const R1Blame: React.FC = () => {
             <Layer>
               <Bean x={480} y={FLOOR} scale={1.5} kind="bot" color={K.steel} belly={K.sky} ant="bolt" hop={14} item="pen" />
             </Layer>
-            <Pop f0={at[2]} x={170} y={230} origin="70% 100%">
-              <Bubble w={520} tail="down" size={42}>
-                AI：我建议……
-              </Bubble>
+            <Pop f0={at[2]} x={200} y={250}>
+              <Sticker text="AI 能给建议" size={50} col={K.white} rot={-3} />
             </Pop>
             {['被追责', '赔偿', '吊销执照'].map((t, i) => (
               <Pop key={t} f0={at[2] + 30 + i * 22} x={900} y={280 + i * 170} from="right">
@@ -329,17 +319,14 @@ export const R1Blame: React.FC = () => {
               <Car x={760 - 260 * E.out(seg(b[3], 0, 16)) + 260} y={FLOOR} f={f} />
               <Burst x={1150} y={640} f0={at[3] + 16} size={1.2} col={K.red} />
             </Layer>
-            <Stamp f0={at[3] + 20} x={1450} y={330} size={110} col={K.yellow}>
+            <Stamp f0={at[3] + 10} x={1450} y={330} size={110} col={K.yellow}>
               算谁的？
             </Stamp>
             {['车主', '车企', '写软件的'].map((t, i) => (
-              <Pop key={t} f0={at[3] + 40 + i * 10} x={1180 + i * 220} y={470} rot={(i - 1) * 5}>
+              <Pop key={t} f0={at[3] + 22 + i * 7} x={1180 + i * 220} y={470} rot={(i - 1) * 5}>
                 <Sticker text={`${t}?`} size={38} col={[K.white, K.sky, K.lime][i]} />
               </Pop>
             ))}
-            <Pop f0={at[3] + 90} x={1180} y={600}>
-              <Sticker text="到现在还在争" size={40} col={K.pink} rot={-3} />
-            </Pop>
           </>
         )}
         {ph >= 4 && (
@@ -386,25 +373,22 @@ export const R1Blame: React.FC = () => {
             </g>
             {ph >= 5 && (
               <g>
-                <Bean x={240} y={FLOOR} scale={1.1} color={K.pink} belly={K.cream} hat="none" ant="none" lean={Math.sin(b[5] / 2.5) * 8} open={b[5] >= 30} />
+                <Bean x={240} y={FLOOR} scale={1.1} color={K.pink} belly={K.cream} hat="none" ant="none" lean={Math.sin(b[5] / 2.5) * 8} open={b[5] >= 30} name="病人" />
                 <rect x={180} y={FLOOR - 200} width={120} height={22} rx={10} fill={K.white} {...SO} strokeWidth={5} transform={`rotate(-12 240 ${FLOOR - 190})`} />
-                <NameTagSvg x={240} y={FLOOR} name="病人" />
               </g>
             )}
           </Layer>
         )}
-        {ph >= 4 && b[4] < 50 && (
-          <Pop f0={at[4] + 30} f1={at[5]} x={960} y={300}>
+        {ph === 4 && (
+          <Pop f0={at[4] + 30} f1={at[5]} x={960} y={190}>
             <div style={{transform: 'translateX(-50%)', whiteSpace: 'nowrap'}}>
               <Sticker text="医疗 · 司法：一整套追责体系" size={46} col={K.white} rot={-2} />
             </div>
           </Pop>
         )}
         {ph >= 5 && b[6] < 0 && (
-          <Pop f0={at[5] + 30} x={60} y={490} origin="0 100%">
-            <Bubble w={330} tail="down" size={50} col={K.white}>
-              不答应！
-            </Bubble>
+          <Pop f0={at[5] + 30} x={60} y={520}>
+            <Sticker text="病人不答应" size={46} col={K.white} rot={-4} />
           </Pop>
         )}
         {b[6] >= 0 && (
@@ -418,17 +402,6 @@ export const R1Blame: React.FC = () => {
   );
 };
 
-const NameTagSvg: React.FC<{x: number; y: number; name: string}> = ({x, y, name}) => {
-  const w = name.length * 36 + 40;
-  return (
-    <g transform={`translate(${x} ${y + 16})`}>
-      <rect x={-w / 2} y={0} width={w} height={52} rx={26} fill={K.ol} stroke={K.white} strokeWidth={4} />
-      <text x={0} y={38} fontSize={34} fontFamily={F_CJK} fontWeight={900} fill={K.white} textAnchor="middle">
-        {name}
-      </text>
-    </g>
-  );
-};
 
 // ------------------------------------------------------------------ Mercy
 export const R1Mercy: React.FC = () => {
@@ -548,9 +521,11 @@ export const R1Watch: React.FC = () => {
               const p = seg(b[2], t0, t0 + 16);
               if (p <= 0) return null;
               const bounce = b[2] - t0 - 16;
-              const x = bounce < 0 ? 1800 - (1800 - 820) * p : 820 + bounce * 22;
-              const y = 420 + (i % 2) * 180 + (bounce < 0 ? 0 : -bounce * 12 + bounce * bounce * 0.8);
-              const rot = bounce < 0 ? 0 : bounce * 14;
+              // fly in from the right, hit the shield, settle beside it with a small recoil
+              const xf = 900 + Math.floor(i / 2) * 230;
+              const x = bounce < 0 ? 1800 - (1800 - xf) * p : xf + 30 * Math.exp(-bounce / 5) * Math.sin(bounce / 1.5);
+              const y = 420 + (i % 2) * 180;
+              const rot = bounce < 0 ? 0 : (i % 2 ? 6 : -6) * (1 - Math.exp(-bounce / 6));
               return (
                 <g key={i} transform={`translate(${x} ${y}) rotate(${rot})`}>
                   <rect x={-90} y={-40} width={180} height={80} rx={18} fill={K.red} {...SO} strokeWidth={6} />
@@ -561,7 +536,7 @@ export const R1Watch: React.FC = () => {
               );
             })}
             {[0, 1, 2, 3].map((i) => (
-              <Burst key={i} x={820} y={420 + (i % 2) * 180} f0={at[2] + 36 + i * 18} size={0.7} col={K.white} />
+              <Burst key={i} x={810} y={420 + (i % 2) * 180} f0={at[2] + 36 + i * 18} size={0.7} col={K.white} />
             ))}
           </Layer>
         )}
@@ -587,19 +562,18 @@ export const R1Watch: React.FC = () => {
         {ph === 4 && (
           <>
             <Layer>
-              {/* rising arrow chart */}
-              {[0, 1, 2, 3, 4].map((i) => {
-                const h = 70 + i * 80;
-                const p = E.out(seg(b[4], i * 5, i * 5 + 12));
-                return <rect key={i} x={360 + i * 150} y={FLOOR - h * p} width={110} height={h * p} rx={10} fill={i === 4 ? K.yellow : K.cream} {...SO} />;
-              })}
-              <path d={`M 340 ${FLOOR - 80} L 1100 ${FLOOR - 470}`} stroke={K.red} strokeWidth={18} strokeLinecap="round" strokeDasharray="1200" strokeDashoffset={1200 * (1 - E.out(seg(b[4], 10, 34)))} />
-              <Bean x={1450} y={FLOOR} scale={1.3} color={K.orange} belly={K.cream} hat="headset" hey={1} open hop={22} />
+              {/* bots grow stronger one by one; the watcher keeps an eye on all of them */}
+              {[0, 1, 2].map((i) => (
+                <g key={i} opacity={b[4] >= i * 8 ? 1 : 0}>
+                  <Bean x={330 + i * 300 + i * i * 30} y={FLOOR} scale={(0.6 + i * 0.32) * E.back(seg(b[4], i * 8, i * 8 + 10))} kind="bot" color={K.steel} belly={K.sky} ant="bolt" hop={12} phase={i * 0.3} />
+                </g>
+              ))}
+              <Bean x={1450} y={FLOOR} scale={1.3} color={K.orange} belly={K.cream} hat="headset" item="magnifier" hey={b[4] >= 50 ? 1 : 0.5} open={b[4] >= 50} hop={22} lean={b[4] >= 50 ? 0 : 8} />
               <Judge word="过关！" x={1400} y={340} f0={at[4] + 50} col={K.yellow} dur={70} size={160} />
               <Confetti f0={at[4] + 50} dur={50} seed={21} />
             </Layer>
             <Pop f0={at[4] + 6} x={300} y={240}>
-              <Sticker text="AI 越强，这类人越缺" size={52} col={K.white} rot={-3} />
+              <Sticker text="AI 越强，越需要有人盯着" size={52} col={K.white} rot={-3} />
             </Pop>
           </>
         )}

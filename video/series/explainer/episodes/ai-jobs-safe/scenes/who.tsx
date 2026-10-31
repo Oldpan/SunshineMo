@@ -1,7 +1,7 @@
-// 被裁的是谁：科技和信息服务公司（裁了不补），坐办公室的白领（电脑里的活）；斯坦福「煤矿里的金丝雀」研究。
+// 被裁的是谁：都是科技公司（Block 归因 AI，甲骨文据报道为 AI 数据中心腾钱，Meta 还关了招聘岗位），坐办公室的白领（电脑里的活）；斯坦福「煤矿里的金丝雀」研究（早期观察，非因果）。
 import React from 'react';
 import {AbsoluteFill} from 'remotion';
-import {A, LOCX} from './assets';
+import {A, LOC_USN} from './assets';
 import {
   At,
   Bean,
@@ -92,25 +92,20 @@ export const Who: React.FC = () => {
         {ph >= 1 && ph <= 4 && (
           <Pop f0={at[1]} x={960} y={200}>
             <div style={{transform: 'translateX(-50%)', whiteSpace: 'nowrap'}}>
-              <Sticker text="① 科技公司 · 信息服务公司" size={52} col={K.yellow} rot={-2} />
+              <Sticker text="① 都是科技公司" size={52} col={K.yellow} rot={-2} />
             </div>
           </Pop>
         )}
-        {ph === 1 && <City f={b[1]} />}
-        {(ph === 2 || ph === 3) && (
+        {ph === 1 && <At f0={at[1]}><Four /></At>}
+        {ph === 2 && <At f0={at[2]}><Reasons /></At>}
+        {ph === 3 && (
           <>
             <Layer>
-              <Door x={380} label="裁" col={K.red} f={f} dir={1} />
-              <Door x={1100} label="招" col={K.green} f={f} dir={1} closed={ph === 3 ? E.out(seg(b[3], 6, 18)) : 0} />
+              <Door x={760} label="招" col={K.green} f={f} dir={1} closed={E.out(seg(b[3], 20, 50))} n={3} />
             </Layer>
-            <Pop f0={ph === 2 ? at[2] + 6 : at[3]} x={ph === 2 ? 1380 : 1360} y={420} origin="0 50%">
-              {ph === 2 ? <Sticker text="别的行业：换岗" size={50} col={K.white} rot={3} /> : <Sticker text="科技公司：很多不补了" size={50} col={K.white} rot={3} />}
+            <Pop f0={at[3] + 6} x={1130} y={400} origin="0 50%">
+              <Sticker text="招人的口子也在收" size={50} col={K.white} rot={3} />
             </Pop>
-            {ph === 3 && (
-              <Stamp f0={at[3] + 20} x={1100} y={600} size={110} col={K.red}>
-                不补
-              </Stamp>
-            )}
           </>
         )}
         {ph === 4 && <At f0={at[4]}><MetaJobs f={b[4]} /></At>}
@@ -121,7 +116,7 @@ export const Who: React.FC = () => {
         )}
         {ph === 5 && (
           <>
-            <Screen src={A.office} x={170} y={290} w={900} h={520} f0={at[5] + 6} credit={LOCX} label="办公室（1963）" focus={[50, 45]} tilt={-2} />
+            <Screen src={A.office} x={170} y={290} w={900} h={520} f0={at[5] + 6} credit={LOC_USN} label="办公室（1963）" focus={[50, 45]} tilt={-2} />
             <Layer>
               <Bean x={1450} y={FLOOR} scale={1.4} color={K.blue} belly={K.sky} item="laptop" hat="glasses" hop={10} ant="none" />
             </Layer>
@@ -130,20 +125,21 @@ export const Who: React.FC = () => {
         {ph === 6 && <At f0={at[6]}><AmazonSplit f={b[6]} /></At>}
         {ph === 7 && (
           <>
-            <Layer>
-              <Bean x={420} y={FLOOR} scale={1.4} color={K.orange} belly={K.cream} item="mic" hop={10} open={Math.floor(f / 7) % 2 === 0} hey={0.4} name="贾西" />
-            </Layer>
-            <Pop f0={at[7] + 4} x={640} y={250} origin="0 50%">
-              <Bubble w={640} tail="left" size={46}>
-                生成式 AI 会让公司的
-                <br />
-                白领岗位变少
-                <div style={{fontFamily: F_CJK, fontWeight: 700, fontSize: 28, marginTop: 10, color: '#555'}}>亚马逊 CEO 贾西 · 2025 年 6 月</div>
-              </Bubble>
+            <div style={{position: 'absolute', left: 140, top: 300, transform: `scale(${E.back(seg(b[7], 0, 10))}) rotate(-2deg)`, transformOrigin: '0 0'}}>
+              <NewsTile src={A.newsAmazon} w={620} h={272} outlet="TechCrunch" date="2026.1.28" focus="100% 40%" />
+            </div>
+            <Pop f0={at[7] + 20} x={860} y={280} from="right">
+              <ShadowCard w={920} h={360} col={K.cream} r={30}>
+                <div style={{padding: '26px 40px'}}>
+                  <div style={{fontFamily: F_CJK, fontWeight: 900, fontSize: 34, color: K.orange}}>亚马逊 CEO 贾西 · 2025 年 6 月（转述）</div>
+                  <div style={{fontFamily: F_CJK, fontWeight: 900, fontSize: 54, color: K.ol, marginTop: 18, lineHeight: 1.3}}>
+                    预计未来几年，生成式 AI
+                    <br />
+                    会让公司职员的总数变少
+                  </div>
+                </div>
+              </ShadowCard>
             </Pop>
-            <Layer>
-              <DownArrow x={1380} y={760} f={b[7] - 50} />
-            </Layer>
           </>
         )}
         {ph === 8 && <At f0={at[8]}><Laptop f={b[8]} /></At>}
@@ -154,48 +150,52 @@ export const Who: React.FC = () => {
   );
 };
 
-/** Row of buildings: tech / info-service towers get hit, others stay. */
-const City: React.FC<{f: number}> = ({f}) => {
-  const bs = [
-    {x: 230, h: 300, tech: false, icon: '🏭', name: '制造'},
-    {x: 520, h: 420, tech: true, icon: '</>', name: '科技'},
-    {x: 810, h: 260, tech: false, icon: '+', name: '医院'},
-    {x: 1100, h: 460, tech: true, icon: '@', name: '信息服务'},
-    {x: 1390, h: 280, tech: false, icon: '¥', name: '零售'},
-    {x: 1680, h: 380, tech: true, icon: 'AI', name: '互联网'},
-  ];
-  return (
+/** The four companies from the opening, all tech. */
+const Four: React.FC = () => (
+  <>
+    {['亚马逊', 'Block', '甲骨文', 'Meta'].map((n, i) => (
+      <Pop key={n} f0={4 + i * 8} x={180 + i * 410} y={380} rot={(i % 2 ? 3 : -3)} from="drop">
+        <ShadowCard w={340} h={200} col={[K.orange, K.lime, K.red, K.sky][i]} r={30}>
+          <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%'}}>
+            <TelopDiv size={70} family={/[A-Za-z]/.test(n) ? F_ROUND : F_CJK}>
+              {n}
+            </TelopDiv>
+          </div>
+        </ShadowCard>
+      </Pop>
+    ))}
+    <Stamp f0={40} x={960} y={700} size={100} col={K.yellow}>
+      科技公司
+    </Stamp>
+  </>
+);
+
+/** Block and Oracle tie their cuts to AI (as reported). */
+const Reasons: React.FC = () => (
+  <>
+    {[
+      {n: 'Block', t: '多尔西：原因是 AI 工具', src: 'Fortune 2026.2.27', c: K.lime},
+      {n: '甲骨文', t: '裁员，给 AI 数据中心腾钱', src: 'The Next Web 标题 2026.3.31', c: K.red},
+    ].map((r, i) => (
+      <Pop key={r.n} f0={4 + i * 24} x={170 + i * 820} y={340} from={i ? 'right' : 'left'} rot={i ? 2 : -2}>
+        <ShadowCard w={760} h={300} col={K.cream} r={30}>
+          <div style={{padding: '24px 36px'}}>
+            <div style={{display: 'inline-block', background: r.c, border: `6px solid ${K.ol}`, borderRadius: 20, padding: '0 22px'}}>
+              <TelopDiv size={52} family={i ? F_CJK : F_ROUND}>
+                {r.n}
+              </TelopDiv>
+            </div>
+            <div style={{fontFamily: F_CJK, fontWeight: 900, fontSize: 50, color: K.ol, marginTop: 24}}>{r.t}</div>
+            <div style={{fontFamily: F_CJK, fontWeight: 700, fontSize: 26, color: '#666', marginTop: 16}}>据 {r.src}</div>
+          </div>
+        </ShadowCard>
+      </Pop>
+    ))}
     <Layer>
-      {bs.map((bd, i) => {
-        const p = E.back(seg(f, i * 4, i * 4 + 10));
-        const hit = bd.tech && f >= 40;
-        return (
-          <g key={i} transform={`translate(${bd.x} ${FLOOR}) scale(1 ${p})`}>
-            <rect x={-110} y={-bd.h} width={220} height={bd.h} rx={10} fill={bd.tech ? K.sky : K.cream} {...SO} />
-            {Array.from({length: Math.floor(bd.h / 90)}).map((_, r) =>
-              [-55, 0, 55].map((wx) => <rect key={`${r}${wx}`} x={wx - 18} y={-bd.h + 30 + r * 80} width={36} height={44} rx={6} fill={hit && (r + wx) % 2 === 0 ? K.ol : K.white} stroke={K.ol} strokeWidth={4} />),
-            )}
-            <Telop x={0} y={-bd.h - 20} size={34} fill={bd.tech ? K.yellow : K.white} sw={6}>
-              {bd.name}
-            </Telop>
-          </g>
-        );
-      })}
-      {bs.filter((x) => x.tech).map((bd, i) => (
-        <g key={i}>
-          {f >= 40 + i * 6 && (
-            <g transform={`translate(${bd.x} ${FLOOR - bd.h - 90}) scale(${E.back(seg(f, 40 + i * 6, 48 + i * 6))}) rotate(-8)`}>
-              <rect x={-60} y={-34} width={120} height={60} rx={14} fill={K.red} {...SO} strokeWidth={6} />
-              <Telop x={0} y={12} size={38} fill={K.white} sw={5}>
-                裁员
-              </Telop>
-            </g>
-          )}
-        </g>
-      ))}
+      <Bean x={960} y={FLOOR} scale={0.9} kind="bot" color={K.steel} belly={K.sky} ant="bolt" hop={16} />
     </Layer>
-  );
-};
+  </>
+);
 
 /** Meta: 8,000 layoffs + 6,000 open roles closed (job cards stamped). */
 const MetaJobs: React.FC<{f: number}> = ({f}) => (
@@ -260,29 +260,12 @@ const AmazonSplit: React.FC<{f: number}> = ({f}) => (
       </Stamp>
     )}
     {f >= 60 && (
-      <Stamp f0={60} x={1220} y={480} size={100} col={K.lime}>
+      <Stamp f0={60} x={1200} y={530} size={90} col={K.lime}>
         不是这里
       </Stamp>
     )}
   </>
 );
-
-const DownArrow: React.FC<{x: number; y: number; f: number}> = ({x, y, f}) => {
-  if (f < 0) return null;
-  const p = E.out(seg(f, 0, 20));
-  return (
-    <g transform={`translate(${x} ${y})`}>
-      {[0, 1, 2, 3].map((i) => {
-        const h = (260 - i * 55) * E.out(seg(f, i * 4, i * 4 + 12));
-        return <rect key={i} x={i * 110} y={-h} width={86} height={h} rx={10} fill={i === 3 ? K.red : K.cream} {...SO} />;
-      })}
-      <path d={`M -20 -300 L ${-20 + 440 * p} ${-300 + 220 * p}`} stroke={K.red} strokeWidth={16} strokeLinecap="round" />
-      <Telop x={200} y={-340} size={44} fill={K.white}>
-        白领岗位
-      </Telop>
-    </g>
-  );
-};
 
 /** Giant laptop; 文字 / 表格 / 代码 pop out of the screen. */
 const Laptop: React.FC<{f: number}> = ({f}) => {
@@ -360,7 +343,7 @@ const Target: React.FC<{f: number}> = ({f}) => {
 export const Canary: React.FC = () => {
   useKit();
   const {b, at} = useBeatFrames();
-  const ph = [7, 6, 5, 4, 3, 2, 1, 0].find((k) => b[k] >= 0) ?? 0;
+  const ph = [8, 7, 6, 5, 4, 3, 2, 1, 0].find((k) => b[k] >= 0) ?? 0;
   const tileP = E.inOut(seg(b[1], 0, 12));
   return (
     <AbsoluteFill>
@@ -382,12 +365,14 @@ export const Canary: React.FC = () => {
         {ph >= 1 && ph <= 2 && (
           <>
             <Pop f0={at[1] + 8} x={130} y={620}>
-              <Sticker text="AI 最容易接手的职业" size={44} col={K.yellow} rot={-3} />
+              <Sticker text="AI 暴露度最高的职业" size={44} col={K.yellow} rot={-3} />
             </Pop>
             <Pop f0={at[1] + 24} x={180} y={730}>
               <Sticker text="22–25 岁" size={52} col={K.white} rot={2} family={F_CJK} />
             </Pop>
-            <Bars f={b[2]} />
+            <At f0={at[2]}>
+              <Bars f={b[2]} />
+            </At>
           </>
         )}
         {ph === 3 && (
@@ -407,14 +392,32 @@ export const Canary: React.FC = () => {
         {ph === 5 && <At f0={at[5]}><HelperBars f={b[5]} /></At>}
         {ph === 6 && (
           <>
-            <Pop f0={at[6]} x={200} y={360} from="left">
+            <Layer>
+              <Bean x={420} y={FLOOR} scale={1.3} color={K.purple} belly={K.cream} hat="glasses" item="magnifier" hop={10} name="研究者" ant="none" />
+            </Layer>
+            <Pop f0={at[6] + 4} x={780} y={300} from="right">
+              <ShadowCard w={940} h={300} col={K.cream} r={34}>
+                <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%'}}>
+                  <TelopDiv size={76}>早期观察</TelopDiv>
+                  <div style={{fontFamily: F_CJK, fontWeight: 900, fontSize: 46, color: K.ol, marginTop: 14}}>还不能直接说是 AI 造成的</div>
+                </div>
+              </ShadowCard>
+            </Pop>
+            <Stamp f0={at[6] + 50} x={1250} y={700} size={90} col={K.yellow}>
+              不是因果结论
+            </Stamp>
+          </>
+        )}
+        {ph === 7 && (
+          <>
+            <Pop f0={at[7]} x={200} y={360} from="left">
               <ShadowCard w={680} h={300} col={K.red} r={34}>
                 <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%'}}>
                   <TelopDiv size={80}>容易被替代</TelopDiv>
                 </div>
               </ShadowCard>
             </Pop>
-            <Pop f0={at[6] + 20} x={1040} y={360} from="right">
+            <Pop f0={at[7] + 20} x={1040} y={360} from="right">
               <ShadowCard w={680} h={300} col={K.green} r={34}>
                 <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%'}}>
                   <TelopDiv size={80}>不容易被替代</TelopDiv>
@@ -423,7 +426,7 @@ export const Canary: React.FC = () => {
             </Pop>
           </>
         )}
-        {ph === 7 && <At f0={at[7]}><ThreeDoors f={b[7]} /></At>}
+        {ph === 8 && <At f0={at[8]}><ThreeDoors f={b[8]} /></At>}
       </Punch>
       <WhoTag />
     </AbsoluteFill>
@@ -437,8 +440,8 @@ const Bars: React.FC<{f: number}> = ({f}) => {
     const xs = [0, 1, 2, 3, 4, 5, 6];
     return xs.map((i) => {
       const t = i / 6;
-      const y = k === 0 ? 100 + 6 * t : 100 - 19 * Math.max(0, (t - 0.25) / 0.75);
-      return [1010 + i * 120, 760 - (y - 75) * 16] as const;
+      const y = k === 0 ? 100 : 100 - 19 * Math.max(0, (t - 0.25) / 0.75);
+      return [1010 + i * 120, 770 - y * 4.2] as const;
     });
   };
   const p = E.inOut(seg(f, 4, 50));
@@ -454,26 +457,32 @@ const Bars: React.FC<{f: number}> = ({f}) => {
         <line x1={1000} y1={770} x2={1760} y2={770} stroke={K.ol} strokeWidth={5} />
         <path d={path(0)} fill="none" stroke={K.teal} strokeWidth={14} strokeLinecap="round" strokeLinejoin="round" />
         <path d={path(1)} fill="none" stroke={K.red} strokeWidth={14} strokeLinecap="round" strokeLinejoin="round" />
-        <Telop x={1750} y={244} size={30} fill={K.teal} sw={0} anchor="end">
-          其他职业的同龄人
+        <Telop x={1750} y={332} size={30} fill={K.teal} sw={0} anchor="end">
+          低暴露职业 · 同龄人
         </Telop>
-        <Telop x={1500} y={740} size={30} fill={K.red} sw={0} anchor="start">
-          AI 最容易接手的职业
+        <Telop x={1750} y={490} size={30} fill={K.red} sw={0} anchor="end">
+          高暴露职业 · 22–25 岁
         </Telop>
-        <Telop x={1000} y={250} size={28} fill={K.ol} sw={0} anchor="start" weight={700}>
-          22–25 岁就业人数（相对走势）
+        <Telop x={1000} y={252} size={30} fill={K.ol} sw={0} anchor="start" weight={700}>
+          就业人数的相对走势
         </Telop>
+        <g transform="translate(1690 240)">
+          <rect x={-60} y={-24} width={120} height={44} rx={12} fill={K.gray} />
+          <Telop x={0} y={10} size={28} fill={K.ol} sw={0}>
+            示意
+          </Telop>
+        </g>
       </Layer>
       {f >= 50 && (
-        <Stamp f0={50} x={1600} y={520} size={130} col={K.red}>
-          −19%
+        <Stamp f0={50} x={1370} y={640} size={100} col={K.red}>
+          相对 −19%
         </Stamp>
       )}
     </>
   );
 };
 
-/** 招聘 sign flips to 暂停; queue of young beans waits. */
+/** 招聘 sign flips to 少招; only some of the queue gets in. */
 const NoHire: React.FC<{f: number}> = ({f}) => {
   const flip = seg(f, 30, 40);
   const sx = Math.abs(Math.cos(flip * Math.PI));
@@ -485,19 +494,25 @@ const NoHire: React.FC<{f: number}> = ({f}) => {
         <g transform={`translate(1330 ${FLOOR - 470}) scale(${Math.max(sx, 0.04)} 1)`}>
           <rect x={-140} y={-50} width={280} height={96} rx={18} fill={flip < 0.5 ? K.green : K.gray} {...SO} />
           <Telop x={0} y={18} size={54} fill={K.white} sw={7}>
-            {flip < 0.5 ? '招聘中' : '暂停招聘'}
+            {flip < 0.5 ? '招聘中' : '少招了'}
           </Telop>
         </g>
-        {[0, 1, 2, 3].map((i) => (
-          <Bean key={i} x={1000 - i * 210} y={FLOOR} scale={0.8} color={[K.yellow, K.pink, K.sky, K.lime][i]} belly={K.cream} hop={f >= 40 ? 0 : 12} phase={i * 0.25} face={f >= 40 ? 'sad' : null} ant="sprout" />
-        ))}
+        {[0, 1, 2, 3].map((i) => {
+          // the first one still walks in; the rest of the queue waits
+          const inP = i === 0 ? E.inOut(seg(f, 44, 70)) : 0;
+          return (
+            <g key={i} opacity={1 - seg(f, 64, 70) * (i === 0 ? 1 : 0)}>
+              <Bean x={1000 - i * 210 + inP * 330} y={FLOOR} scale={0.8} color={[K.yellow, K.pink, K.sky, K.lime][i]} belly={K.cream} hop={i > 0 && f >= 40 ? 0 : 12} phase={i * 0.25} face={i > 0 && f >= 40 ? 'sad' : null} ant="sprout" />
+            </g>
+          );
+        })}
       </Layer>
       <Pop f0={6} x={150} y={250}>
         <Sticker text="不是被开除" size={50} col={K.white} rot={-3} />
       </Pop>
       {f >= 40 && (
         <Stamp f0={40} x={700} y={420} size={110} col={K.yellow}>
-          是不招新人了
+          是少招新人
         </Stamp>
       )}
     </>
@@ -519,6 +534,12 @@ const HelperBars: React.FC<{f: number}> = ({f}) => (
         <path d="M 0 -80 L 70 0 L 30 0 L 30 80 L -30 80 L -30 0 L -70 0 Z" fill={K.green} {...SO} />
       </g>
       <Bean x={1520} y={FLOOR} scale={1.2} color={K.orange} belly={K.cream} hey={f >= 40 ? 1 : 0.2} hop={18} open={f >= 40} />
+      <g transform={`translate(420 ${FLOOR - 470})`}>
+        <rect x={-60} y={-24} width={120} height={44} rx={12} fill={K.white} {...SO} strokeWidth={4} />
+        <Telop x={0} y={10} size={28} fill={K.ol} sw={0}>
+          示意
+        </Telop>
+      </g>
       <g transform={`translate(1680 ${FLOOR}) scale(0.7)`}>
         <Bean x={0} y={0} kind="bot" color={K.steel} belly={K.sky} ant="bolt" hop={18} phase={0.5} item="box" />
       </g>

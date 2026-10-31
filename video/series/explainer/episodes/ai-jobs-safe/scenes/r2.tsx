@@ -427,24 +427,43 @@ const Hourglass: React.FC<{x: number; y: number; f: number}> = ({x, y, f}) => {
 const PriceLine: React.FC<{f: number; at4: number}> = ({f, at4}) => {
   const p = E.inOut(seg(f, 6, 60));
   const n = 8;
-  const pts = Array.from({length: n}).map((_, i) => [260 + i * 150, 330 + 420 * (1 - Math.exp(-i / 2.6))] as const);
-  const k = Math.max(1, Math.round(p * (n - 1)));
+  // late in the line the price falls faster, so the crossing (and the safe zone) slides back
+  const tau = 2.6 - 1.0 * E.inOut(seg(f, 66, 118));
+  const pts = Array.from({length: 4 * (n - 1) + 1}).map((_, j) => [260 + j * 37.5, 330 + 420 * (1 - Math.exp(-j / 4 / tau))] as const);
+  const k = Math.max(1, Math.round(p * (pts.length - 1)));
   const d = pts.slice(0, k + 1).map(([x, y], i) => `${i ? 'L' : 'M'}${x} ${y}`).join(' ');
-  const lineX = 1520 - 360 * E.inOut(seg(f, 30, 90));
+  // machine price falls; while it is above the cost of hiring a person (green line), people are the better deal
+  const costY = 650;
+  const crossX = 260 + tau * Math.log(420 / (420 - (costY - 330))) * 150;
+  const drawnX = pts[k][0];
+  const safeW = Math.max(0, Math.min(drawnX, crossX) - 260);
   return (
     <>
       <Layer>
         <rect x={200} y={260} width={1200} height={560} rx={24} fill={K.white} {...SO} />
+        <rect x={260} y={300} width={safeW} height={500} fill={K.lime} opacity={0.5} />
+        {drawnX > crossX - 40 && (
+          <Telop x={260 + (crossX - 260) / 2} y={780} size={30} fill={K.green} sw={0}>
+            请人更划算
+          </Telop>
+        )}
+        <line x1={240} y1={costY} x2={1380} y2={costY} stroke={K.green} strokeWidth={10} strokeDasharray="24 16" />
+        <Telop x={1370} y={costY - 18} size={30} fill={K.green} sw={0} anchor="end">
+          请一个人的成本
+        </Telop>
         <path d={d} fill="none" stroke={K.red} strokeWidth={16} strokeLinecap="round" strokeLinejoin="round" />
-        <Telop x={240} y={310} size={32} fill={K.ol} sw={0} anchor="start">
+        <Telop x={300} y={318} size={32} fill={K.red} sw={0} anchor="start">
           机器的价格
         </Telop>
-        <line x1={lineX - 200} y1={260} x2={lineX - 200} y2={820} stroke={K.green} strokeWidth={10} strokeDasharray="24 16" />
-        <Telop x={lineX - 220} y={790} size={30} fill={K.green} sw={0} anchor="end">
-          请人更划算的线
-        </Telop>
+        <g transform="translate(1320 780)">
+          <rect x={-60} y={-24} width={120} height={44} rx={12} fill={K.gray} />
+          <Telop x={0} y={10} size={28} fill={K.ol} sw={0}>
+            示意
+          </Telop>
+        </g>
+        {drawnX > crossX && <circle cx={crossX} cy={costY} r={20} fill={K.yellow} {...SO} strokeWidth={6} />}
         <Bean x={1640} y={FLOOR} scale={1.2} color={K.orange} belly={K.cream} hat="cap" item="wrench" hey={1} open hop={22} />
-        <Judge word="过关！" x={1560} y={360} f0={at4 + 70} col={K.yellow} dur={80} size={150} />
+        <Judge word="过关！" x={1650} y={360} f0={at4 + 70} col={K.yellow} dur={80} size={150} />
         <Confetti f0={at4 + 70} dur={50} seed={22} />
       </Layer>
     </>

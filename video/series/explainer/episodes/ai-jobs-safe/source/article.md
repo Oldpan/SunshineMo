@@ -11,6 +11,8 @@
   CEO Andy Jassy 2025 年 6 月曾说，预计生成式 AI 会在未来几年让公司的 corporate 员工总数减少。
   来源：TechCrunch 2026-01-28 <https://techcrunch.com/2026/01/28/amazon-says-it-is-laying-off-16000-employees/>；
   Retail Insight Network <https://www.retail-insight-network.com/news/what-amazon-told-employees-about-axing-16-000-jobs/>。
+  2025 年 10 月那一轮同样是公司（corporate）职位，约 14,000 个，也由 Beth Galetti 发信宣布（财务、人力、技术部门为主）。
+  来源：Chain Store Age <https://chainstoreage.com/amazon-cuts-14000-corporate-employees>；Yahoo Finance <https://finance.yahoo.com/news/amazon-eliminate-more-14-000-213000218.html>。
 - **Block**：2026-02-26 宣布裁掉 4,000 多人，员工从 1 万出头降到不到 6,000（约 40%，也有报道称"近一半"）；
   Jack Dorsey 直接把原因归到 AI：「Intelligence tools have changed what it means to build and run a company」。
   来源：Fortune 2026-02-27 <https://fortune.com/2026/02/27/jack-dorsey-block-40-percent-layoff-ai-intelligence-tools-smaller-team/>。

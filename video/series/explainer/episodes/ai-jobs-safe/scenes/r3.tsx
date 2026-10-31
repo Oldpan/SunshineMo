@@ -1,4 +1,4 @@
-// 第三关 · 非你不可：别人花钱买的就是你这个人。四种：人就是作品、情绪价值、做的人自己开心、传了上千年的手艺。
+// 第三关 · 非你不可：离了你这个人就不成立。四种：人就是作品、情绪价值、做的人自己开心、一代代传下来的老手艺。
 import React from 'react';
 import {AbsoluteFill} from 'remotion';
 import {A, LOC, LOCX} from './assets';
@@ -40,14 +40,14 @@ const KINDS = [
   {n: '①', t: '人就是作品', c: K.yellow},
   {n: '②', t: '情绪价值', c: K.pink},
   {n: '③', t: '自己开心', c: K.lime},
-  {n: '④', t: '千年手艺', c: K.sky},
+  {n: '④', t: '老手艺', c: K.sky},
 ];
 
 /** Kind label used at the top of each sub-scene. */
 const KindTag: React.FC<{i: number; f0?: number}> = ({i, f0 = 0}) => (
   <Pop f0={f0} x={960} y={200}>
     <div style={{transform: 'translateX(-50%)', whiteSpace: 'nowrap'}}>
-      <Sticker text={`第 ${i + 1} 种：${['人就是作品', '给人情绪价值', '做的人自己开心', '传了上千年的手艺'][i]}`} size={56} col={KINDS[i].c} rot={-2} />
+      <Sticker text={`第 ${i + 1} 种：${['人就是作品', '给人情绪价值', '做的人自己开心', '一代代传下来的老手艺'][i]}`} size={56} col={KINDS[i].c} rot={-2} />
     </div>
   </Pop>
 );
@@ -79,7 +79,7 @@ export const R3Card: React.FC = () => {
           <Bean x={190} y={FLOOR} scale={0.75} color={K.yellow} belly={K.cream} item="mic" ant="star" hop={20} hey={1} open />
           <Bean x={1730} y={FLOOR} scale={0.75} color={K.purple} belly="#B9A6F0" item="brush" hat="beret" hop={20} phase={0.5} hey={1} open />
         </Layer>
-        <RoundCard num={3} name="非你不可" tag="别人花钱，买的就是你这个人" col={COL} f0={2} f1={at[1] + 4} />
+        <RoundCard num={3} name="非你不可" tag="离了你这个人就不成立" col={COL} f0={2} f1={at[1] + 4} />
         {b[1] >= 0 &&
           KINDS.map((k, i) => (
             <Pop key={i} f0={at[1] + 6 + i * 8} x={260 + i * 360} y={330} from="drop" rot={(i % 2 ? 3 : -3)}>
@@ -96,7 +96,7 @@ export const R3Card: React.FC = () => {
         {b[1] >= 0 && (
           <Pop f0={at[1] + 2} x={960} y={200}>
             <div style={{transform: 'translateX(-50%)', whiteSpace: 'nowrap'}}>
-              <Sticker text="买的就是你这个人" size={52} col={K.white} rot={-2} />
+              <Sticker text="离了你这个人就不成立" size={52} col={K.white} rot={-2} />
             </div>
           </Pop>
         )}
@@ -173,10 +173,8 @@ export const R3Art: React.FC = () => {
                 <Bean key={i} x={1100 + i * 250} y={FLOOR} scale={0.85} color={[K.blue, K.yellow, K.green][i]} belly={K.cream} ant="q" hop={14} phase={i * 0.3} />
               ))}
             </Layer>
-            <Pop f0={at[2] + 30} x={1110} y={300}>
-              <Bubble w={520} tail="down" size={54}>
-                谁演的？
-              </Bubble>
+            <Pop f0={at[2] + 30} x={1100} y={330}>
+              <Sticker text="先看是谁演的" size={54} col={K.white} rot={-3} />
             </Pop>
           </>
         )}
@@ -565,17 +563,15 @@ const SongWriting: React.FC<{f: number}> = ({f}) => {
         </Stamp>
       )}
       {f >= 110 && (
-        <Pop f0={110} x={560} y={560}>
-          <Bubble w={420} tail="down" size={44} col={K.white}>
-            还开心什么？
-          </Bubble>
+        <Pop f0={110} x={560} y={600}>
+          <Sticker text="乐趣没了" size={46} col={K.white} rot={-4} />
         </Pop>
       )}
     </>
   );
 };
 
-// ------------------------------------------------------------------ ④ 传了上千年的手艺
+// ------------------------------------------------------------------ ④ 一代代传下来的老手艺
 export const R3Old: React.FC = () => {
   useKit();
   const {f, b, at} = useBeatFrames();
@@ -597,7 +593,7 @@ export const R3Old: React.FC = () => {
                     <rect x={-w / 2} y={-140} width={w} height={280} fill={K.cream} {...SO} />
                     {p > 0.6 && (
                       <Telop x={0} y={50} size={150} fill={K.red} sw={12}>
-                        千年
+                        老手艺
                       </Telop>
                     )}
                     <rect x={-w / 2 - 40} y={-170} width={40} height={340} rx={16} fill={K.wood} {...SO} />

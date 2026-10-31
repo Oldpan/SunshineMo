@@ -474,10 +474,11 @@ const Hat: React.FC<{hat: NonNullable<BeanProps['hat']>; color: string}> = ({hat
     case 'judge':
       return (
         <g>
-          {[-56, -32, 32, 56].map((x) => (
-            <circle key={x} cx={x} cy={-150 + Math.abs(x) * 0.5} r={22} fill={K.white} {...SO} strokeWidth={6} />
+          {/* wig curls sit at the sides of the head, clear of the eyes (±28, −128…−96) */}
+          {[-80, -60, 60, 80].map((x) => (
+            <circle key={x} cx={x} cy={-150 + (Math.abs(x) - 60) * 0.8} r={20} fill={K.white} {...SO} strokeWidth={6} />
           ))}
-          <path d="M -48 -160 Q 0 -200 48 -160" fill={K.white} {...SO} strokeWidth={6} />
+          <path d="M -60 -158 Q 0 -206 60 -158" fill={K.white} {...SO} strokeWidth={6} />
         </g>
       );
     case 'nurse':
@@ -662,7 +663,8 @@ export const Bean: React.FC<BeanProps> = ({
         )}
         {hat !== 'none' && <Hat hat={hat} color={color} />}
       </g>
-      {name && <NameTag name={name} col={tagCol} />}
+      {/* name badge sits on the belly so it never reaches the subtitle band under the floor */}
+      {name && <NameTag name={name} col={tagCol} y={-64} size={Math.min(46, 30 / Math.max(scale, 0.65))} />}
     </g>
   );
 };

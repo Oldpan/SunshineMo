@@ -11,3 +11,13 @@ deliver:
   - {from: out/封面B_16x9.png, as: 哪些工作还安全_封面B_16x9.png}
   - {from: out/封面B_3x4.png, as: 哪些工作还安全_封面B_3x4.png}
   - {from: source/video.md, as: 介绍和文案.md}
+drive:
+  folder: video_from_opus/AI 裁员潮里哪些工作还安全
+  url: https://drive.google.com/drive/folders/1dbaJ_E3tYKY5DgWCW83J0Vuxjt6GDXFj
+  files:
+  - {name: 哪些工作还安全_AIJobs.mp4, id: 1lKsmgwDvvsv0uXhlrs5X7hCKL00PmiqQ, bytes: 152943835}
+  - {name: 哪些工作还安全_封面_16x9.png, id: 1NBvPRaSmCee1BlkJStS57v4d6BUByS35, bytes: 417478}
+  - {name: 哪些工作还安全_封面_3x4.png, id: 1JXFnZJfFr1rasCUYa-HQos3ostzNnIN-, bytes: 375628}
+  - {name: 哪些工作还安全_封面B_16x9.png, id: 1ydz1eZzq7qNmvMrcddJ_66jXHT-11h7O, bytes: 351469}
+  - {name: 哪些工作还安全_封面B_3x4.png, id: 1wx89RzRYpkV6BqwDxuOup_6I0gbnJWY3, bytes: 302714}
+  - {name: 介绍和文案.md, id: 1IiASoajc9Ji8cRK7OZmb_Tavzr8AnAuR, bytes: 595}

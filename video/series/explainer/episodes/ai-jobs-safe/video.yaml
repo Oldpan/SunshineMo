@@ -1,0 +1,13 @@
+# AI 裁员潮里，哪些工作还安全？ — see `sm --help` for the fields
+title: AI 裁员潮里，哪些工作还安全？
+engine: narrated
+style: flat
+deliver:
+  drive: video_from_opus/AI 裁员潮里哪些工作还安全
+  files:
+  - {from: out/ai-jobs-safe.mp4, as: 哪些工作还安全_AIJobs.mp4}
+  - {from: out/封面_16x9.png, as: 哪些工作还安全_封面_16x9.png}
+  - {from: out/封面_3x4.png, as: 哪些工作还安全_封面_3x4.png}
+  - {from: out/封面B_16x9.png, as: 哪些工作还安全_封面B_16x9.png}
+  - {from: out/封面B_3x4.png, as: 哪些工作还安全_封面B_3x4.png}
+  - {from: source/video.md, as: 介绍和文案.md}

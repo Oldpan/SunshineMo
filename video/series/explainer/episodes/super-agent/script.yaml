@@ -1,0 +1,366 @@
+# 讲透 · DeepSeek Harness 团队公众号原创《Super-agent 设计探索：迈向更自主的 Agent 系统》
+# 严格按原文 1–9 节的顺序讲，只讲原文内容；所有数字、例子和图都出自 source/article.md（复核只认这份资料）。
+# 画风：暗色控制台 / IDE（video/series/explainer/shared/console.tsx）。
+meta:
+  title: 一个人最多盯 5 个 Session：DeepSeek 团队的 Super-agent 架构全拆解
+  topic: Super-agent架构
+  source: https://mp.weixin.qq.com/s/zoS7GlReWPhfCjENGxXCdg
+  voice: qwen-longanhuan
+  fps: 30
+  width: 1920
+  height: 1080
+  gap: 0.1
+  scene_tail: 0.3
+
+readings:
+  调用: diào
+  调度: diào
+  调触发: tiáo
+  重新: chóng
+  重命名: chóng
+  长尾: cháng
+  长程: cháng
+  超长: cháng
+  侧重: zhòng
+  协调: tiáo
+  自行: xíng
+  串行: xíng
+
+lexicon:
+  "Super-agent": "Super agent"
+  "DeepSeek Harness": "DeepSeek Harness"
+  "Session": "Session"
+  "Coding Agent": "Coding Agent"
+  "Agent Team": "Agent Team"
+  "Team Lead": "Team Lead"
+  "ReAct": "React"
+  "Router": "Router"
+  "Worker": "Worker"
+  "Subagent": "Sub agent"
+  "Trigger": "Trigger"
+  "Thread": "Thread"
+  "Prefill": "Prefill"
+  "Fast Path": "Fast Path"
+  "Slow Path": "Slow Path"
+  "Inline": "Inline"
+  "Spill": "Spill"
+  "Watchdog": "Watchdog"
+  "daemon": "daemon"
+  "BYOM": "B Y O M"
+  "A2A": "A 二 A"
+  "LLM": "L L M"
+  "CLI": "C L I"
+  "MCP": "M C P"
+  "CI": "C I"
+  "IM": "I M"
+  "PR": "P R"
+  "Bash": "Bash"
+  "Mock": "Mock"
+  "token": "token"
+  "Pull Request": "Pull Request"
+  "markdown-it": "markdown it"
+  "Pandoc": "Pandoc"
+  "macOS": "mac OS"
+  "Electron": "Electron"
+  "dsh-superagent-prototype": "D S H super agent prototype"
+  "p50": "P 五十"
+  "p95": "P 九十五"
+
+scenes:
+  # ================================================================== 开场
+  - id: cover
+    theme: console
+    beats:
+      - DeepSeek Harness 团队有个观察：
+      - 一个人，通常只能同时跟进 3 到 5 个活跃 Session。
+      - 单任务的上限看模型，多任务的上限看人的注意力。
+      - 他们的答案，叫 Super-agent。这期按原文顺序讲透。
+
+  - id: who
+    theme: console
+    beats:
+      - 素材是 DeepSeek Harness 团队的公众号原创文章。
+      - 文章开头说明：这是架构思路探讨，不是现有产品功能的介绍。
+      - 文中的数字，来自他们自己的初步实验。
+
+  # ================================================================== 1 Super-agent
+  - id: why
+    theme: console
+    beats:
+      - 过去一年，Coding Agent 证明了模型能用工具解决复杂问题，
+      - 越来越少需要人盯着；多 Agent 协同也变得可行。
+      - 人的角色，正上移到决策与验收。
+      - 个人助手也在涌现：接入消息、日程、邮件，持续在线、事件驱动。
+
+  - id: limit
+    theme: console
+    beats:
+      - 可主流 Agent 还是以单个 Session 为单位，彼此独立。
+      - 并行几件事，就得手动切换、自己记住各自的上下文。
+      - 接上 CLI、MCP 或连接器，也还是会同步阻塞、上下文混乱，
+      - 本地设备一离线就停。
+      - 所以要打破 Agent 和单次会话的绑定，
+      - 让它成为跨会话保持上下文、同时推进多个任务的连续实体。
+      - 这种形态和它的架构，就叫 Super-agent。
+
+  - id: demo1
+    theme: console
+    beats:
+      - 看他们内部的一个实例：有人在 IM 群里提了字体设置需求。
+      - 维护者 @ 它，它回复：Pull Request 已就绪。
+      - 用户追问字号，它加进了同一个 PR。
+      - 讨论挪到 GitHub，维护者和设计师又提了改法，它都接住了。
+      - 最后回到 IM：Pull Request 已合并。
+
+  - id: demo2
+    theme: console
+    beats:
+      - 另一个用户群，没人 @ 它。有人说：
+      - 窗口没聚焦时点会话，会被识别成双击、进入重命名。
+      - 它判断这是缺陷，在后台复现、排查，提交了修复 PR。
+      - 根因是 Electron 吞掉了激活窗口的那次点击，
+      - {text: 下一次点击带着 detail=2，被当成了双击。, say: 下一次点击带着 detail 等于二，被当成了双击。}
+
+  - id: traits
+    theme: console
+    beats:
+      - 文章认为，Super-agent 有四个基础特征。
+      - 连续：在 IM、GitHub 里交互，感觉始终只有一个 Agent。
+      - 高效：响应快，能并行完成多个复杂任务。
+      - 主动：持续观察环境事件，主动推进；不需要介入时就安静。
+      - 持久：始终在线，遇到异常能自动恢复。
+
+  - id: arch
+    theme: console
+    beats:
+      - 单个 ReAct 循环撑不起这些，底层需要一套架构。
+      - 这里很多问题，和传统计算机系统的问题很像，经典思想同样适用。
+      - 他们给出五个模块：双层架构，兼顾连续与并发；
+      - 事件驱动，实现主动；面向人的交互，又连续又高效；
+      - 计算、状态与环境分离，加上 Watchdog，实现持久在线和自愈。
+
+  # ================================================================== 2 双层架构
+  - id: ch2
+    theme: console
+    data: {num: '02', title: 双层架构, sub: Router 层 + Worker 层}
+    beats:
+      - 第一个模块：双层架构。
+
+  - id: tradeoff
+    theme: console
+    beats:
+      - 会话怎么组织，是连续性和吞吐量的权衡。
+      - 所有事件都给一个 Session，上下文最连续，
+      - 但循环串行、吞吐低，多个任务的细节还会混在一起。
+      - 每条事件都新开 Session，吞吐最高，
+      - 可缺了全局上下文，结果彼此割裂，各自回复用户也会乱。
+
+  - id: twolayer
+    theme: console
+    beats:
+      - 解法是拆成两层：常驻的 Router 层，管人类交互和全局协调；
+      - 上下文隔离的 Worker 层，并发执行具体任务。
+      - 用户面对的，始终是同一个 Super-agent。
+      - 文章说，Session 应该是系统的实现细节，不是用户的认知负担。
+
+  - id: router
+    theme: console
+    beats:
+      - Router 层承接所有入口的交互，是全局的序点、协调点和记忆。
+      - 它不直接执行任务，甚至可以不配 Bash 工具。
+      - 这不同于 Agent Team：Team Lead 要深入拆解单个任务，
+      - Router 只处理任务之间的关联和分派。
+      - 他们发现，较轻量的模型往往就够用。
+
+  - id: batching
+    theme: console
+    beats:
+      - 他们用单个常驻 LLM Session 做 Router，它不太容易成为瓶颈。
+      - 事件平稳时，Trigger 逐条进入，延迟低；
+      - 事件密集时，上一轮积压的 Trigger，合并进下一次调用。
+      - Router 每步是长输入、短输出，合并的输入在 Prefill 阶段并行算。
+      - 单次耗时增长远慢于批大小，一定范围内，积压越多，每个决定分摊的时间越短。
+      - 规模再大，也可以水平切分，但切得越细，连续性越低。
+
+  - id: worker
+    theme: console
+    beats:
+      - Worker 层各自隔离，挂完整工具，通常配能力最强的模型。
+      - 它们不直接和人说话，向 Router 汇报，由 Router 统一回复。
+      - Worker 之间通常不直接通信；
+      - 在同一个 PR 里有冲突，订阅同一 Thread 会收到相同事件，有机会自行解决。
+      - Worker 内部还能再开 Subagent，对 Router 透明。
+
+  # ================================================================== 3 事件驱动
+  - id: ch3
+    theme: console
+    data: {num: '03', title: 事件驱动, sub: 过滤 · 路由 · 上下文 · 提前行动}
+    beats:
+      - 第二个模块：事件驱动。
+
+  - id: trigger
+    theme: console
+    beats:
+      - 驱动 Agent 的，不再是人逐条键入的提示词，
+      - 而是群聊消息、邮件、代码评审、CI 结果这些环境事件，叫 Trigger。
+      - 围绕一条 Trigger，文章讲了四步：过滤、路由、上下文、提前行动。
+
+  - id: filter
+    theme: console
+    beats:
+      - 先是过滤。真实事件流高噪音、低触发率，每条都问大模型，扛不住。
+      - 他们借用 Fast Path 和 Slow Path，做两级过滤。
+      - 程序层按来源和白名单直接准入：闲聊群的消息，直接拦掉。
+      - 语义层由 LLM 按提示词判断：“界面挺清爽”，静默；
+      - “切换会话时偶发白屏”，触发。
+
+  - id: route
+    theme: console
+    beats:
+      - 接着是路由。同一个 PR 或 IM 话题里的连续事件，叫一条 Thread。
+      - Router 为初始事件创建 Worker，Worker 随即订阅这条 Thread。
+      - 之后的事件由程序直通 Worker，这是 Fast Path；
+      - 没人订阅的新事件，才交给 Router 分派，这是 Slow Path。
+      - 订阅是多对多的，多个 Worker 订阅同一条 Thread，就有机会知道彼此的操作。
+
+  - id: inline
+    theme: console
+    beats:
+      - 事件进了 Session，上下文里该放多少？
+      - 原文说：浪费上下文窗口，就是浪费模型的智能。
+      - 他们把窗口当缓存管：Inline，把很可能用到的直接内联；
+      - Spill，把超预算的留在窗外，只留引用或摘要。
+      - 从 ID 和摘要开始，按局部性补上相邻消息，超长就截断、留续读入口。
+
+  - id: recall
+    theme: console
+    beats:
+      - 所有对象都这样注入，就有了链式召回。
+      - 每个对象带着关联对象的 ID，连成一张引用图。
+      - 从 Trigger 42，读到 Thread 08，再到 Worker 03，
+      - 又顺着找到关联 PR 的 Thread 15。
+      - Router 不用装下全部历史，也能找回旧任务的上下文。
+
+  - id: spec
+    theme: console
+    beats:
+      - 第四步是提前行动，借的是投机执行：
+      - 根据环境信号在后台先试，有价值就交付，没价值就丢掉。
+      - 他们在内部群配了“静默复现并修复”：
+      - 群里还在讨论波浪号被渲染成删除线，
+      - Super-agent 已经提交了 PR，只有双波浪号才渲染删除线。
+      - 有人问依据，它答：单个波浪号多用来表示范围，正是误渲染的来源。
+
+  # ================================================================== 4 面向人的交互
+  - id: ch4
+    theme: console
+    data: {num: '04', title: 面向人的交互, sub: 全双工 · 多信道}
+    beats:
+      - 第三个模块：面向人的交互。
+
+  - id: duplex
+    theme: console
+    beats:
+      - 经典 ReAct 循环调用同步的 run，就阻塞到工具执行完，
+      - 期间没法响应新输入，这是半双工。
+      - 他们改成异步的 start 和 stop：调用 start 马上返回“已启动”，
+      - 工具跑完，结果作为新消息投递进会话；跑太久就 stop。
+      - 这套机制已在 DeepSeek Harness 里实现，但还没默认开启。
+
+  - id: channel
+    theme: console
+    beats:
+      - 不同信道，输出也要匹配。
+      - IM 侧重低打扰，只在需要决策或验收时通知；
+      - 他们验证过一条硬规定：单次回复不超过 100 词。
+      - GitHub 和邮件，侧重结构化、高信息密度的交付。
+
+  # ================================================================== 5 计算、状态与环境的分离
+  - id: ch5
+    theme: console
+    data: {num: '05', title: 计算、状态与环境的分离, sub: 两步解耦}
+    beats:
+      - 第四个模块：计算、状态与环境的分离。
+
+  - id: compute
+    theme: console
+    beats:
+      - 本地 Agent 把计算、状态和执行环境绑在一台设备上，设备一离线就停。
+      - 第一步，计算与状态分离：
+      - 计算放进云端无状态容器，Session 状态存进数据库，容器随时可换。
+
+  - id: env
+    theme: console
+    beats:
+      - 第二步，计算与执行环境分离。
+      - 真实环境里有未提交的修改、私有凭据、内网依赖，很难搬上云。
+      - 那就让环境留在原地，端侧只装一个轻量 daemon，执行命令、返回结果。
+      - 文章说这和 Anthropic 的“脑手分离”一致，
+      - 区别是，这里首先要接入可能间歇在线的个人机器，也就是 BYOM。
+      - 设备重新上线，云端 Agent 还能接着完成它上面的任务。
+
+  # ================================================================== 6 Watchdog
+  - id: watchdog
+    theme: console
+    beats:
+      - 第五个模块：Watchdog。
+      - 很多 Agent 异常不是进程崩溃，而是陷入无效循环、偏离目标。
+      - 他们在系统外配了一个独立的 Watchdog Session，用定时消息驱动。
+      - 它既处理基础设施故障，也由模型判断每个 Worker 有没有实质进展。
+      - 维护者还能用自然语言问它，让它在线改提示词、调触发规则。
+
+  # ================================================================== 7 初步实验
+  - id: ch7
+    theme: console
+    data: {num: '07', title: 初步实验, sub: 消融 · Router 批处理}
+    beats:
+      - 最后看初步实验。
+
+  - id: ablation
+    theme: console
+    beats:
+      - 每次约 300 条消息，约 20 条是工作请求，其余是闲聊、叫停和 CI。
+      - 编码用一个只耗时间的工具代替，测的是调度能力。
+      - 四种方案各跑 5 次，文章强调是合成负载，只作初步参考。
+
+  - id: result
+    theme: console
+    beats:
+      - Super-agent 的 p50 是 12.4 分钟，p95 是 15.7 分钟。
+      - 单 Session 加中性提示，一次都没委派，p95 到了 29.5 分钟。
+      - 提示优先委派，5 次里委派了 4 次，剩下 1 次自己做，留下长尾。
+      - 双层架构在系统层面，不靠提示词和临场判断。
+
+  - id: tokens
+    theme: console
+    beats:
+      - 代价是 token：Super-agent 读缓存 2323 万，单 Session 是 605 万和 1082 万。
+      - 去掉直通，完成时间基本不变，
+      - 但 Router 的决定多了约 30%，token 涨到 3177 万，多了约 37%。
+
+  - id: batch
+    theme: console
+    beats:
+      - 单独压测 Router：Trigger 从每分钟约 1 条加到约 40 条。
+      - batch 从 1.0 升到 2.8，单次耗时只从 2.5 秒到 3.9 秒，
+      - 每个决定分摊的时间，从 6.4 秒降到 1.6 秒。
+      - 在他们目前的团队规模下，不必过早切分 Router。
+
+  # ================================================================== 8 开放问题
+  - id: open
+    theme: console
+    beats:
+      - 文章最后列了四个开放问题。
+      - 一，双层架构怎么扩展，跨月运行的长程记忆怎么办。
+      - 二，脱离 Session 后怎么协作，界面不一定是聊天窗口。
+      - 三，上下文边界和 A2A，隔离的实例之间怎么安全协作。
+      - 四，安全和隐私：云端被攻破，连着的端侧设备都有风险。
+
+  # ================================================================== 9 结语
+  - id: outro
+    theme: console
+    beats:
+      - 作者说，他们没有提出全新理论，
+      - 而是把计算机系统的经典工程思想，用到了 Agent 上。
+      - 系统接管会话管理和上下文同步，人上移到决策与验收。
+      - 部分设计已在原型 dsh-superagent-prototype 里实现，它不是正式产品。

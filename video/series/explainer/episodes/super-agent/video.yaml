@@ -1,0 +1,12 @@
+# 一个人最多盯 5 个 Session：DeepSeek 团队的 Super-agent 架构全拆解 — see `sm --help` for the fields
+title: 一个人最多盯 5 个 Session：DeepSeek 团队的 Super-agent 架构全拆解
+engine: narrated
+style: console
+source: https://mp.weixin.qq.com/s/zoS7GlReWPhfCjENGxXCdg
+deliver:
+  drive: video_from_opus/Super-agent架构
+  files:
+  - {from: out/super-agent.mp4, as: Super-agent架构_SuperAgent.mp4}
+  - {from: out/封面_16x9.png, as: Super-agent架构_封面_16x9.png}
+  - {from: out/封面_3x4.png, as: Super-agent架构_封面_3x4.png}
+  - {from: source/video.md, as: 介绍和文案.md}

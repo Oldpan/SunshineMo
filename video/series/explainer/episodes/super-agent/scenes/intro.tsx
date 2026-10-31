@@ -12,6 +12,7 @@ import {
   DeepSeekWhale,
   during,
   Head,
+  Illus,
   Lab,
   LogLine,
   LoopPacket,
@@ -56,7 +57,7 @@ const SessionTile: React.FC<{i: number; f: number}> = ({i, f}) => {
           ))}
           <div style={{position: 'absolute', right: 12, bottom: 10}}>
             <Mo size={15} color={c}>
-              {over ? '无人跟进' : warn ? '勉强' : '跟进中'}
+              {over ? '跟不过来' : warn ? '上限附近' : '跟进中'}
             </Mo>
           </div>
         </Win>
@@ -71,6 +72,9 @@ export const Cover: React.FC<P> = () => {
   const n = Math.round(count(b[1], 0, 8, 50));
   return (
     <Shell file="00_super-agent.md" status="watching · 0 tasks">
+      <div style={{position: 'absolute', right: 110, top: 840, opacity: dimTiles * prog(b[1], 14)}}>
+        <Illus />
+      </div>
       <div style={{position: 'absolute', left: 120, top: 120, display: 'flex', alignItems: 'center', gap: 18, ...rise(b[0])}}>
         <DeepSeekWhale size={64} />
         <Mo size={24} color={V.comment}>
@@ -299,12 +303,12 @@ export const Limit: React.FC<P> = () => {
       </div>
       <div style={{position: 'absolute', left: 120, top: 700, opacity: (1 - merge) * prog(b[2], 14, 20)}}>
         <Zh size={26} w={500} color={V.dim}>
-          即使借助 CLI、MCP 或外部连接器接入外部消息，仍需要大量人工维护
+          只在本地单会话 Agent 上借助 CLI、MCP 或外部连接器做简单扩展，仍需要大量人工维护
         </Zh>
       </div>
       {/* the continuous entity */}
       {b[4] >= 0 && (
-        <div style={{position: 'absolute', left: 260, top: 330, width: 1400, ...rise(b[5])}}>
+        <div style={{position: 'absolute', left: 260, top: 330, width: 1400, ...rise(b[4], 20)}}>
           <div style={{height: 150, borderRadius: 18, border: `2px solid ${V.blue}`, background: 'linear-gradient(90deg, rgba(91,124,255,0.22), rgba(91,124,255,0.06))', boxShadow: `0 0 40px rgba(91,124,255,0.35)`, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 30}}>
             <Zh size={42} w={800}>
               跨会话保持上下文 · 同时推进多项复杂任务 · 互不干扰
@@ -493,7 +497,7 @@ export const Traits: React.FC<P> = () => {
       <Head kicker="1 · Super-agent" title="四个基础特征" />
       <div style={{position: 'absolute', left: 120, top: 270, display: 'flex', gap: 28}}>
         {T.map(([t, d, c], i) => (
-          <div key={t} style={{width: 400, height: 520, ...pop(b[i + 1])}}>
+          <div key={t} style={{width: 400, height: 520, opacity: b[i + 1] >= 0 ? 1 : 0.35 * prog(b[0], 14, i * 6)}}>
             <div style={{height: '100%', boxSizing: 'border-box', borderRadius: 16, border: `1.5px solid ${c}`, background: V.panel, padding: '30px 30px', boxShadow: `0 0 ${b[i + 1] >= 0 && (i === 3 || b[i + 2] < 0) ? 30 : 0}px ${c}44`}}>
               <Mo size={20} color={c}>
                 0{i + 1}

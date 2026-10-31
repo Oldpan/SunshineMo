@@ -30,12 +30,12 @@ export const Trigger: React.FC<P> = () => {
       </div>
       <div style={{position: 'absolute', left: 900, top: 250, width: 900, height: 360, overflow: 'hidden', ...rise(b[1])}}>
         <Lab color={V.blue}>现在：Trigger（环境中的半结构化事件）</Lab>
-        <div style={{position: 'absolute', top: 50, left: 0, right: 0}}>
+        <div style={{position: 'absolute', top: 46, left: 0, right: 0, bottom: 0, overflow: 'hidden'}}>
           {Array.from({length: 8}, (_, i) => {
             const e = ev[i % 4];
             const y = i * 62 - ((Math.max(0, b[1]) * 0.8) % 248) - 62;
             return (
-              <div key={i} style={{position: 'absolute', top: y + 62, left: 0, opacity: 0.9}}>
+              <div key={i} style={{position: 'absolute', top: y + 20, left: 0, opacity: 0.9}}>
                 <LogLine size={24} t={`#${40 + i}`} tag={`TRIGGER ${e[0]}`} color={e[3]}>
                   {e[2]}
                 </LogLine>
@@ -249,7 +249,7 @@ export const Route: React.FC<P> = () => {
         </>
       )}
       {b[3] >= 0 && (
-        <div style={{position: 'absolute', left: RX + 380, top: Y - 10, width: 420, ...rise(b[3])}}>
+        <div style={{position: 'absolute', left: RX + 390, top: Y - 74, width: 560, ...rise(b[3])}}>
           <Zh size={22} w={600} color={V.violet}>
             未订阅的新事件 → Router 判断与分派；Router 仍观测所有事件
           </Zh>
@@ -457,7 +457,7 @@ export const Recall: React.FC<P> = () => {
       {b[3] >= 0 && edge([[1480, 610], [1540, 610]], 'read_thread(#15)', b[3], 1500, 665)}
       <div style={{position: 'absolute', left: 120, top: 700, width: 1500, ...rise(b[4])}}>
         <Zh size={28} w={700} color={V.green}>
-          Router 不必装下所有任务的全量历史，用户跨信道提起旧任务时也能找回
+          缓解了 Router 层在长程中丢失先前信息的问题（不必装下所有任务的全量历史）
         </Zh>
       </div>
     </Shell>
@@ -511,6 +511,11 @@ export const Spec: React.FC<P> = () => {
             <Mo size={40} color={V.green}>
               policy: “静默复现并修复”
             </Mo>
+          </div>
+          <div style={{marginTop: 12, ...rise(b[2], 30)}}>
+            <Zh size={26} w={600}>
+              确认问题并找到简单的修复方案后才交付，否则全程保持安静
+            </Zh>
           </div>
         </div>
       </div>

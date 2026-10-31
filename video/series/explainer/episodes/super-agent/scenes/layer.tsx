@@ -308,6 +308,11 @@ export const Batching: React.FC<P> = () => {
           {'# 上一轮推理期间到达的 Trigger 会积压，下一轮一并处理'}
         </Mo>
       </div>
+      {b[1] < 0 && (
+        <div style={{position: 'absolute', left: 660, top: 380, ...rise(b[0], 10)}}>
+          <Node x={0} y={0} w={600} h={160} title="Router = 单个常驻 LLM Session" sub="逐条或合批处理 Trigger" color={V.blue} glow={1} titleSize={32} />
+        </div>
+      )}
     </Shell>
   );
 };

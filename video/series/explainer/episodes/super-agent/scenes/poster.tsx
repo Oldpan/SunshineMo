@@ -74,13 +74,13 @@ export const Poster: React.FC<{w: number; h: number}> = ({w, h}) => {
       <Bg>
         <div style={{position: 'absolute', left: tall ? 80 : 110, top: tall ? 90 : 90}}>
           <Kicker s={s} />
-          <div style={{marginTop: 50, fontFamily: FONT_ZH, fontSize: tall ? 96 : 92, fontWeight: 900, color: V.ink, lineHeight: 1.1}}>一个人最多盯</div>
+          <div style={{marginTop: 50, fontFamily: FONT_ZH, fontSize: tall ? 96 : 92, fontWeight: 900, color: V.ink, lineHeight: 1.1}}>一个人通常只能盯</div>
           <div style={{display: 'flex', alignItems: 'baseline', gap: 20, marginTop: 6}}>
-            <span style={{fontFamily: '"Montserrat", sans-serif', fontSize: tall ? 300 : 260, fontWeight: 800, color: V.amber, lineHeight: 0.95, textShadow: '0 0 50px rgba(227,179,65,0.45)'}}>5</span>
+            <span style={{fontFamily: '"Montserrat", sans-serif', fontSize: tall ? 220 : 220, fontWeight: 800, color: V.amber, lineHeight: 0.95, letterSpacing: -2, textShadow: '0 0 50px rgba(227,179,65,0.45)'}}>3–5</span>
             <span style={{fontFamily: FONT_ZH, fontSize: tall ? 96 : 92, fontWeight: 900, color: V.ink}}>个 Session</span>
           </div>
         </div>
-        <Tiles x={tall ? 160 : 1060} y={tall ? 600 : 230} s={tall ? 1.15 : 1.35} />
+        <Tiles x={tall ? 160 : 1100} y={tall ? 620 : 230} s={tall ? 1.15 : 1.35} />
         <div style={{position: 'absolute', left: tall ? 80 : 110, bottom: tall ? 80 : 90}}>
           <Title s={tall ? 1.1 : 1} />
         </div>

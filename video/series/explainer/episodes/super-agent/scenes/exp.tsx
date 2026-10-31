@@ -1,7 +1,7 @@
 // Sections 7–9 of the article: preliminary experiments (ablation, tokens, Router batching), open questions, closing.
 import React from 'react';
 import {Img} from 'remotion';
-import {Chip, count, DeepSeekWhale, Head, Lab, Mo, prog, rise, Shell, SRC, SrcLine, useBeats, useCurrentFrame, usePopIn, V, Win, Zh} from './common';
+import {Chip, count, GitHubMark, Head, Lab, Mo, prog, rise, Shell, SRC, SrcLine, useBeats, useCurrentFrame, usePopIn, V, Win, Zh} from './common';
 import type {Scene} from '@atv/lib/types';
 // @ts-ignore -- png asset, bundled by Remotion's webpack config
 import fig12 from './figs/fig12.png';
@@ -57,7 +57,7 @@ export const Ablation: React.FC<P> = () => {
       </div>
       <div style={{position: 'absolute', left: 120, top: 700, ...rise(b[1])}}>
         <Mo size={24} color={V.comment}>
-          {'def code_task(): sleep(...)  # 编码工作用只消耗时间的工具代替'}
+          {'# 编码工作：用一个只消耗时间的工具代替'}
         </Mo>
         <div style={{marginTop: 8}}>
           <Zh size={24} w={600}>
@@ -123,14 +123,14 @@ export const Result: React.FC<P> = () => {
               </div>
               <div style={{position: 'absolute', left: S * p95 + 12, top: 32}}>
                 <Mo size={22} color={V.dim}>
-                  P95 {p95}
+                  P95 {p95.toFixed(1)}
                 </Mo>
               </div>
             </div>
           </div>
         ))}
       </div>
-      <Fig src={fig12} x={1110} y={232} w={690} ratio={1009 / 822} title="原文图 · 工作请求的累计到达与完成（5 次均值）" f={b[0]} />
+      <Fig src={fig12} x={1110} y={232} w={690} ratio={1009 / 822} title="原文图 · 累计到达与完成（5 次均值；消息间隔与工作时长按 1/4 缩放）" f={b[0]} />
       <div style={{position: 'absolute', left: 120, top: 856, ...rise(b[2], 20)}}>
         <Zh size={21} w={500} color={V.dim}>
           中性提示：5 次运行 0 次调用 Subagent；提示优先委派：5 次中 4 次委派，1 次判断工作“很小”自己执行（紫色长尾）
@@ -149,7 +149,7 @@ const TOK: [string, number, string][] = [
 ];
 export const Tokens: React.FC<P> = () => {
   const b = useBeats();
-  const vis = [b[0], b[1] + 10, b[0] + 20, b[0] + 30];
+  const vis = [b[0], b[1], b[0] + 20, b[0] + 30];
   const S = 0.32;
   return (
     <Shell file="07_1_tokens.md" status="bench · tokens">
@@ -189,7 +189,7 @@ export const Tokens: React.FC<P> = () => {
       </div>
       <div style={{position: 'absolute', left: 120, top: 780, ...rise(b[2], 30)}}>
         <Zh size={24} w={500} color={V.dim}>
-          以更多的 token 消耗，换取更短且更稳定的完成时间；直通不提高完成质量与速度，但为 Router 节省 token 与推理开销
+          以更多的 token 消耗，换取更短且更稳定的完成时间；在实验负载下，直通不提高完成质量与速度，但为 Router 节省 token 与推理开销
         </Zh>
       </div>
     </Shell>
@@ -201,7 +201,7 @@ export const Batch: React.FC<P> = () => {
   const b = useBeats();
   const tiles: [string, number, number, string, number, string][] = [
     ['平均 batch 大小', 1.0, 2.8, '条/次', b[1], V.blue],
-    ['单次请求耗时', 2.5, 3.9, '秒', b[1] + 40, V.amber],
+    ['单次请求耗时', 2.5, 3.9, '秒', b[1] - 40, V.amber],
     ['单个决定的分摊推理时间', 6.4, 1.6, '秒', b[2], V.green],
   ];
   return (
@@ -309,7 +309,7 @@ export const Outro: React.FC<P> = () => {
         </div>
       </div>
       <div style={{position: 'absolute', left: 120, top: 620, display: 'flex', alignItems: 'center', gap: 22, ...rise(b[3])}}>
-        <DeepSeekWhale size={70} />
+        <GitHubMark size={64} color={V.dim} />
         <div>
           <Mo size={26} color={V.cyan}>
             dsh-superagent-prototype

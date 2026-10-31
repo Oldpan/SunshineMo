@@ -367,7 +367,7 @@ export const Watchdog: React.FC<P> = () => {
             <div key={i} style={{width: 18, height: 18, borderRadius: 4, background: i === tick % 8 ? V.violet : V.line}} />
           ))}
           <Mo size={18} color={V.violet} style={{marginLeft: 8}}>
-            cron
+            定时消息
           </Mo>
         </div>
         <Wire pts={[[1290, 415], [1140, 415]]} color={V.violet} />

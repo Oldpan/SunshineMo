@@ -2,7 +2,7 @@
 # 严格按原文 1–9 节的顺序讲，只讲原文内容；所有数字、例子和图都出自 source/article.md（复核只认这份资料）。
 # 画风：暗色控制台 / IDE（video/series/explainer/shared/console.tsx）。
 meta:
-  title: 一个人最多盯 5 个 Session：DeepSeek 团队的 Super-agent 架构全拆解
+  title: 一个人通常只能盯 3–5 个 Session：DeepSeek Harness 团队的 Super-agent 架构全拆解
   topic: Super-agent架构
   source: https://mp.weixin.qq.com/s/zoS7GlReWPhfCjENGxXCdg
   voice: qwen-longanhuan
@@ -13,8 +13,6 @@ meta:
   scene_tail: 0.3
 
 readings:
-  调用: diào
-  调度: diào
   调触发: tiáo
   重新: chóng
   重命名: chóng
@@ -81,7 +79,7 @@ scenes:
     beats:
       - 素材是 DeepSeek Harness 团队的公众号原创文章。
       - 文章开头说明：这是架构思路探讨，不是现有产品功能的介绍。
-      - 文中的数字，来自他们自己的初步实验。
+      - 第 7 节的实验数字基于合成负载，只作初步参考。
 
   # ================================================================== 1 Super-agent
   - id: why
@@ -97,7 +95,7 @@ scenes:
     beats:
       - 可主流 Agent 还是以单个 Session 为单位，彼此独立。
       - 并行几件事，就得手动切换、自己记住各自的上下文。
-      - 接上 CLI、MCP 或连接器，也还是会同步阻塞、上下文混乱，
+      - 只是简单接上 CLI、MCP 或连接器，也还是会同步阻塞、上下文混乱，
       - 本地设备一离线就停。
       - 所以要打破 Agent 和单次会话的绑定，
       - 让它成为跨会话保持上下文、同时推进多个任务的连续实体。
@@ -144,7 +142,7 @@ scenes:
     theme: console
     data: {num: '02', title: 双层架构, sub: Router 层 + Worker 层}
     beats:
-      - 第一个模块：双层架构。
+      - 原文第 2 节，第一个模块：双层架构。
 
   - id: tradeoff
     theme: console
@@ -153,7 +151,7 @@ scenes:
       - 所有事件都给一个 Session，上下文最连续，
       - 但循环串行、吞吐低，多个任务的细节还会混在一起。
       - 每条事件都新开 Session，吞吐最高，
-      - 可缺了全局上下文，结果彼此割裂，各自回复用户也会乱。
+      - 任务一旦相关，缺了全局上下文，结果彼此割裂；各自回复用户也会乱。
 
   - id: twolayer
     theme: console
@@ -177,7 +175,7 @@ scenes:
     beats:
       - 他们用单个常驻 LLM Session 做 Router，它不太容易成为瓶颈。
       - 事件平稳时，Trigger 逐条进入，延迟低；
-      - 事件密集时，上一轮积压的 Trigger，合并进下一次调用。
+      - 事件密集时，上一轮积压的 Trigger，合并进下一次调用里。
       - Router 每步是长输入、短输出，合并的输入在 Prefill 阶段并行算。
       - 单次耗时增长远慢于批大小，一定范围内，积压越多，每个决定分摊的时间越短。
       - 规模再大，也可以水平切分，但切得越细，连续性越低。
@@ -196,7 +194,7 @@ scenes:
     theme: console
     data: {num: '03', title: 事件驱动, sub: 过滤 · 路由 · 上下文 · 提前行动}
     beats:
-      - 第二个模块：事件驱动。
+      - 第 3 节，第二个模块：事件驱动。
 
   - id: trigger
     theme: console
@@ -228,7 +226,7 @@ scenes:
     beats:
       - 事件进了 Session，上下文里该放多少？
       - 原文说：浪费上下文窗口，就是浪费模型的智能。
-      - 他们把窗口当缓存管：Inline，把很可能用到的直接内联；
+      - 他们把窗口视为缓存来管：Inline，把很可能用到的直接内联；
       - Spill，把超预算的留在窗外，只留引用或摘要。
       - 从 ID 和摘要开始，按局部性补上相邻消息，超长就截断、留续读入口。
 
@@ -239,14 +237,14 @@ scenes:
       - 每个对象带着关联对象的 ID，连成一张引用图。
       - 从 Trigger 42，读到 Thread 08，再到 Worker 03，
       - 又顺着找到关联 PR 的 Thread 15。
-      - Router 不用装下全部历史，也能找回旧任务的上下文。
+      - 这缓解了 Router 在长期运行中丢失旧任务上下文的问题。
 
   - id: spec
     theme: console
     beats:
       - 第四步是提前行动，借的是投机执行：
       - 根据环境信号在后台先试，有价值就交付，没价值就丢掉。
-      - 他们在内部群配了“静默复现并修复”：
+      - 他们在内部群配了“静默复现并修复”：确认问题、找到简单修法才交付，否则全程安静。
       - 群里还在讨论波浪号被渲染成删除线，
       - Super-agent 已经提交了 PR，只有双波浪号才渲染删除线。
       - 有人问依据，它答：单个波浪号多用来表示范围，正是误渲染的来源。
@@ -256,16 +254,16 @@ scenes:
     theme: console
     data: {num: '04', title: 面向人的交互, sub: 全双工 · 多信道}
     beats:
-      - 第三个模块：面向人的交互。
+      - 第 4 节，第三个模块：面向人的交互。
 
   - id: duplex
     theme: console
     beats:
-      - 经典 ReAct 循环调用同步的 run，就阻塞到工具执行完，
+      - 经典 ReAct 循环同步调用 run，就会阻塞到工具执行完，
       - 期间没法响应新输入，这是半双工。
       - 他们改成异步的 start 和 stop：调用 start 马上返回“已启动”，
       - 工具跑完，结果作为新消息投递进会话；跑太久就 stop。
-      - 这套机制已在 DeepSeek Harness 里实现，但还没默认开启。
+      - {text: 这套机制已在 DeepSeek Harness 里实现，但还没默认开启。, say: 这套机制，已经在 DeepSeek 的 Harness 中实现了，但还没默认开启。}
 
   - id: channel
     theme: console
@@ -280,7 +278,7 @@ scenes:
     theme: console
     data: {num: '05', title: 计算、状态与环境的分离, sub: 两步解耦}
     beats:
-      - 第四个模块：计算、状态与环境的分离。
+      - 第 5 节，第四个模块：计算、状态与环境的分离。
 
   - id: compute
     theme: console
@@ -303,7 +301,7 @@ scenes:
   - id: watchdog
     theme: console
     beats:
-      - 第五个模块：Watchdog。
+      - 第 6 节，第五个模块：Watchdog。
       - 很多 Agent 异常不是进程崩溃，而是陷入无效循环、偏离目标。
       - 他们在系统外配了一个独立的 Watchdog Session，用定时消息驱动。
       - 它既处理基础设施故障，也由模型判断每个 Worker 有没有实质进展。
@@ -314,7 +312,7 @@ scenes:
     theme: console
     data: {num: '07', title: 初步实验, sub: 消融 · Router 批处理}
     beats:
-      - 最后看初步实验。
+      - 第 7 节，看他们的初步实验。
 
   - id: ablation
     theme: console
@@ -329,7 +327,7 @@ scenes:
       - Super-agent 的 p50 是 12.4 分钟，p95 是 15.7 分钟。
       - 单 Session 加中性提示，一次都没委派，p95 到了 29.5 分钟。
       - 提示优先委派，5 次里委派了 4 次，剩下 1 次自己做，留下长尾。
-      - 双层架构在系统层面，不靠提示词和临场判断。
+      - 双层架构把分工固定在系统层面，缓解了对提示词和临场判断的依赖。
 
   - id: tokens
     theme: console

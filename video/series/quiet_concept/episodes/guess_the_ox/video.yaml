@@ -1,0 +1,19 @@
+# 787 人猜牛（群体智慧）— see `sm --help` for the fields
+title: 787 人猜牛
+engine: code
+style: quiet_concept
+deliver:
+  drive: video_from_opus/一帧一理07_787人猜牛
+  files:
+    - {from: out/787 人猜牛.mp4, as: 787人猜牛_WisdomOfCrowds.mp4}
+    - {from: out/cover_16x9_A.png, as: 787人猜牛_封面_16x9.png}
+    - {from: out/cover_3x4_A.png, as: 787人猜牛_封面_3x4.png}
+    - {from: 介绍和文案.md}
+drive:
+  folder: video_from_opus/一帧一理07_787人猜牛
+  url: https://drive.google.com/drive/folders/1_Wr8GMuQlFp49KerzLdZBLPVf_KHLs74
+  files:
+  - {name: 787人猜牛_WisdomOfCrowds.mp4, id: 1w9g6xCGHwqbPZbRsIctyebgeHB1FY2rc, bytes: 235783056}
+  - {name: 787人猜牛_封面_16x9.png, id: 1Y1G0Q9Qf6m9BTjKKsuIYYjdpV2qXZOMn, bytes: 2711429}
+  - {name: 787人猜牛_封面_3x4.png, id: 19urgc7fbrubbFVSUiny8wLKdIWBhsfYK, bytes: 1689959}
+  - {name: 介绍和文案.md, id: 1yNwC3q5Fz5fwJDtSF_cagJd3XTnI3gXK, bytes: 597}

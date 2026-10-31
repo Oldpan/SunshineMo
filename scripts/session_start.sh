@@ -41,6 +41,15 @@ if [ -f "$ATV/scripts/synth.py" ]; then
               "jost/Jost%5Bwght%5D.ttf Jost-VF.ttf"; do
     set -- $pair; [ -s "$F/$2" ] || curl -sL --fail -o "$F/$2" "$G/$1" || step "font $2 failed"
   done
+  # pixel and handwriting fonts (paper / pixel styles) come from GitHub releases, as in setup.sh
+  [ -s "$F/Xiaolai.ttf" ] || curl -sL --fail -o "$F/Xiaolai.ttf" https://github.com/lxgw/kose-font/releases/download/v3.126/Xiaolai-Regular.ttf || step "font Xiaolai failed"
+  if [ ! -s "$F/FusionPixel-zh_hans.ttf" ]; then
+    FP=2026.09.25; T=$(mktemp -d)
+    curl -sL --fail -o "$T/fp.zip" "https://github.com/TakWolf/fusion-pixel-font/releases/download/$FP/fusion-pixel-font-12px-proportional-ttf-v$FP.zip" \
+      && unzip -o -q -j "$T/fp.zip" fusion-pixel-12px-proportional-zh_hans.ttf -d "$T" && mv "$T/fusion-pixel-12px-proportional-zh_hans.ttf" "$F/FusionPixel-zh_hans.ttf" \
+      || step "font FusionPixel failed"
+    rm -rf "$T"
+  fi
   [ -d "$ATV/assets/bgm" ] || "$ATV/.venv/bin/python" "$ATV/scripts/make_audio_assets.py" >/dev/null 2>&1
 fi
 step "done; source env.sh, then ./sm doctor"

@@ -41,6 +41,7 @@ source env.sh
 | managed-agents | Anthropic 把 Agent 的脑和手拆开了：Managed Agents 架构全拆解 | Drive video_from_opus/脑手分离 |
 | hf-reverse-engineering | DeepSeek 带 4 个 Qwen 小模型逆向程序：主管还给手下改了 harness | Drive video_from_opus/大模型带小模型逆向 |
 | spec-decoding | 加快 LLM 速度最快 6 倍，五种投机解码全解析 | Drive video_from_opus/五种投机解码 |
+| super-agent | 一个人通常只能盯 3–5 个 Session：DeepSeek Harness 团队的 Super-agent 架构全拆解 | Drive video_from_opus/Super-agent架构 |
 
 （之前的 10 期在 article-to-video 的 `projects/` 里，留在原处。）
 
@@ -59,3 +60,7 @@ source env.sh
 - 审片里最常见的必须改是“借来的数字没交代口径”：别家论文测的基线、不同批量 / 链式与树、博客自训的对照，旁白和卡片都要写明谁测的、在什么设置下。
 - 「参」不在多音字表里，`readings` 标不了；读错时给那一句加 `say`，用同音字（餐数）。
 
+`shared/console.tsx`：暗色控制台 / IDE 风（`THEMES.console`，深底 + 蓝色强调），super-agent 首用。`Shell` 画标签栏、状态栏（带运行时钟）、行号栏，并让网格、扫光、行号整场缓慢移动来过 freezedetect；`Head` / `Chapter` / `Win` / `Node` / `Wire` / `Packet` 等是通用零件，每期的 `scenes/common.tsx` re-export 后再加本期零件。
+
+- 原文配图直接放进 `scenes/figs/` 用 `import x from './figs/x.png'` 引入（webpack 处理），放在 `Win` 窗口里当“原图”展示；重画的示意图要标“示意”，别和原图混。
+- 多音字读音（`readings`）只给真有风险的词：「调用→掉用」这种同音替换会让 TTS 在词中间停顿，复核时听出来像吞字，宁可改写句子避开。

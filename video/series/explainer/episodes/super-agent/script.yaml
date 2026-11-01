@@ -263,7 +263,7 @@ scenes:
       - 期间没法响应新输入，这是半双工。
       - 他们改成异步的 start 和 stop：调用 start 马上返回“已启动”，
       - 工具跑完，结果作为新消息投递进会话；跑太久就 stop。
-      - {text: 这套机制已在 DeepSeek Harness 里实现，但还没默认开启。, say: 这套机制，已经在 DeepSeek 的 Harness 中实现了，但还没默认开启。}
+      - {text: 这套机制已经在 DeepSeek 的 Harness 中实现了，但还没默认开启。, say: 这套机制，已经在 DeepSeek 的 Harness 中实现了，但还没默认开启。}
 
   - id: channel
     theme: console

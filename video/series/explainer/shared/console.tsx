@@ -150,7 +150,7 @@ export const Shell: React.FC<{children: React.ReactNode; file?: string; status?:
 };
 
 /** Scene header: `// kicker` comment line + big title (+ dim sub) + hairline. */
-export const Head: React.FC<{kicker: string; title: React.ReactNode; sub?: React.ReactNode; f?: number}> = ({kicker, title, sub, f}) => {
+export const Head: React.FC<{kicker: string; title: React.ReactNode; sub?: React.ReactNode; f?: number; illus?: boolean}> = ({kicker, title, sub, f, illus}) => {
   const frame = useCurrentFrame();
   const g = f ?? frame;
   const t = prog(g, 16, 4);
@@ -162,6 +162,7 @@ export const Head: React.FC<{kicker: string; title: React.ReactNode; sub?: React
             {'// '}
             {kicker}
           </Mo>
+          {illus && <Illus style={{marginLeft: 16, position: 'relative', top: -3}} />}
         </div>
         <div style={{opacity: t, transform: `translateY(${(1 - t) * 14}px)`, marginTop: 8, display: 'flex', alignItems: 'baseline', gap: 26, whiteSpace: 'nowrap'}}>
           <Zh size={56} w={800} style={{letterSpacing: 1}}>

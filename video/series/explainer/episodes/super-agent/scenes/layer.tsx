@@ -39,7 +39,7 @@ export const Tradeoff: React.FC<P> = () => {
   const knob = 0.5 + 0.38 * (b[3] >= 0 ? prog(b[3], 30) : -prog(b[1], 30));
   return (
     <Shell file="02_two_layer.md">
-      <Head kicker="2 · 双层架构" title="连续性 vs 吞吐量" sub="会话组织的根本权衡" />
+      <Head illus kicker="2 · 双层架构" title="连续性 vs 吞吐量" sub="会话组织的根本权衡" />
       {/* slider */}
       <div style={{position: 'absolute', left: 560, top: 236, width: 800, ...rise(b[0])}}>
         <div style={{display: 'flex', justifyContent: 'space-between'}}>
@@ -101,7 +101,7 @@ export const Twolayer: React.FC<P> = () => {
   const one = prog(b[2], 20);
   return (
     <Shell file="02_two_layer.md">
-      <Head kicker="2 · 原文图：双层架构" title="Router 层 + Worker 层" />
+      <Head kicker="2 · 据原文图重绘：双层架构" title="Router 层 + Worker 层" />
       {chans.map((c, i) => (
         <div key={c} style={pop(b[0], i * 5)}>
           <Node x={150} y={300 + i * 130} w={260} h={96} title={c} titleSize={28} />
@@ -258,7 +258,7 @@ export const Batching: React.FC<P> = () => {
   const shard = prog(b[5], 24);
   return (
     <Shell file="02_1_router.md" status="router · batching">
-      <Head kicker="2.1 · Router 层" title="积压的 Trigger 自动合批" sub="单个常驻 LLM Session" />
+      <Head illus kicker="2.1 · Router 层" title="积压的 Trigger 自动合批" sub="单个常驻 LLM Session" />
       <div style={{opacity: 1 - shard}}>
         <Lane y={340} f={b[1]} dense={false} label="事件平稳：Trigger 逐条进入" />
         <Lane y={510} f={b[2]} dense label="事件密集：上一轮积压的 Trigger 合并进下一次调用" />
@@ -325,7 +325,7 @@ export const Worker: React.FC<P> = () => {
   const RY = 250;
   return (
     <Shell file="02_2_worker.md" status="workers · 3 running">
-      <Head kicker="2.2 · Worker 层" title="隔离上下文，专注单一任务" />
+      <Head illus kicker="2.2 · Worker 层" title="隔离上下文，专注单一任务" />
       <div style={pop(b[1])}>
         <Node x={700} y={RY} w={520} h={110} title="Router 层" sub="统一向用户回复" color={V.blue} glow={0.8} titleSize={32} />
         <Wire pts={[[1220, RY + 55], [1480, RY + 55]]} p={prog(b[1], 16, 10)} color={V.blue} />

@@ -353,7 +353,7 @@ export const Demo1: React.FC<P> = () => {
   const b = useBeats();
   return (
     <Shell file="01_example_1.md" status="thread · font-settings">
-      <Head kicker="1 · 内部实例（原文图）" title="同一个任务，在 IM 和 GitHub 之间连续推进" />
+      <Head kicker="1 · 内部实例（据原文图重绘）" title="同一个任务，在 IM 和 GitHub 之间连续推进" />
       <div style={{position: 'absolute', left: 120, top: 222, width: 1680, display: 'flex', flexDirection: 'column', gap: 9}}>
         {DEMO1.map(([ch, who, text, agent], i) => {
           const f = b[DEMO1_BEAT[i]] - (i === 2 ? 40 : i === 4 ? 36 : 0) - (DEMO1_BEAT[i] === 3 ? (i - 5) * 22 : 0);
@@ -374,7 +374,7 @@ export const Demo2: React.FC<P> = () => {
   const frame = useCurrentFrame();
   return (
     <Shell file="01_example_2.md" status="watching · user-group">
-      <Head kicker="1 · 内部实例（原文图）" title="在公共群聊中静默监听，主动识别问题并提交修复" />
+      <Head kicker="1 · 内部实例（据原文图重绘）" title="在公共群聊中静默监听，主动识别问题并提交修复" />
       <div style={{position: 'absolute', left: 120, top: 236, width: 1680, display: 'flex', flexDirection: 'column', gap: 16}}>
         <div style={rise(b[0])}>
           <ChatRow who="群内日常消息" whoW={190} text="其他成员在群内讨论日常使用与功能建议，Super-agent 静默监听、不介入" muted size={23} />
@@ -575,7 +575,7 @@ export const Arch: React.FC<P> = () => {
   ];
   return (
     <Shell file="01_architecture.md">
-      <Head kicker="1 · 原文图：整体系统架构" title="五个模块" sub="标号 [2]–[6] 对应原文第 2–6 节" />
+      <Head kicker="1 · 据原文图重绘：整体系统架构" title="五个模块" sub="标号 [2]–[6] 对应原文第 2–6 节" />
       <div style={{opacity: show}}>
         {wires.map(([pts, m], i) => (
           <Wire key={i} pts={pts} p={prog(b[0], 24, 6 + i * 3)} color={hi(m) > 0.3 ? V.blue : '#4A5672'} dash={m === 6} />

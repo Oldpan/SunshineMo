@@ -72,7 +72,7 @@ export const Duplex: React.FC<P> = () => {
   );
   return (
     <Shell file="04_1_duplex.md" status="loop · async">
-      <Head kicker="4.1 · 原文图：全双工交互" title="同步 run() → 异步 start() / stop()" />
+      <Head kicker="4.1 · 据原文图重绘：全双工交互" title="同步 run() → 异步 start() / stop()" />
       <div style={{position: 'absolute', left: 120, top: Y(52) - 46, ...rise(b[0])}}>
         <Zh size={26} w={800}>
           经典 ReAct Loop
@@ -204,7 +204,7 @@ export const Compute: React.FC<P> = () => {
   ];
   return (
     <Shell file="05_1_compute_state.md" status="cloud · stateless">
-      <Head kicker="5 · 计算、状态与环境的分离" title="借鉴存算分离，分两步解耦" />
+      <Head illus kicker="5 · 计算、状态与环境的分离" title="借鉴存算分离，分两步解耦" />
       {/* the single device */}
       <div style={{position: 'absolute', left: 140, top: 260, width: 620, ...rise(b[0])}}>
         <Lab>现有的本地 Agent：三者绑在同一台设备上</Lab>
@@ -272,7 +272,7 @@ export const Env: React.FC<P> = () => {
   const back = b[5] >= 0 ? prog(b[5], 16, 20) : 0;
   return (
     <Shell file="05_2_environment.md" status="daemons · 3 attached">
-      <Head kicker="5.2 · 原文图：计算与执行环境分离" title="环境留在原地，端侧装轻量 daemon" />
+      <Head kicker="5.2 · 据原文图重绘：计算与执行环境分离" title="环境留在原地，端侧装轻量 daemon" />
       <div style={{position: 'absolute', left: 120, top: 236, display: 'flex', gap: 12, ...rise(b[1])}}>
         {['未提交的本地修改', '私有凭据', '内网服务依赖', '特定的硬件或工具链'].map((t) => (
           <Chip key={t} color={V.amber} size={20}>
@@ -335,7 +335,7 @@ export const Watchdog: React.FC<P> = () => {
   const fixed = b[3] >= 40;
   return (
     <Shell file="06_watchdog.md" status="watchdog · tick">
-      <Head kicker="6 · Watchdog" title="主系统之外的控制回路" />
+      <Head illus kicker="6 · Watchdog" title="主系统之外的控制回路" />
       {/* main system */}
       <div style={{position: 'absolute', left: 120, top: 260, width: 1020, height: 520, borderRadius: 18, border: `1.5px solid ${V.line}`, background: 'rgba(18,23,34,0.6)', ...rise(b[0])}}>
         <div style={{position: 'absolute', left: 20, top: 14}}>

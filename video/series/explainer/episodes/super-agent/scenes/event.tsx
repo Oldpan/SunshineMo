@@ -83,7 +83,7 @@ export const Filter: React.FC<P> = () => {
   const run = (f: number, pts: [number, number][]) => <Packet pts={pts} t={(f % 70) / 60} size={16} />;
   return (
     <Shell file="03_1_filter.md" status="filter · fast/slow">
-      <Head kicker="3.1 · 原文图：两级过滤" title="先程序，后模型" sub="高噪音、低触发率" />
+      <Head kicker="3.1 · 据原文图重绘：两级过滤" title="先程序，后模型" sub="高噪音、低触发率" />
       {T.map(([t, g, m], i) => (
         <div key={t} style={{position: 'absolute', left: 120, top: ys[i] - 55, width: 500, padding: '14px 20px', boxSizing: 'border-box', borderRadius: 12, border: `1.5px solid ${i === 2 ? V.blue : V.line}`, background: V.panel, ...rise(b[0], i * 8)}}>
           <Zh size={22} w={700} color={i === 0 ? V.dim : V.blue}>
@@ -202,7 +202,7 @@ export const Route: React.FC<P> = () => {
   ];
   return (
     <Shell file="03_2_route.md" status="router · subscriptions">
-      <Head kicker="3.2 · 原文图：Thread 与订阅直通" title="已订阅的事件，不再经过 Router" />
+      <Head kicker="3.2 · 据原文图重绘：Thread 与订阅直通" title="已订阅的事件，不再经过 Router" />
       <ThreadCard
         x={120}
         f={b[0]}
@@ -362,7 +362,7 @@ export const Recall: React.FC<P> = () => {
   );
   return (
     <Shell file="03_3_recall.md" status="router · recall">
-      <Head kicker="3.3 · 原文图：链式召回" title="顺着 ID，一跳一跳展开" sub="Chain of Recall" />
+      <Head kicker="3.3 · 据原文图重绘：链式召回" title="顺着 ID，一跳一跳展开" sub="Chain of Recall" />
       <div style={{position: 'absolute', left: 120, top: 228, ...rise(b[1])}}>
         <Zh size={24} w={500} color={V.dim}>
           Trigger、Thread、Worker Session 都有唯一 ID；注入时内联关联对象的 ID → 一张引用图

@@ -41,6 +41,7 @@ source env.sh
 | managed-agents | Anthropic 把 Agent 的脑和手拆开了：Managed Agents 架构全拆解 | Drive video_from_opus/脑手分离 |
 | hf-reverse-engineering | DeepSeek 带 4 个 Qwen 小模型逆向程序：主管还给手下改了 harness | Drive video_from_opus/大模型带小模型逆向 |
 | spec-decoding | 加快 LLM 速度最快 6 倍，五种投机解码全解析 | Drive video_from_opus/五种投机解码 |
+| qwen4-preview | Qwen4 还没发，架构已经开源两个月了 | Drive video_from_opus/Qwen4前瞻 |
 
 （之前的 10 期在 article-to-video 的 `projects/` 里，留在原处。）
 
@@ -58,4 +59,11 @@ source env.sh
 - 大块扁平盒子（底板、传送带）要放 `{layer: 0}`，否则深度排序会把上面的方块盖住；中文写在方块顶面上看不清，字要竖直画在屏幕空间。
 - 审片里最常见的必须改是“借来的数字没交代口径”：别家论文测的基线、不同批量 / 链式与树、博客自训的对照，旁白和卡片都要写明谁测的、在什么设置下。
 - 「参」不在多音字表里，`readings` 标不了；读错时给那一句加 `say`，用同音字（餐数）。
+
+`shared/evidence.tsx`：视觉调查 / 证据墙（lemo `visual-investigation`），qwen4-preview 首用。深色软木墙 + 镜头关键帧，证据是钉上墙的卡片（截图、文字卡、数字），每张卡盖一个章（官方 / 现场转述 / 社区代码 / 社区传闻 / 推断），下面一行写出处，红线把卡片连起来。适合前瞻、传闻核对这类要分清信息来源的题目。
+
+- 卡片坐标都在 3840×2160 的墙面坐标里；`Wall` 的 `cams` 写「第几拍时墙上哪个点在画面中心、缩放多少」，镜头在拍前 26 帧开始移动、拍开始时到位。镜头一直有缓慢推近和横移，长句停留也不会被判静帧。
+- 先按内容的包围盒算镜头：要读的卡片宽度 × z 在 1500 px 左右；底部 120 px 留给字幕，重要内容别放进去。第一次按感觉写的镜头大半偏到左上，按包围盒重算后才正。
+- 印章不能用 `mix-blend-mode: multiply`：落在深色墙上会被吃成黑色，只有在白卡片上才看得见。
+- 截图按段落裁（Playwright 找到包含关键词的 `p`/`li`，用 `fullPage` 坐标截），比整页截图再手工裁可靠；X / Reddit 要登录截不到，改成文字卡并在出处里写明。
 

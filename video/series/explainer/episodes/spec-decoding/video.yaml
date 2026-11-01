@@ -1,7 +1,7 @@
 # 加快 LLM 速度最快 6 倍，五种投机解码全解析 — see `sm --help` for the fields
 title: 加快 LLM 速度最快 6 倍，五种投机解码全解析
 engine: narrated
-style: iso        # iso-infographic (lemo-opuscar), engine vendored in video/series/explainer/shared/iso
+style: type      # typing close-up + flat structure diagrams (v2, 2026-11-01); kit in scenes/type.tsx
 source: https://arxiv.org/abs/2602.06036
 deliver:
   drive: video_from_opus/五种投机解码

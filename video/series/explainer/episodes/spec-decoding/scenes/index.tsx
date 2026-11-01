@@ -1,15 +1,16 @@
 // Scene registry for a project that lives outside this repo (copied by `scripts/new_project.py <slug> --dir <path>`
 // into <path>/scenes/). Scene files sit beside this one and import the renderer as '@atv/lib/...'.
 // Scenes without an entry here render with their `layout:` from script.yaml (src/lib/layouts.tsx).
+// v2 look (2026-11-01): typing close-up + flat structure diagrams, kit in ./type.tsx.
 import type {NavGroup} from '@atv/lib/chrome';
 import {defaultTipOf, SceneComponent} from '@atv/lib/Video';
-import * as intro from './intro';
-import * as mtp from './mtp';
-import * as eagle from './eagle';
-import * as dflash from './dflash';
-import * as dspark from './dspark';
-import * as dflash2 from './dflash2';
-import * as end from './end';
+import * as intro from './v_intro';
+import * as mtp from './v_mtp';
+import * as eagle from './v_eagle';
+import * as dflash from './v_dflash';
+import * as dspark from './v_dspark';
+import * as dflash2 from './v_dflash2';
+import * as end from './v_end';
 
 /** Composition id: must equal the project directory name (render.sh checks). */
 export const id = 'spec-decoding';

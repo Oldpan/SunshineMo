@@ -26,9 +26,20 @@ refresh token 不是一次性的,但会失效(见下方"踩坑")。重新生成�
 1. `python3 scripts/gdrive_auth.py url`,在浏览器里用目标 Google 账号打开输出的链接,点同意。
 2. 浏览器跳到 `http://localhost/?code=4/0A...`,页面打不开是正常的。复制整个地址栏 URL。
 3. `python3 scripts/gdrive_auth.py exchange '<整个 URL 或 code 值>'`,令牌写入 `.gdrive_tokens.json`(权限 600,已 gitignore,不会打印)。
-4. 长期使用:把 refresh token 更新到环境里的 `GOOGLE_REFRESH_TOKEN`。脚本会优先读 `.gdrive_tokens.json`,没有再读环境变量。
+4. 长期使用:把 refresh token 更新到环境里的 `GOOGLE_REFRESH_TOKEN`(见下一节)。脚本会优先读 `.gdrive_tokens.json`,没有再读环境变量。
 
 授权码(`code=`)只能用一次,几分钟内有效;它不是 refresh token,换 token 还需要 client secret。
+
+## 让 token 长期有效(一次性设置)
+
+2026-10-23 写进云端环境的 token 在 2026-10-31 报 `invalid_grant`,刚好约 7 天,就是 OAuth 应用处于"测试"状态的表现。一次性修好:
+
+1. **发布应用**:打开 [Google Cloud Console](https://console.cloud.google.com/) → 选中这个 OAuth 客户端所在的项目 → "Google Auth Platform" → "目标对象"(Audience;旧界面叫"OAuth 同意屏幕")→ 发布状态"测试"旁点"发布应用"(Publish app)→ 确认。状态变成"正式版/生产"(In production)。只用 `drive.file` 这个非敏感范围,不需要提交 Google 审核;授权时出现"Google 尚未验证此应用"就点"高级"→"继续"。
+2. **重新生成 token**(必须在发布之后,发布前签发的 token 仍然 7 天过期):在云端会话里让 Claude 跑 `python3 scripts/gdrive_auth.py url`,你在浏览器打开链接、同意,把跳转后的整个 `http://localhost/?code=...` 地址栏 URL 发回;Claude 跑 `exchange` 写入 `.gdrive_tokens.json`。如果输出 `WARNING: this refresh token expires in ...`,说明还是限时 token,回到第 1 步检查。
+3. **写进云端环境**:claude.ai 项目设置 → Cloud environment → 当前环境(MakeVideo)旁的齿轮 → 环境变量里把 `GOOGLE_REFRESH_TOKEN=` 改成新值,保存。token 值从 `.gdrive_tokens.json` 的 `refresh_token` 字段取(在会话里 `python3 -c "import json;print(json.load(open('.gdrive_tokens.json'))['refresh_token'])"` 自己复制,不要贴进对话或提交)。新会话才会读到新值。
+4. **验证**:新会话里 `./sm doctor`,"Google Drive token accepted by Google" 为 `[ok]`;或单独跑 `python3 scripts/gdrive_auth.py check`。`doctor` 现在会真的去 Google 换一次 access token,只看变量是否存在不够。
+
+发布为生产后 token 不再 7 天过期,但下面几种情况仍会失效,需要重走第 2–3 步:在 Google 账号"第三方应用"里撤销授权、改了账号密码(含 Gmail 范围时)、连续 6 个月没用、同一客户端给同一账号签发超过 100 个 token(最老的作废)。
 
 ## 上传文件
 

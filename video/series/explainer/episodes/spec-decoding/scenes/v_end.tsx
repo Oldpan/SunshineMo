@@ -39,7 +39,6 @@ const Mini: React.FC<{i: number}> = ({i}) => {
           {T(370, 110, '低中高')}
           <Arrow pts={[[484, y + 45], [530, y + 45]]} color={C.target} tone="target" />
           <Box x={534} y={y + 10} w={110} h={70} fill={C.drafterBg} stroke={C.drafter} label="1 层" size={20} color={C.drafter} />
-          <Arrow pts={[[589, y + 8], [589, y - 6], [620, y - 6], [620, y + 8]]} color={C.drafter} tone="drafter" dash w={2} head={false} />
           <Arrow pts={[[648, y + 45], [690, y + 45]]} color={C.draft} tone="draft" />
           {[
             [710, 45],
@@ -78,7 +77,8 @@ const Mini: React.FC<{i: number}> = ({i}) => {
           ))}
           <Arrow pts={[[862, y + 45], [890, y + 45]]} color={C.draft} tone="draft" />
           {chips(910, 4)}
-          <Label x={1040} y={y + 52} t="2–6 个" size={18} />
+          <Label x={1036} y={y + 40} t="低负载约 4–6 个" size={18} />
+          <Label x={1036} y={y + 64} t="随负载变短" size={18} />
         </g>
       );
     default:
@@ -86,10 +86,10 @@ const Mini: React.FC<{i: number}> = ({i}) => {
         <g>
           <Box x={370} y={y + 10} w={160} h={70} fill={C.drafterBg} stroke={C.drafter} label="DFlash + 卷积" size={19} color={C.drafter} />
           <Arrow pts={[[534, y + 45], [570, y + 45]]} color={C.ink} />
-          {Array.from({length: 6}, (_, c) =>
+          {Array.from({length: 7}, (_, c) =>
             Array.from({length: 4}, (_, r) => <rect key={`${c}${r}`} x={590 + c * 44} y={y + r * 22} width={30} height={16} rx={3} fill={C.card} stroke={C.line} strokeWidth={1.5} />),
           )}
-          <path d={`M605,${y + 8} L649,${y + 30} L693,${y + 8} L737,${y + 52} L781,${y + 30} L825,${y + 8}`} stroke={SEL} strokeWidth={4} fill="none" />
+          <path d={`M605,${y + 8} L649,${y + 30} L693,${y + 8} L737,${y + 52} L781,${y + 30} L825,${y + 8} L869,${y + 30}`} stroke={SEL} strokeWidth={4} fill="none" />
         </g>
       );
   }
@@ -188,7 +188,7 @@ export const Caveat: React.FC<{scene: Scene}> = () => (
                 const hi = (n === 'EAGLE-3' || n === 'DFlash 2') && f >= b[3];
                 const ya = y0 - v0 * u,
                   yb = y0 - v1 * u;
-                const ly = [yb - 30, yb + 4, yb + 44][i];
+                const ly = [yb - 30, yb + 4, yb + 56][i];
                 return (
                   <g key={n} opacity={a}>
                     <line x1={x0} y1={ya} x2={x0 + (x1 - x0) * a} y2={ya + (yb - ya) * a} stroke={col} strokeWidth={hi ? 6 : 4} />
@@ -248,6 +248,57 @@ export const Outro: React.FC<{scene: Scene}> = () => (
 );
 
 // ------------------------------------------------------------------ cover
+// cover: who guesses, who checks, and how many forward passes it saves
+const PBox: React.FC<{zh: string; en: string; c: string; bg: string; w: number; note: string; stack?: boolean}> = ({zh, en, c, bg, w, note, stack}) => (
+  <div style={{width: w, boxSizing: 'border-box', padding: '20px 26px', background: bg, border: `3px solid ${c}`, borderRadius: 18}}>
+    <div style={{display: 'flex', flexDirection: stack ? 'column' : 'row', alignItems: stack ? 'flex-start' : 'baseline', gap: stack ? 0 : 14}}>
+      <span style={{font: `800 46px ${ZH}`, color: c}}>{zh}</span>
+      <span style={{font: `600 30px ${NUM}`, color: c, opacity: 0.8}}>{en}</span>
+    </div>
+    <div style={{font: `600 28px ${ZH}`, color: C.ink, marginTop: 6}}>{note}</div>
+  </div>
+);
+const Pips: React.FC<{label: string; n: number; c: string}> = ({label, n, c}) => (
+  <div style={{display: 'flex', alignItems: 'center', gap: 12}}>
+    <span style={{width: 150, font: `700 30px ${ZH}`, color: C.ink}}>{label}</span>
+    {Array.from({length: n}, (_, k) => <div key={k} style={{width: 34, height: 34, borderRadius: 8, background: c}} />)}
+    <span style={{marginLeft: 8, font: `700 30px ${NUM}`, color: c}}>{n} 次前向</span>
+  </div>
+);
+const PosterLoop: React.FC<{tall: boolean}> = ({tall}) => {
+  const draft = (
+    <div style={{display: 'flex', gap: 8}}>
+      {[0, 1, 2, 3].map((k) => <div key={k} style={{width: 30, height: 30, borderRadius: 7, background: C.draftBg, border: `2px solid ${C.draft}`}} />)}
+    </div>
+  );
+  const arrow = tall ? (
+    <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, width: 180}}>
+      {draft}
+      <svg width={150} height={30}><path d="M4 15 H130" stroke={C.draft} strokeWidth={4} /><path d="M126 4 L146 15 L126 26 Z" fill={C.draft} /></svg>
+    </div>
+  ) : (
+    <div style={{display: 'flex', alignItems: 'center', gap: 18, paddingLeft: 60, height: 120}}>
+      <svg width={30} height={110}><path d="M15 4 V88" stroke={C.draft} strokeWidth={4} /><path d="M4 84 L15 106 L26 84 Z" fill={C.draft} /></svg>
+      {draft}
+    </div>
+  );
+  const boxW = tall ? 370 : 620;
+  return (
+    <div style={{position: 'absolute', left: tall ? 80 : 1180, top: tall ? 880 : 150, display: 'flex', flexDirection: 'column', gap: tall ? 30 : 18}}>
+      <div style={{display: 'flex', flexDirection: tall ? 'row' : 'column', alignItems: tall ? 'center' : 'flex-start'}}>
+        <PBox zh="草稿机" en="draft model" c={C.drafter} bg={C.drafterBg} w={boxW} note="便宜，先猜一串" stack={tall} />
+        {arrow}
+        <PBox zh="目标模型" en="target model" c={C.target} bg={C.targetBg} w={boxW} note="一次前向，全部核对" stack={tall} />
+      </div>
+      <div style={{display: 'flex', flexDirection: 'column', gap: 16, marginTop: tall ? 0 : 30}}>
+        <div style={{font: `600 28px ${ZH}`, color: C.dim}}>写出同样 5 个字，目标模型要跑</div>
+        <Pips label="逐字生成" n={5} c={C.faint} />
+        <Pips label="投机解码" n={1} c={C.target} />
+      </div>
+    </div>
+  );
+};
+
 export const Poster: React.FC<{w: number; h: number}> = ({w, h}) => {
   const tall = h > w;
   const x = tall ? 80 : 110;
@@ -267,7 +318,7 @@ export const Poster: React.FC<{w: number; h: number}> = ({w, h}) => {
       <div style={{position: 'absolute', left: x, top: tall ? 250 : 210, font: `800 ${tall ? 170 : 190}px ${ZH}`, color: C.drafter, letterSpacing: 4}}>最快 6 倍</div>
       <div style={{position: 'absolute', left: x, top: tall ? 470 : 440, font: `700 ${tall ? 66 : 76}px ${ZH}`}}>五种投机解码全解析</div>
       <div style={{position: 'absolute', left: x, top: tall ? 560 : 540, font: `600 ${tall ? 38 : 40}px ${ZH}`, color: C.dim}}>先猜后验 · 一字不差</div>
-      <div style={{position: 'absolute', left: x, top: tall ? 700 : 650, display: 'flex', gap: 8, padding: '28px 30px', background: C.card, border: `2px solid ${C.line}`, borderRadius: 20}}>
+      <div style={{position: 'absolute', left: x, top: tall ? 700 : 650, display: 'flex', gap: 8, padding: '46px 30px 28px', background: C.card, border: `2px solid ${C.line}`, borderRadius: 20}}>
         {row.map((k, i) => (
           <div key={i} style={{position: 'relative'}}>
             <TokBox t={k.t} s={k.s} size={size} />
@@ -275,7 +326,8 @@ export const Poster: React.FC<{w: number; h: number}> = ({w, h}) => {
           </div>
         ))}
       </div>
-      <div style={{position: 'absolute', left: x, top: tall ? 1300 : 960, font: `600 ${tall ? 32 : 30}px ${NUM}`, color: C.dim}}>MTP · EAGLE-3 · DFlash · DSpark · DFlash 2</div>
+      <PosterLoop tall={tall} />
+      <div style={{position: 'absolute', left: x, top: tall ? 1350 : 900, font: `600 ${tall ? 32 : 30}px ${NUM}`, color: C.dim}}>MTP · EAGLE-3 · DFlash · DSpark · DFlash 2</div>
     </AbsoluteFill>
   );
 };

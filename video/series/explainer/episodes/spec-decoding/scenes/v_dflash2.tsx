@@ -54,14 +54,14 @@ export const Dflash2Obs: React.FC<{scene: Scene}> = () => (
 
 // ------------------------------------------------------------------ dflash2_path
 const SHOW = 5; // candidates drawn per slot (of 16)
-const PATH = [0, 0, 2, 0, 1, 3, 0];
+const PATH = [0, 0, 2, 0, 0, 1, 0]; // 好，适合出门走 — slot 6 picks its 2nd candidate
 const CANDS = [
   ['好', '热', '不', '晴', '冷'],
   ['，', '。', '的', '啊', '呀'],
   ['出', '是', '适', '去', '要'],
   ['合', '宜', '于', '用', '在'],
   ['出', '门', '外', '去', '散'],
-  ['去', '玩', '吃', '走', '逛'],
+  ['去', '门', '玩', '吃', '逛'],
   ['走', '。', '吧', '啊', '！'],
 ];
 const score = (i: number, a: number, c: number) => {
@@ -103,7 +103,7 @@ export const Dflash2Path: React.FC<{scene: Scene}> = () => (
       PATH.forEach((r, i) => {
         if (f >= b[3] + i * 10) toks.push({t: CANDS[i][r], s: f >= b[4] + 30 ? 'ok' : 'draft', a: walk(i)});
       });
-      if (f >= b[4] + 40) toks.push({t: '！', s: 'model', a: ease(f, b[4] + 40, 10), tag: 'bonus'});
+      if (f >= b[4] + 40) toks.push({t: '走', s: 'model', a: ease(f, b[4] + 40, 10), tag: 'bonus'});
       return (
         <>
           <Sentence toks={toks} y={214} size={50} f={f} label="选出的那一条路，交给目标模型核对 · 候选为示意" />
@@ -111,8 +111,9 @@ export const Dflash2Path: React.FC<{scene: Scene}> = () => (
             {/* target model: 64 layers, taps 5/19/33/47/61 */}
             <g opacity={pS}>
               <Stack x={SX} y={SY} w={SW} h={SH} n={N} color={C.target} bg={C.targetBg} hi={taps} />
-              <TermS x={SX + SW / 2} y={SY - 14} zh="目标模型" en="target" c={C.target} size={20} anchor="middle" />
-              <Label x={SX + SW / 2} y={SY + SH + 28} t="64 层取 5、19、33、47、61" anchor="middle" size={17} color={C.target} />
+              <TermS x={SX + SW / 2} y={SY - 14} zh="目标模型" en="target model" c={C.target} size={20} anchor="middle" />
+              <Label x={SX + SW / 2} y={SY + SH + 26} t="Qwen3.8-27B · 64 层" anchor="middle" size={18} color={C.target} weight={600} />
+              <Label x={SX + SW / 2} y={SY + SH + 50} t="取 5、19、33、47、61" anchor="middle" size={18} color={C.target} />
               {taps.map((t, j) => (
                 <Arrow key={t} pts={[[SX + SW + 4, layerY(SY, SH, N, t)], [270, layerY(SY, SH, N, t)], [270, 600 + j * 14], [286, 600 + j * 14]]} color={C.target} tone="target" w={2} head={false} />
               ))}
@@ -149,10 +150,25 @@ export const Dflash2Path: React.FC<{scene: Scene}> = () => (
                 <Chip key={i} x={LX + 30 + i * 58} y={ly(0) + LH + 44} t={i ? '?' : '很'} s={i ? 'mask' : 'done'} size={20} />
               ))}
               <Label x={LX + LW + 14} y={ly(0) + LH + 50} t="块 8：1 + 7" size={18} />
+              <Arrow pts={[[LX + 30 + 3.5 * 58, ly(0) + LH + 30], [LX + 30 + 3.5 * 58, ly(0) + LH + 4]]} color={C.ink} w={2.5} />
+              {/* drafter output → top-16 candidates per slot */}
+              <Arrow pts={[[LX + LW + 4, ly(2) + LH / 2], [GX - 8, ly(2) + LH / 2]]} color={C.drafter} tone="drafter" w={3} p={pG} />
+              <Label x={LX + LW + 12} y={ly(2) + LH / 2 - 12} t="每位 top-16" color={C.drafter} weight={600} size={18} a={pG} />
             </g>
             {/* two-tap conv: each position mixes in the one before it */}
             <g opacity={conv}>
-              <Label x={LX} y={ly(0) + LH + 100} t="两抽头卷积：每个位置混进前一个位置（第 1 位读最后已核对的词）" color="#8A6416" weight={600} size={18} />
+              {Array.from({length: 7}, (_, i) => {
+                const x0 = LX + 30 + i * 58,
+                  x1 = x0 + 58,
+                  y0 = ly(0) + LH + 60;
+                return (
+                  <g key={i}>
+                    <path d={`M${x0 + 4},${y0} Q${(x0 + x1) / 2},${y0 + 22} ${x1 - 8},${y0 + 2}`} fill="none" stroke="#8A6416" strokeWidth={2.5} />
+                    <path d={`M${x1 - 8},${y0 + 2} l-9,1 l5,-8 z`} fill="#8A6416" />
+                  </g>
+                );
+              })}
+              <Label x={LX} y={ly(0) + LH + 108} t="两抽头卷积：每个位置混进前一个位置（第 1 位读最后已核对的词）" color="#8A6416" weight={600} size={18} />
             </g>
             {/* candidate columns + pair scores + path */}
             <g opacity={gridA}>
@@ -192,8 +208,9 @@ export const Dflash2Path: React.FC<{scene: Scene}> = () => (
               </text>
             </g>
             <g opacity={pV * (1 - table)}>
-              <Arrow pts={[[1440, 420], [1440, 392]]} color={C.target} tone="target" w={3} />
-              <TermS x={1820} y={398} zh="目标模型只核这一条路，一次前向" en="verify one path" c={C.target} size={19} anchor="end" />
+              <Box x={GX} y={372} w={1824 - GX} h={60} fill={C.targetBg} stroke={C.target} />
+              <TermS x={(GX + 1824) / 2} y={411} zh="目标模型只核这一条路，一次前向" en="verify one path" c={C.target} size={23} anchor="middle" />
+              <Arrow pts={[[GX + 6 * CW + 30, GY + PATH[6] * RH - 2], [GX + 6 * CW + 30, 436]]} color={SEL} tone="ok" w={3} p={pV} />
             </g>
           </Svg>
           {table > 0 && (

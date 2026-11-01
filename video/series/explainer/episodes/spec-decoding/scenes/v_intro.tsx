@@ -146,7 +146,7 @@ export const Hook: React.FC<{scene: Scene}> = () => (
 
 // ------------------------------------------------------------------ why: decoding is memory-bound
 export const Why: React.FC<{scene: Scene}> = () => (
-  <Page tag="基础" title="为什么能快" sub="一次前向要把全部权重从显存读一遍，算力却大多闲着">
+  <Page tag="基础" title="为什么能快" sub="一次前向卡在显存读取上，算力却大多闲着">
     {({f, b}) => {
       const batch = f >= b[4];
       const per = 34;
@@ -250,13 +250,16 @@ export const Loop: React.FC<{scene: Scene}> = () => (
             {chips.map((t, i) => (
               <Chip key={t + i} x={CX + i * 66} y={CY} t={t} s={chipState(i)} a={ease(f, (second ? b[5] + 4 : b[0] + 12) + i * 10, 10)} size={38} />
             ))}
-            {[0, 1, 2, 3].map((i) => (
-              <Arrow key={i} pts={[[CX + 3 * 66 + 40, CY], [CX + 3 * 66 + 130, CY - 135 + i * 90], [990, CY - 135 + i * 90]]} color={C.target} tone="target" w={2.5} p={pA} head={false} a={0.75} />
-            ))}
+            {/* the whole run goes in at the bottom of the target model: one forward pass */}
+            <Arrow pts={[[CX + 3 * 66 + 34, CY], [950, CY], [950, 849], [986, 849]]} color={C.target} tone="target" w={3} p={pA} />
+            <TermS x={772} y={CY - 24} zh="核对" en="verify" c={C.target} size={22} a={pA} />
             <Stack x={990} y={490} w={270} h={380} n={8} color={C.target} bg={C.targetBg} a={ease(f, b[1] - 10, 16)} hi={pass ? [Math.floor((f - b[1]) / 4) % 8] : []} />
             <TermS x={1125} y={474} zh="目标模型" en="target model" c={C.target} anchor="middle" a={ease(f, b[1] - 10, 16)} />
             <TermS x={1125} y={910} zh="一次前向" en="one forward pass" c={C.target} size={22} anchor="middle" a={pA} />
-            <Arrow pts={[[1264, 540], [1300, 540], [1300, 412]]} color={C.model} tone="model" p={ease(f, b[2], 16)} />
+            <Arrow pts={[[1264, 510], [1300, 510], [1300, 382]]} color={C.model} tone="model" p={ease(f, b[2], 16)} />
+            {/* closed loop: what was committed is where the next round starts */}
+            <Arrow pts={[[255, 384], [255, 574]]} color={C.drafter} tone="drafter" dash w={3} p={ease(f, b[5] - 30, 20)} />
+            <Label x={272} y={486} t="落下的词 → 下一轮起点" color={C.drafter} weight={600} size={21} a={ease(f, b[5] - 30, 16)} />
           </Svg>
           <Card
             x={1360}
@@ -288,7 +291,7 @@ export const Loop: React.FC<{scene: Scene}> = () => (
               <span style={{font: `700 26px ${ZH}`}}>接受长度</span>
               <span style={{font: `italic 500 21px ${NUM}`, color: C.dim}}>acceptance length</span>
             </div>
-            <div style={{font: `500 21px ${ZH}`, color: C.dim, marginTop: 6}}>每轮平均落下几个 token（含目标模型补的 1 个）</div>
+            <div style={{font: `500 21px ${ZH}`, color: C.dim, marginTop: 6}}>每轮平均落下几个 token（含补的 1 个）</div>
             <div style={{font: `600 24px ${ZH}`, color: C.ink, marginTop: 8}}>这两轮：(4 + 5) ÷ 2 = 4.5 · 示意</div>
           </div>
         </>
@@ -307,7 +310,7 @@ export const Lossless: React.FC<{scene: Scene}> = () => (
     {({f, b}) => {
       const rej = f >= b[2] + 30;
       const toks: Tok[] = [...done('今天天气很')];
-      if (f >= b[1] - 30) toks.push(rej ? (f >= b[2] + 52 ? {t: '好', s: 'model', a: ease(f, b[2] + 52, 10), tag: '从 max(0, p−q) 重采样'} : {t: '热', s: 'bad', tag: '被拒'}) : {t: '热', s: 'draft', a: ease(f, b[1] - 30, 10), tag: '草稿'});
+      if (f >= b[1] - 30) toks.push(rej ? (f >= b[2] + 52 ? {t: '好', s: 'model', a: ease(f, b[2] + 52, 10), tag: '从归一化的 max(0, p−q) 重采样'} : {t: '热', s: 'bad', tag: '被拒'}) : {t: '热', s: 'draft', a: ease(f, b[1] - 30, 10), tag: '草稿'});
       const a = ease(f, b[1], 18);
       const ar = ease(f, b[2] + 30, 20);
       const BX = 170,
@@ -340,13 +343,13 @@ export const Lossless: React.FC<{scene: Scene}> = () => (
                 );
               })}
               <line x1={110} y1={BASE} x2={960} y2={BASE} stroke={C.line} strokeWidth={2} />
-              <Label x={110} y={BASE + 96} t="紫条 = max(0, p − q)：被拒后从这里重新采样" color={C.model} weight={600} a={ar} />
+              <Label x={110} y={BASE + 96} t="紫条 = max(0, p − q)，归一化后：被拒时从这里重新采样" color={C.model} weight={600} a={ar} />
             </g>
           </Svg>
           <Card x={1100} y={460} w={724} a={ease(f, b[2], 16)} rows={[{t: '留下的概率 = min(1, p ÷ q)', sub: '「热」：0.2 ÷ 0.45 ≈ 0.44 · 示意', c: C.ok}]} />
           <Card x={1100} y={610} w={724} a={ease(f, b[3], 16)} rows={[{t: '输出分布 = 目标模型自己一个个生成的分布', sub: 'Leviathan et al. 2023 · Chen et al. 2023', c: C.target}]} />
           <Card x={1100} y={760} w={724} a={ease(f, b[4], 16)} rows={[{t: '贪心解码（greedy, T = 0）', sub: '草稿和目标模型选的是同一个词，才留下', c: C.ink}]} />
-          <Src t="接受规则：EAGLE-3 论文 §2.1（speculative sampling）· 概率为示意" a={a} />
+          <Src t="接受规则：Leviathan et al. 2023 §2.3 · Chen et al. 2023 Algorithm 2 · 概率为示意" a={a} />
         </>
       );
     }}
@@ -370,7 +373,7 @@ export const Knobs: React.FC<{scene: Scene}> = () => (
           </div>
           <div style={{position: 'absolute', left: 0, right: 0, top: 350, display: 'flex', justifyContent: 'center', gap: 80, opacity: a1, font: `500 25px ${ZH}`, color: C.dim}}>
             <span>分子：一轮里猜 + 核对的时间</span>
-            <span>分母 τ：这一轮落下几个 token</span>
+            <span>分母 τ：平均每轮落下几个 token</span>
           </div>
           <Svg>
             {/* knob 1: guess better → longer accepted run */}

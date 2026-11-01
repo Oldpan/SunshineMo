@@ -46,8 +46,8 @@ export const MtpMeta: React.FC<{scene: Scene}> = () => (
             {/* shared trunk */}
             <Stack x={TX + TW / 2 - 220} y={690} w={440} h={150} n={4} color={C.target} bg={C.targetBg} a={pT} />
             <TermS x={TX + TW / 2 + 240} y={776} zh="共享主干" en="shared trunk" c={C.target} size={24} a={pT} />
-            <Chip x={TX + TW / 2 - 290} y={800} t="气" s="done" size={26} a={pT} />
-            <Arrow pts={[[TX + TW / 2 - 266, 800], [TX + TW / 2 - 226, 800]]} color={C.ink} p={pT} />
+            <Chip x={TX + TW / 2 - 290} y={823} t="气" s="done" size={26} a={pT} />
+            <Arrow pts={[[TX + TW / 2 - 266, 823], [TX + TW / 2 - 226, 823]]} color={C.ink} p={pT} />
             {/* independence: no links between heads */}
             {[0, 1, 2].map((i) => (
               <g key={i} opacity={indep}>
@@ -57,7 +57,7 @@ export const MtpMeta: React.FC<{scene: Scene}> = () => (
                 </text>
               </g>
             ))}
-            <Label x={TX} y={HY + 136} t="各猜各的：头 3 看不到头 2 猜了什么" color={C.bad} weight={600} a={indep} />
+            <Label x={TX} y={404} t="各猜各的：头 3 看不到头 2 猜了什么" color={C.bad} weight={600} a={indep} />
           </Svg>
           <Card x={1360} y={430} w={464} a={ease(f, b[3] + 30, 16)} rows={[{t: '推理时只用头 1', sub: '头 2–4 可当草稿；每个头是一层 Transformer', c: C.target}, {t: '新意：和模型一起预训练', sub: '多头起草早有先例（如 Medusa 2024.01）', c: C.drafter}]} />
           <Card x={1360} y={680} w={464} a={ease(f, b[4], 16)} head="代码任务 · 自投机解码" rows={[{t: '约 3 倍', sub: 'Meta 论文 §3.2', c: C.ok}]} />
@@ -92,9 +92,9 @@ const Module: React.FC<{x: number; k: number; f: number; b: number[]; a: number;
       <Arrow pts={[[x + 75, 688], [x + 75, 664], [x + 140, 664]]} color={C.dim} tone="dim" w={2.5} p={pNorm} head={false} />
       <Arrow pts={[[x + 225, 688], [x + 225, 664], [x + 160, 664]]} color={C.dim} tone="dim" w={2.5} p={pNorm} head={false} />
       <circle cx={x + 150} cy={664} r={9} fill={C.card} stroke={C.ink} strokeWidth={2} opacity={pNorm} />
-      <Label x={x + 166} y={658} t="拼接" size={18} a={pNorm} />
+      <Label x={x + 166} y={658} t="拼接 concat" size={18} a={pNorm} />
       <Arrow pts={[[x + 150, 654], [x + 150, 632]]} color={C.ink} p={pNorm} />
-      <Box x={x + 40} y={586} w={220} h={44} label={`投影 M${k}`} size={22} a={pNorm} fill={newHi ? '#FFF3D6' : C.card} stroke={newHi ? C.draft : C.ink} />
+      <Box x={x + 40} y={586} w={220} h={44} label={`投影 M${k} projection`} size={20} a={pNorm} fill={newHi ? '#FFF3D6' : C.card} stroke={newHi ? C.draft : C.ink} />
       <Label x={x + 266} y={614} t="2d→d" size={17} a={pNorm} />
       <Arrow pts={[[x + 150, 584], [x + 150, 566]]} color={C.ink} p={pTrm} />
       <Box x={x + 40} y={508} w={220} h={56} label="Transformer 块" size={22} a={pTrm} fill={newHi ? '#FFF3D6' : C.drafterBg} stroke={newHi ? C.draft : C.drafter} color={C.drafter} />
@@ -132,9 +132,9 @@ export const MtpDs: React.FC<{scene: Scene}> = () => (
             {/* main model */}
             <g opacity={pMain}>
               <Stack x={COLS[0] + 40} y={508} w={220} h={270} n={6} color={C.target} bg={C.targetBg} />
-              <TermS x={COLS[0] + 150} y={OY + 82} zh="主模型" en="Main Model" c={C.target} size={22} anchor="middle" />
+              <TermS x={COLS[0] + 76} y={OY + 82} zh="主模型" en="Main Model" c={C.target} size={22} />
               <Arrow pts={[[COLS[0] + 150, EY - 2], [COLS[0] + 150, 784]]} color={C.ink} />
-              <Arrow pts={[[COLS[0] + 150, 504], [COLS[0] + 150, OY + 50]]} color={C.target} tone="target" />
+              <Arrow pts={[[COLS[0] + 58, 504], [COLS[0] + 58, OY + 50]]} color={C.target} tone="target" />
               <Chip x={COLS[0] + 150} y={EY + 64} t="气" s="done" size={26} />
             </g>
             <Module x={COLS[1]} k={1} f={f} b={b} a={pM1} dim={0} />
@@ -153,7 +153,7 @@ export const MtpDs: React.FC<{scene: Scene}> = () => (
           </Svg>
           <Term x={1280} y={440} zh="因果链" en="causal chain" c={C.model} a={ease(f, b[1] + 30, 14)} />
           <div style={{position: 'absolute', left: 1280, top: 476, width: 544, font: `500 21px ${ZH}`, color: C.dim, opacity: ease(f, b[1] + 30, 14)}}>
-            模块 k 吃上一深度的隐状态 h 和第 k 个 token 的 embedding
+            模块 k 吃上一深度的隐状态 h，和往后第 k 个 token（t<sub>i+k</sub>）的 embedding
           </div>
           <Card x={1280} y={540} w={544} a={ease(f, b[5], 16)} rows={[{t: '共用：embedding、输出头', c: C.target}, {t: '新增：投影 M + 1 个 Transformer 块', c: C.draft}]} />
           <Card x={1280} y={700} w={544} a={ease(f, b[6], 16) * (1 - ease(f, b[7], 10))} head="推理（V3：只用模块 1）" rows={[{t: '这次前向的 h⁰ → 模块 1 猜 1 个', sub: '主模型下一次前向顺带核对它', c: C.drafter}]} />

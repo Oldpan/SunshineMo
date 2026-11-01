@@ -30,10 +30,10 @@ export const EagleIntro: React.FC<{scene: Scene}> = () => (
             <g opacity={pT}>
               <Stack x={150} y={470} w={300} h={380} n={10} color={C.target} bg={C.targetBg} />
               <TermS x={300} y={452} zh="目标模型" en="target model" c={C.target} anchor="middle" />
-              <Label x={300} y={882} t="训好后冻住，一个参数不动" anchor="middle" color={C.target} weight={600} a={pD} />
+              <Label x={300} y={882} t="冻住 frozen：一个参数不动" anchor="middle" color={C.target} weight={600} a={pD} />
             </g>
             <g opacity={pD}>
-              <Arrow pts={[[454, 600], [640, 600]]} color={C.target} tone="target" w={3} p={pD} label="特征" lx={520} ly={588} />
+              <Arrow pts={[[454, 600], [640, 600]]} color={C.target} tone="target" w={3} p={pD} label="特征 features" lx={466} ly={588} />
               <Box x={650} y={550} w={220} h={100} fill={C.drafterBg} stroke={C.drafter} label="草稿机" sub="draft model · 1 层" color={C.drafter} size={30} />
               <Label x={760} y={690} t="模型训好以后再单独训练" anchor="middle" color={C.drafter} weight={600} />
             </g>
@@ -70,9 +70,9 @@ export const EagleArch: React.FC<{scene: Scene}> = () => (
         SH = 380,
         N = 9;
       const taps = [
-        {i: 1, t: '低', c: '#7FA0D6'},
-        {i: 4, t: '中', c: C.target},
-        {i: 7, t: '高', c: '#24427A'},
+        {i: 1, t: '低 l', c: '#7FA0D6'},
+        {i: 4, t: '中 m', c: C.target},
+        {i: 7, t: '高 h', c: '#24427A'},
       ];
       const pDec = ease(f, b[0], 16);
       const pTap = ease(f, b[1], 22);
@@ -81,9 +81,10 @@ export const EagleArch: React.FC<{scene: Scene}> = () => (
       const pIn = ease(f, b[3], 18);
       const pHead = ease(f, b[3] + 40, 18);
       const step1 = ease(f, b[4], 18);
-      const step2 = f >= b[5];
+      const s2 = f >= b[5]; // step 2 has begun: the new token has no target feature yet
+      const step2 = f >= b[6]; // …so the drafter's own output a stands in for g
       const pLoop = ease(f, b[6], 22);
-      const dimTarget = step2 ? 0.35 : 1;
+      const dimTarget = s2 ? 0.35 : 1;
       const MID = layerY(SY, SH, N, 4);
       const CATX = 410,
         SEG = 50,
@@ -99,11 +100,11 @@ export const EagleArch: React.FC<{scene: Scene}> = () => (
         HW = 150;
       const route = (j: number): [number, number][] => {
         const y = layerY(SY, SH, N, taps[j].i);
-        if (j === 1) return [[SX + SW + 4, y], [CATX - 4, y]];
-        const x = CATX + (j === 2 ? 1 : 2) * SEG + SEG / 2 - 2;
+        const x = CATX + j * SEG + SEG / 2 - 2;
+        if (j === 1) return [[SX + SW + 4, y], [CATX - 22, y], [CATX - 22, CATY - 30], [x, CATY - 30], [x, CATY - 4]];
         return [[SX + SW + 4, y], [x, y], [x, j === 2 ? CATY - 4 : CATY + 56]];
       };
-      const segOf = (j: number) => (j === 1 ? 0 : j === 2 ? 1 : 2);
+      const segOf = (j: number) => j;
       const toks: Tok[] = done('今天天气');
       if (f >= b[4] + 40) toks.push({t: '很', s: 'draft', a: ease(f, b[4] + 40, 12), tag: '第 1 步'});
       if (f >= b[6] + 30) toks.push({t: '好', s: 'draft', a: ease(f, b[6] + 30, 12), tag: '第 2 步'});
@@ -113,7 +114,7 @@ export const EagleArch: React.FC<{scene: Scene}> = () => (
           <Svg>
             <g opacity={dimTarget}>
               <Stack x={SX} y={SY} w={SW} h={SH} n={N} color={C.target} bg={C.targetBg} hi={pTap > 0.5 ? taps.map((k) => k.i) : []} />
-              <TermS x={SX + SW / 2} y={SY - 16} zh="目标模型" en="target" c={C.target} size={22} anchor="middle" />
+              <TermS x={SX + SW / 2} y={SY - 16} zh="目标模型" en="target model" c={C.target} size={22} anchor="middle" />
               <Label x={SX + SW / 2} y={SY + SH + 30} t="冻住 frozen" anchor="middle" color={C.target} size={20} />
               {taps.map((k, j) => (
                 <g key={k.t}>
@@ -124,10 +125,11 @@ export const EagleArch: React.FC<{scene: Scene}> = () => (
               {taps.map((k, j) => (
                 <rect key={j} x={CATX + segOf(j) * SEG} y={CATY} width={SEG - 4} height={52} rx={5} fill={k.c} opacity={pCat * 0.85} />
               ))}
-              <TermS x={CATX} y={CATY + 92} zh="拼成 3 倍宽" en="concat 3k" size={19} a={pCat} />
+              <Label x={CATX + SEG + 4} y={CATY + 88} t="拼成 3 倍宽" color={C.ink} weight={700} size={20} a={pCat} />
+              <Label x={CATX + SEG + 4} y={CATY + 113} t="concat 3k" size={20} a={pCat} />
               <Arrow pts={[[CATX + SEG * 3 + 2, MID], [FC1 - 4, MID]]} color={C.ink} p={pFc} />
-              <Box x={FC1} y={MID - 34} w={84} h={68} label="FC" a={pFc} size={26} />
-              <Label x={FC1 + 42} y={MID + 62} t="3k → k" anchor="middle" size={18} a={pFc} />
+              <Box x={FC1} y={MID - 40} w={84} h={80} label="FC" sub="全连接" a={pFc} size={26} />
+              <Label x={FC1 + 42} y={MID + 66} t="3k → k" anchor="middle" size={19} a={pFc} />
               <Arrow pts={[[FC1 + 88, MID], [GX - 4, MID]]} color={C.target} tone="target" p={pIn} />
             </g>
             {/* g | e pair: fused feature + token embedding */}
@@ -141,27 +143,29 @@ export const EagleArch: React.FC<{scene: Scene}> = () => (
                 e
               </text>
               <Arrow pts={[[GX + SEG * 1.5 - 2, MID + 120], [GX + SEG * 1.5 - 2, MID + 30]]} color={C.draft} tone="draft" p={pIn} />
-              <Box x={GX + SEG * 1.5 - 72} y={MID + 124} w={142} h={60} label="词嵌入" sub="embedding" size={20} stroke={C.draft} />
-              <Chip x={GX - 40} y={MID + 154} t={step2 ? '很' : '气'} s={step2 ? 'draft' : 'done'} size={24} />
+              <Box x={GX + SEG * 1.5 - 76} y={MID + 120} w={150} h={68} label="词嵌入" sub="embedding" size={22} stroke={C.draft} />
+              <Chip x={GX - 40} y={MID + 154} t={s2 ? '很' : '气'} s={s2 ? 'draft' : 'done'} size={24} />
               <Arrow pts={[[GX - 20, MID + 154], [GX + SEG * 1.5 - 76, MID + 154]]} color={C.ink} p={pIn} />
               <Arrow pts={[[GX + SEG * 2 + 2, MID], [FC2 - 4, MID]]} color={C.ink} p={pIn} />
-              <Box x={FC2} y={MID - 34} w={84} h={68} label="FC" size={26} />
-              <Label x={FC2 + 42} y={MID + 62} t="2k → k" anchor="middle" size={18} />
+              <Box x={FC2} y={MID - 40} w={84} h={80} label="FC" sub="全连接" size={26} />
+              <Label x={FC2 + 42} y={MID + 66} t="2k → k" anchor="middle" size={19} />
               <Arrow pts={[[FC2 + 88, MID], [DX - 4, MID]]} color={C.ink} p={pIn} />
             </g>
-            {step2 && (
+            {s2 && (
               <g opacity={ease(f, b[5], 12)}>
                 <line x1={FC1 + 96} y1={MID - 16} x2={FC1 + 130} y2={MID + 16} stroke={C.bad} strokeWidth={5} />
                 <line x1={FC1 + 130} y1={MID - 16} x2={FC1 + 96} y2={MID + 16} stroke={C.bad} strokeWidth={5} />
-                <Label x={FC1 + 42} y={MID - 56} t="新词还没过目标模型" anchor="middle" color={C.bad} weight={600} size={20} />
+                <Label x={FC1 + 42} y={MID - 86} t="新词还没过目标模型" anchor="middle" color={C.bad} weight={600} size={20} />
               </g>
             )}
             {/* the one-layer decoder + LM head */}
-            <Box x={DX} y={DY} w={DW} h={DH} fill={C.drafterBg} stroke={C.drafter} label="1 层 decoder" sub="草稿机 draft model" color={C.drafter} size={28} a={pDec} />
+            <Box x={DX} y={DY} w={DW} h={DH} fill={C.drafterBg} stroke={C.drafter} label="1 层 decoder" sub="解码层" color={C.drafter} size={28} a={pDec} />
+            <TermS x={DX + DW / 2} y={DY + DH + 34} zh="草稿机" en="draft model" c={C.drafter} size={24} anchor="middle" a={pDec} />
             <Arrow pts={[[DX + DW + 4, MID], [HX - 4, MID]]} color={C.drafter} tone="drafter" p={pHead} />
-            <Box x={HX} y={MID - 40} w={HW} h={80} label="输出头" sub="LM head" size={24} a={pHead} />
-            <Label x={HX + HW / 2} y={MID + 72} t="仓库代码：草稿自带、词表裁小" anchor="middle" size={17} a={pHead} />
-            <Arrow pts={[[HX + HW / 2, MID - 44], [HX + HW / 2, 412]]} color={C.draft} tone="draft" p={ease(f, b[4] + 20, 20)} label="草稿词" lx={HX + HW / 2 + 12} ly={460} />
+            <Box x={HX} y={MID - 40} w={HW} h={80} label="输出头" sub="LM head" size={26} a={pHead} />
+            <Label x={HX + HW / 2} y={MID + 74} t="仓库代码：" anchor="middle" size={19} a={pHead} />
+            <Label x={HX + HW / 2} y={MID + 98} t="草稿自带、词表裁小" anchor="middle" size={19} a={pHead} />
+            <Arrow pts={[[HX + HW / 2, MID - 44], [HX + HW / 2, 412]]} color={C.draft} tone="draft" p={ease(f, b[3] + 50, 20)} label="草稿词" lx={HX + HW / 2 + 12} ly={460} />
             {/* step 2+: the decoder's own output a stands in for g */}
             <Arrow
               pts={[[DX + DW / 2, DY - 4], [DX + DW / 2, DY - 60], [GX + SEG / 2 - 2, DY - 60], [GX + SEG / 2 - 2, MID - 60]]}
@@ -295,19 +299,19 @@ export const EagleTtt: React.FC<{scene: Scene}> = () => (
 // ------------------------------------------------------------------ eagle_tree: dynamic draft tree, one tree-attention pass, closed loop
 type Node = {t: string; d: number; y: number; p: number; acc?: boolean};
 const TREE: Node[] = [
-  {t: '很', d: 1, y: 540, p: -1, acc: true},
-  {t: '真', d: 1, y: 760, p: -1},
-  {t: '好', d: 2, y: 480, p: 0, acc: true},
-  {t: '热', d: 2, y: 600, p: 0},
-  {t: '不', d: 2, y: 760, p: 1},
-  {t: '适', d: 3, y: 440, p: 2, acc: true},
-  {t: '，', d: 3, y: 530, p: 2},
-  {t: '啊', d: 3, y: 620, p: 3},
-  {t: '错', d: 3, y: 760, p: 4},
+  {t: '很', d: 1, y: 570, p: -1, acc: true},
+  {t: '真', d: 1, y: 790, p: -1},
+  {t: '好', d: 2, y: 510, p: 0, acc: true},
+  {t: '热', d: 2, y: 630, p: 0},
+  {t: '不', d: 2, y: 790, p: 1},
+  {t: '适', d: 3, y: 470, p: 2, acc: true},
+  {t: '，', d: 3, y: 560, p: 2},
+  {t: '啊', d: 3, y: 650, p: 3},
+  {t: '错', d: 3, y: 790, p: 4},
 ];
 const TX0 = 170,
   TDX = 170,
-  ROOTY = 640;
+  ROOTY = 670;
 
 export const EagleTree: React.FC<{scene: Scene}> = () => (
   <Page tag="② EAGLE-3 · 推理" title="草稿树 + 一次核对" sub="dynamic draft tree（沿用 EAGLE-2）· tree attention">
@@ -340,22 +344,23 @@ export const EagleTree: React.FC<{scene: Scene}> = () => (
               );
             })}
             {[1, 2, 3].map((d) => (
-              <text key={d} x={TX0 + d * TDX} y={850} textAnchor="middle" opacity={deep} style={{font: `700 20px ${ZH}`, fill: C.drafter}}>
+              <text key={d} x={TX0 + d * TDX} y={878} textAnchor="middle" opacity={deep} style={{font: `700 20px ${ZH}`, fill: C.drafter}}>
                 草稿机第 {d} 次
               </text>
             ))}
             {/* target model: one forward over the whole tree */}
             <g opacity={ease(f, b[1] - 10, 16)}>
-              <Arrow pts={[[TX0 + 3 * TDX + 50, 600], [820, 600]]} color={C.target} tone="target" w={3} p={ease(f, b[1], 20)} label="整棵树一起送" lx={TX0 + 3 * TDX + 50} ly={584} />
-              <Stack x={830} y={460} w={240} h={300} n={8} color={C.target} bg={C.targetBg} hi={verify && !kept ? [Math.floor((f - b[1]) / 4) % 8] : []} />
-              <TermS x={950} y={444} zh="目标模型" en="target" c={C.target} size={22} anchor="middle" />
-              <TermS x={950} y={800} zh="树形注意力" en="tree attention" c={C.target} size={21} anchor="middle" a={ease(f, b[1], 14)} />
-              <Label x={950} y={828} t="一次前向核完整棵树" anchor="middle" size={19} a={ease(f, b[1], 14)} />
+              <Arrow pts={[[TX0 + 3 * TDX + 50, 630], [820, 630]]} color={C.target} tone="target" w={3} p={ease(f, b[1], 20)} label="整棵树" lx={TX0 + 3 * TDX + 62} ly={614} />
+              <Stack x={830} y={490} w={240} h={300} n={8} color={C.target} bg={C.targetBg} hi={verify && !kept ? [Math.floor((f - b[1]) / 4) % 8] : []} />
+              <TermS x={940} y={474} zh="目标模型" en="target model" c={C.target} size={22} anchor="middle" />
+              <TermS x={950} y={830} zh="树形注意力" en="tree attention" c={C.target} size={21} anchor="middle" a={ease(f, b[1], 14)} />
+              <Label x={950} y={856} t="一次前向核完整棵树" anchor="middle" size={19} a={ease(f, b[1], 14)} />
             </g>
             {/* closed loop: this pass's low/mid/high features feed the next round's drafter */}
             <g opacity={pLoop}>
-              <Arrow pts={[[950, 456], [950, 410], [TX0 + 70, 410], [TX0 + 70, 600]]} color={C.drafter} tone="drafter" w={3.5} dash p={pLoop} />
-              <Label x={520} y={400} t="这次前向的低 / 中 / 高层特征 → 下一轮草稿" anchor="middle" color={C.drafter} weight={600} size={21} />
+              <Arrow pts={[[1064, 486], [1064, 410], [376, 410]]} color={C.drafter} tone="drafter" w={3.5} dash p={pLoop} />
+              <Box x={110} y={386} w={262} h={48} fill={C.drafterBg} stroke={C.drafter} label="下一轮草稿机 draft model" size={19} color={C.drafter} />
+              <Label x={420} y={442} t="这次前向的低 / 中 / 高层特征 → 下一轮" color={C.drafter} weight={600} size={21} />
             </g>
           </Svg>
           <div style={{position: 'absolute', left: 1130, top: 440, width: 694, opacity: ease(f, b[4], 16)}}>
@@ -368,7 +373,7 @@ export const EagleTree: React.FC<{scene: Scene}> = () => (
                 <div style={{width: 120, font: `700 24px ${NUM}`}}>{n}</div>
                 <div style={{height: 40, width: (v as number) * 80 * ease(f, at as number, 20), background: c as string, borderRadius: 6}} />
                 <div style={{font: `600 30px ${NUM}`}}>{(v as number).toFixed(2)}×</div>
-                <div style={{font: `500 20px ${NUM}`, color: C.dim}}>{sub}</div>
+                <div style={{font: `700 28px ${NUM}`, color: C.drafter}}>{sub}</div>
               </div>
             ))}
           </div>

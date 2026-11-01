@@ -4,6 +4,17 @@ import type {Scene} from '@atv/lib/types';
 import {Arrow, Box, C, Card, Chip, done, ease, Label, layerY, NUM, Page, Sentence, Src, Stack, Svg, TermS, Tok, ZH} from './type';
 
 export const MK = '#C0567F'; // Markov head
+
+/** base + subscript inside an SVG <text>. */
+const Sb: React.FC<{b: string; s: string; tail?: string}> = ({b, s, tail}) => (
+  <>
+    <tspan>{b}</tspan>
+    <tspan dy={7} style={{fontSize: '0.68em'}}>
+      {s}
+    </tspan>
+    <tspan dy={-7}>{tail ?? ''}</tspan>
+  </>
+);
 const CF = '#B7791F'; // confidence head
 const SC = C.model; // scheduler
 
@@ -16,9 +27,9 @@ const Structure: React.FC<{f: number; a: number; hi: number; on: number[]}> = ({
     N = 10;
   const BX = 520,
     BW = 520,
-    BY = 610,
-    LH = 40,
-    G = 12;
+    BY = 614,
+    LH = 34,
+    G = 10;
   const ly = (i: number) => BY + (2 - i) * (LH + G);
   const slots = [
     {zh: '① Markov 头', en: 'Markov head', c: MK},
@@ -28,8 +39,8 @@ const Structure: React.FC<{f: number; a: number; hi: number; on: number[]}> = ({
   return (
     <g opacity={a}>
       <Stack x={SX} y={SY} w={SW} h={SH} n={N} color={C.target} bg={C.targetBg} hi={[7, 8, 9]} />
-      <TermS x={SX + SW / 2} y={SY - 14} zh="目标模型" en="target" c={C.target} size={21} anchor="middle" />
-      <Label x={SX + SW / 2} y={SY + SH + 28} t="V4.1：取最后三层" anchor="middle" size={18} color={C.target} weight={600} />
+      <TermS x={SX + SW / 2} y={SY - 14} zh="目标模型" en="target model" c={C.target} size={21} anchor="middle" />
+      <Label x={SX + SW / 2} y={SY + SH + 28} t="V4.1：取最后三层 37 / 38 / 39" anchor="middle" size={18} color={C.target} weight={600} />
       {[7, 8, 9].map((t) => (
         <Arrow key={t} pts={[[SX + SW + 4, layerY(SY, SH, N, t)], [300, layerY(SY, SH, N, t)], [300, 650], [316, 650]]} color={C.target} tone="target" w={2.5} head={false} />
       ))}
@@ -45,39 +56,55 @@ const Structure: React.FC<{f: number; a: number; hi: number; on: number[]}> = ({
         </g>
       ))}
       <text x={BX + BW - 14} y={ly(1) + LH / 2 + 7} textAnchor="end" style={{font: `600 19px ${ZH}`, fill: C.drafter}}>
-        DFlash 主体 · 线上 3 个 MoE 层
+        DFlash 主体 backbone · 线上 3 个 MoE 层
       </text>
-      <text x={BX + 74} y={ly(2) + LH / 2 + 6} style={{font: `600 16px ${ZH}`, fill: C.target}}>
+      <text x={BX + 74} y={ly(2) + LH / 2 + 6} style={{font: `600 17px ${ZH}`, fill: C.target}}>
         ← K V 来自目标特征
+      </text>
+      {/* shared, frozen embedding (in) and LM head (out) */}
+      <rect x={BX} y={ly(0) + LH + 8} width={BW} height={28} rx={6} fill="#E9EEF6" stroke={C.target} strokeWidth={2} strokeDasharray="7 5" />
+      <text x={BX + BW / 2} y={ly(0) + LH + 28} textAnchor="middle" style={{font: `600 18px ${ZH}`, fill: C.target}}>
+        词嵌入 embedding · 与目标模型共享、冻结
+      </text>
+      <rect x={BX} y={BY - 38} width={BW} height={28} rx={6} fill="#E9EEF6" stroke={C.target} strokeWidth={2} strokeDasharray="7 5" />
+      <text x={BX + BW / 2} y={BY - 18} textAnchor="middle" style={{font: `600 18px ${ZH}`, fill: C.target}}>
+        输出头 LM head · 与目标模型共享、冻结
       </text>
       {/* inputs: anchor + noise × (γ − 1), γ = 5 */}
       {['很', '·', '·', '·', '·'].map((t, i) => (
-        <Chip key={i} x={BX + 60 + i * 100} y={ly(0) + LH + 50} t={t} s={i ? 'mask' : 'done'} size={22} />
+        <g key={i}>
+          <Chip x={BX + 60 + i * 100} y={ly(0) + LH + 72} t={t} s={i ? 'mask' : 'done'} size={22} />
+          <Arrow pts={[[BX + 60 + i * 100, ly(0) + LH + 56], [BX + 60 + i * 100, ly(0) + LH + 40]]} color={C.ink} w={2} />
+        </g>
       ))}
-      <Label x={BX + 60} y={ly(0) + LH + 96} t="锚点 + 4 个噪声位（γ = 5），一次前向" size={18} />
+      <Label x={BX + 60} y={ly(0) + LH + 116} t="锚点 anchor + 4 个噪声位 noise（γ = 5），一次前向" size={18} />
       {/* outputs: base scores U_k per position */}
       {[0, 1, 2, 3, 4].map((k) => (
         <g key={k}>
-          <Arrow pts={[[BX + 60 + k * 100, BY - 4], [BX + 60 + k * 100, BY - 26]]} color={C.drafter} tone="drafter" w={2} />
+          <Arrow pts={[[BX + 60 + k * 100, BY - 40], [BX + 60 + k * 100, BY - 54]]} color={C.drafter} tone="drafter" w={2} />
           {[0.8, 0.45, 0.25].map((v, j) => (
-            <rect key={j} x={BX + 36 + k * 100 + j * 17} y={BY - 34 - 40 * v} width={13} height={40 * v} fill={C.drafter} opacity={0.5 + 0.2 * (2 - j)} />
+            <rect key={j} x={BX + 36 + k * 100 + j * 17} y={BY - 60 - 36 * v} width={13} height={36 * v} fill={C.drafter} opacity={0.5 + 0.2 * (2 - j)} />
           ))}
-          <text x={BX + 60 + k * 100} y={BY - 84} textAnchor="middle" style={{font: `italic 600 17px ${NUM}`, fill: C.drafter}}>
-            U{k + 1}
+          <text x={BX + 60 + k * 100} y={BY - 102} textAnchor="middle" style={{font: `italic 600 18px ${NUM}`, fill: C.drafter}}>
+            <Sb b="U" s={`${k + 1}`} />
           </text>
         </g>
       ))}
+      <text x={BX - 12} y={BY - 70} textAnchor="end" style={{font: `italic 600 19px ${NUM}`, fill: C.drafter}}>
+        每位输出 <Sb b="h" s="k" tail="、" />
+        <Sb b="U" s="k" />
+      </text>
       {/* the three add-ons */}
       {slots.map((s, i) => {
         const lit = on.includes(i);
         const pulse = hi === i ? 0.5 + 0.5 * Math.sin(f * 0.25) : 0;
         return (
           <g key={i} opacity={lit ? 1 : 0.25}>
-            <rect x={BX + i * 178} y={410} width={166} height={64} rx={10} fill={C.card} stroke={s.c} strokeWidth={2.5 + pulse * 2} />
-            <text x={BX + i * 178 + 83} y={438} textAnchor="middle" style={{font: `700 19px ${ZH}`, fill: s.c}}>
+            <rect x={BX + i * 178} y={404} width={166} height={60} rx={10} fill={C.card} stroke={s.c} strokeWidth={2.5 + pulse * 2} />
+            <text x={BX + i * 178 + 83} y={430} textAnchor="middle" style={{font: `700 19px ${ZH}`, fill: s.c}}>
               {s.zh}
             </text>
-            <text x={BX + i * 178 + 83} y={462} textAnchor="middle" style={{font: `italic 500 15px ${NUM}`, fill: C.dim}}>
+            <text x={BX + i * 178 + 83} y={454} textAnchor="middle" style={{font: `italic 500 17px ${NUM}`, fill: C.dim}}>
               {s.en}
             </text>
           </g>
@@ -108,7 +135,7 @@ export const DsparkMarkov: React.FC<{scene: Scene}> = () => (
             <Structure f={f} a={pS} hi={f >= b[3] ? 0 : -1} on={on} />
           </Svg>
           {/* right panel */}
-          <div style={{position: 'absolute', left: 1110, top: 410, width: 714, height: 470, background: C.card, border: `2px solid ${C.line}`, borderRadius: 16, opacity: ease(f, b[3], 16)}}>
+          <div style={{position: 'absolute', left: 1110, top: 410, width: 714, height: 470, background: C.card, border: `2px solid ${C.line}`, borderRadius: 16, opacity: ease(f, b[3], 16) * (1 - ease(f, b[8], 12))}}>
             <div style={{position: 'absolute', left: 24, top: 16, font: `700 23px ${ZH}`, color: MK}}>
               ① Markov 头 <span style={{font: `italic 500 18px ${NUM}`, color: C.dim}}>Markov head · 让后一个词看到前一个</span>
             </div>
@@ -119,29 +146,31 @@ export const DsparkMarkov: React.FC<{scene: Scene}> = () => (
           <Svg>
             {chain && (
               <g opacity={ease(f, b[3], 16)}>
+                {/* anchor: position 1 is biased by B(很) */}
+                <Chip x={1170} y={566} t="很" s="done" size={26} />
+                <Arrow pts={[[1194, 566], [1214, 566], [1214, 663], [1236, 663]]} color={MK} tone="ink" w={2.5} p={walk(0)} />
                 {[0, 1, 2].map((k) => {
-                  const x = 1210 + k * 220;
+                  const x = 1290 + k * 200;
                   const w = walk(k);
                   return (
                     <g key={k}>
                       {[0.8, 0.5, 0.3].map((v, j) => (
-                        <rect key={j} x={x - 34 + j * 24} y={820 - 90 * v} width={20} height={90 * v} fill={C.drafter} opacity={0.45 + 0.2 * (2 - j)} />
+                        <rect key={j} x={x - 34 + j * 24} y={820 - 70 * v} width={20} height={70 * v} fill={C.drafter} opacity={0.45 + 0.2 * (2 - j)} />
                       ))}
                       <text x={x} y={850} textAnchor="middle" style={{font: `italic 600 18px ${NUM}`, fill: C.drafter}}>
-                        U{k + 1}（并行）
+                        <Sb b="U" s={`${k + 1}`} tail="（并行）" />
                       </text>
-                      {k > 0 && (
-                        <g opacity={w}>
-                          <rect x={x - 46} y={640} width={92} height={46} rx={8} fill="#F8E4EC" stroke={MK} strokeWidth={2} />
-                          <text x={x} y={670} textAnchor="middle" style={{font: `700 20px ${NUM}`, fill: MK}}>
-                            + B
-                          </text>
-                          <Arrow pts={[[x, 688], [x, 724]]} color={MK} tone="ink" w={2} />
-                        </g>
-                      )}
-                      <Arrow pts={[[x, 724 - (k ? 0 : 0)], [x, 590]]} color={C.draft} tone="draft" w={2.5} p={w} />
+                      {/* one upward flow: U_k → (+B) → sample → x_k */}
+                      <Arrow pts={[[x, 760], [x, 690]]} color={C.drafter} tone="drafter" w={2.5} />
+                      <g opacity={w}>
+                        <rect x={x - 46} y={640} width={92} height={46} rx={8} fill="#F8E4EC" stroke={MK} strokeWidth={2} />
+                        <text x={x} y={670} textAnchor="middle" style={{font: `700 20px ${NUM}`, fill: MK}}>
+                          + B
+                        </text>
+                      </g>
+                      <Arrow pts={[[x, 638], [x, 588]]} color={C.draft} tone="draft" w={2.5} p={w} label="采样" lx={x + 10} ly={620} />
                       <Chip x={x} y={566} t={['好', '，', '适'][k]} s="draft" size={26} a={w} />
-                      {k < 2 && <Arrow pts={[[x + 24, 566], [x + 120, 566], [x + 120, 662], [x + 220 - 50, 662]]} color={MK} tone="ink" w={2.5} p={walk(k + 1)} label="查 W1[x]" lx={x + 128} ly={620} />}
+                      {k < 2 && <Arrow pts={[[x + 24, 566], [x + 100, 566], [x + 100, 663], [x + 200 - 50, 663]]} color={MK} tone="ink" w={2.5} p={walk(k + 1)} label="查 W1[x]" lx={x + 108} ly={612} />}
                     </g>
                   );
                 })}
@@ -189,30 +218,38 @@ export const DsparkMarkov: React.FC<{scene: Scene}> = () => (
 );
 
 // ------------------------------------------------------------------ dspark_conf
-const CONF = [0.95, 0.9, 0.85, 0.75, 0.6, 0.5]; // illustrative
+const CONF = [0.95, 0.85, 0.75, 0.6]; // illustrative, γ = 5 → 4 draft slots
 export const DsparkConf: React.FC<{scene: Scene}> = () => (
   <Page tag="④ DSpark · 置信度头" title="② 置信度头：这一位能过的概率" sub="confidence head · 式 (7)">
     {({f, b}) => {
       const surv = CONF.map((_, j) => CONF.slice(0, j + 1).reduce((p, c) => p * c, 1));
       const pM = ease(f, b[1], 16);
       const pS = ease(f, b[2], 16);
-      const toks: Tok[] = [...done('今天天气很'), ...['好', '，', '适', '合', '出', '门'].map((t, j) => ({t, s: 'draft' as const, tag: `c=${CONF[j].toFixed(2)}`, a: ease(f, 10 + j * 6, 10)}))];
+      const toks: Tok[] = [...done('今天天气很'), ...['好', '，', '适', '合'].map((t, j) => ({t, s: 'draft' as const, tag: `c=${CONF[j].toFixed(2)}`, a: ease(f, 10 + j * 6, 10)}))];
       return (
         <>
           <Sentence toks={toks} y={214} size={52} f={f} label="每个草稿位估一个通过概率 · 数值为示意" />
           <Svg>
             {/* the head's inputs */}
             <g opacity={ease(f, b[0], 16)}>
-              <Box x={110} y={450} w={330} h={76} label="h_k" sub="草稿主体在这一位的隐状态" size={24} fill={C.drafterBg} stroke={C.drafter} color={C.drafter} />
-              <Box x={110} y={560} w={330} h={76} label="W1[x_k−1]" sub="前一个词的低秩向量（共用 W1）" size={24} fill="#F8E4EC" stroke={MK} color={MK} />
+              <Box x={110} y={450} w={330} h={76} sub="DFlash 主体最后一层，这一位的隐状态" size={24} fill={C.drafterBg} stroke={C.drafter} />
+              <text x={275} y={480} textAnchor="middle" style={{font: `italic 700 26px ${NUM}`, fill: C.drafter}}>
+                <Sb b="h" s="k" />
+              </text>
+              <Box x={110} y={560} w={330} h={76} sub="前一个词的低秩向量（共用 W1）" size={24} fill="#F8E4EC" stroke={MK} />
+              <text x={275} y={590} textAnchor="middle" style={{font: `italic 700 26px ${NUM}`, fill: MK}}>
+                <Sb b="W1[x" s="k−1" tail="]" />
+              </text>
               <Arrow pts={[[444, 488], [500, 488], [500, 540], [530, 540]]} color={C.drafter} tone="drafter" w={2.5} />
               <Arrow pts={[[444, 598], [500, 598], [500, 540], [530, 540]]} color={MK} tone="ink" w={2.5} />
               <Box x={534} y={500} w={200} h={80} label="σ(wᵀ[ · ; · ])" size={22} stroke={CF} />
               <Arrow pts={[[738, 540], [790, 540]]} color={CF} tone="draft" w={3} />
               <text x={800} y={550} style={{font: `italic 700 30px ${NUM}`, fill: CF}}>
-                c_k
+                <Sb b="c" s="k" />
               </text>
-              <Label x={110} y={690} t="c_k：前面都被接受的前提下，第 k 个能过的概率" color={C.ink} weight={600} size={22} a={pM} />
+              <text x={110} y={690} opacity={pM} style={{font: `600 22px ${ZH}`, fill: C.ink}}>
+                <Sb b="c" s="k" tail="：前面都被接受的前提下，第 k 个能过的概率" />
+              </text>
             </g>
             {/* survival: running product */}
             <g opacity={ease(f, b[0] + 30, 16)}>
@@ -234,9 +271,11 @@ export const DsparkConf: React.FC<{scene: Scene}> = () => (
                 );
               })}
               <rect x={1000} y={440} width={18} height={18} fill={CF} opacity={0.35} />
-              <Label x={1026} y={456} t="c_k 单位通过概率" size={20} />
+              <text x={1026} y={456} style={{font: `500 20px ${ZH}`, fill: C.dim}}>
+                <Sb b="c" s="k" tail=" 单位通过概率" />
+              </text>
               <rect x={1260} y={440} width={18} height={18} fill={C.ok} opacity={pS} />
-              <Label x={1286} y={456} t="一路乘下去：前缀活到第 k 位的概率" size={20} a={pS} />
+              <Label x={1286} y={456} t="连乘：存活概率 survival probability" size={20} a={pS} />
             </g>
           </Svg>
           <Src t="DSpark 论文 式 (7)、§3.2 · 数值为示意（STS 校准后平均 ECE 约 1%）" a={ease(f, b[0], 14)} />
@@ -299,6 +338,27 @@ export const DsparkSched: React.FC<{scene: Scene}> = () => (
                 </text>
               ))}
               <Label x={QX0} y={740} t="所有请求的草稿位，按存活概率从高到低排队 · 黑框 = 已加入这一轮核对" size={20} a={sort} />
+              <g opacity={sort}>
+                {['请求 A', '请求 B', '请求 C'].map((s2, ri) => (
+                  <g key={s2}>
+                    <rect x={QX0 + ri * 150} y={560} width={18} height={18} rx={3} fill={RC[ri]} />
+                    <text x={QX0 + 26 + ri * 150} y={577} style={{font: `700 20px ${ZH}`, fill: RC[ri]}}>
+                      {s2}
+                    </text>
+                  </g>
+                ))}
+              </g>
+              <g opacity={ease(f, b[3] + 20, 14)}>
+                <text x={QX0} y={800} style={{font: `700 26px ${ZH}`, fill: C.ink}}>
+                  这一轮核对：
+                  {[0, 1, 2].map((ri) => (
+                    <tspan key={ri} style={{fill: RC[ri]}}>
+                      {`${'ABC'[ri]} ${ALL.slice(0, STOP).filter((c) => c.ri === ri).length} 个${ri < 2 ? ' · ' : ''}`}
+                    </tspan>
+                  ))}
+                  <tspan style={{font: `500 20px ${ZH}`, fill: C.dim}}> （示意）</tspan>
+                </text>
+              </g>
               {stopped && <line x1={QX0 + STOP * QW - 6} y1={600} x2={QX0 + STOP * QW - 6} y2={720} stroke={C.bad} strokeWidth={4} />}
             </g>
             {/* throughput curve */}
@@ -323,7 +383,12 @@ export const DsparkSched: React.FC<{scene: Scene}> = () => (
             <>
               <Card x={96} y={240} w={1728} a={late} rows={[{t: '人少：每个请求多核几个 · 人多：每个请求自动变短', sub: '不需要人去调「每次猜几个」', c: SC}]} />
               <Svg>
-                <g opacity={ease(f, b[5], 16)}>
+                <g opacity={ease(f, b[4] + 24, 16)}>
+                  {[2, 4, 6].map((v) => (
+                    <text key={v} x={186} y={836 - v * 38} textAnchor="end" style={{font: `600 18px ${NUM}`, fill: C.dim}}>
+                      {v}
+                    </text>
+                  ))}
                   <TermS x={200} y={440} zh="DeepSeek V4-Flash 线上 · 每个请求核几个" en="Figure 8" size={24} />
                   <line x1={200} y1={560} x2={200} y2={830} stroke={C.ink} strokeWidth={2} />
                   <line x1={200} y1={830} x2={1400} y2={830} stroke={C.ink} strokeWidth={2} />
@@ -384,15 +449,15 @@ export const DsparkNum: React.FC<{scene: Scene}> = () => (
               {[
                 [820, 'V3', 'MTP 随预训练一起训', C.target],
                 [1160, 'V4', 'MTP-1 → 两周后换成 DSpark', C.drafter],
-                [1500, 'V4.1', '预训练不再带 MTP；主干训完冻住，再单独训 DSpark', C.ok],
+                [1500, 'V4.1', '预训练不带 MTP；\n主干冻住后单独训 DSpark', C.ok],
               ].map(([x, n, t, c]) => (
                 <g key={n as string}>
                   <circle cx={x as number} cy={760} r={10} fill={c as string} />
                   <text x={x as number} y={730} textAnchor="middle" style={{font: `700 28px ${NUM}`, fill: c as string}}>
                     {n}
                   </text>
-                  <foreignObject x={(x as number) - 150} y={780} width={300} height={90}>
-                    <div style={{font: `500 19px ${ZH}`, color: C.ink, textAlign: 'center'}}>{t}</div>
+                  <foreignObject x={(x as number) - 160} y={780} width={320} height={90}>
+                    <div style={{font: `500 20px ${ZH}`, color: C.ink, textAlign: 'center', whiteSpace: 'pre-line'}}>{t}</div>
                   </foreignObject>
                 </g>
               ))}

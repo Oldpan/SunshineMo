@@ -95,7 +95,7 @@ const Module: React.FC<{x: number; k: number; f: number; b: number[]; a: number;
       <Label x={x + 166} y={658} t="拼接 concat" size={18} a={pNorm} />
       <Arrow pts={[[x + 150, 654], [x + 150, 632]]} color={C.ink} p={pNorm} />
       <Box x={x + 40} y={586} w={220} h={44} label={`投影 M${k} projection`} size={20} a={pNorm} fill={newHi ? '#FFF3D6' : C.card} stroke={newHi ? C.draft : C.ink} />
-      <Label x={x + 266} y={614} t="2d→d" size={17} a={pNorm} />
+      <Label x={x + 34} y={614} t="2d→d" anchor="end" size={17} a={pNorm} />
       <Arrow pts={[[x + 150, 584], [x + 150, 566]]} color={C.ink} p={pTrm} />
       <Box x={x + 40} y={508} w={220} h={56} label="Transformer 块" size={22} a={pTrm} fill={newHi ? '#FFF3D6' : C.drafterBg} stroke={newHi ? C.draft : C.drafter} color={C.drafter} />
       <Arrow pts={[[x + 150, 506], [x + 150, OY + 50]]} color={C.drafter} tone="drafter" p={pTrm} />
@@ -115,7 +115,7 @@ export const MtpDs: React.FC<{scene: Scene}> = () => (
       const infer = f >= b[6];
       const toks: Tok[] = done('今天天气');
       if (f >= b[0] + 20) toks.push({t: '很', s: 'done', a: ease(f, b[0] + 20, 10), tag: '主模型'});
-      if (f >= b[4] + 20) toks.push({t: '好', s: infer && f >= b[6] + 120 ? 'ok' : 'draft', a: ease(f, b[4] + 20, 10), tag: infer && f >= b[6] + 120 ? '下一次前向核掉' : '模块 1'});
+      if (f >= b[4] + 20) toks.push({t: '好', s: infer && f >= b[6] + 120 ? 'ok' : 'draft', a: ease(f, b[4] + 20, 10), tag: infer && f >= b[6] + 120 ? '下次核对' : '模块 1'});
       if (f >= b[4] + 34 && !infer) toks.push({t: '适', s: 'draft', a: ease(f, b[4] + 34, 10), tag: '模块 2'});
       const shared = f >= b[5] && f < b[6] ? 0.5 + 0.5 * Math.sin((f - b[5]) * 0.3) : 0;
       const dim2 = ease(f, b[6], 14);

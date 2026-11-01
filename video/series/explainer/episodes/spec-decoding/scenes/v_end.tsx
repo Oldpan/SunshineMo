@@ -210,7 +210,7 @@ export const Caveat: React.FC<{scene: Scene}> = () => (
           </Svg>
           <Card x={1240} y={480} w={584} a={ease(f, b[3], 16)} rows={[{t: 'EAGLE-3：批量 64 时 1.38 倍', sub: 'SGLang · H100（论文 §4.3）', c: '#B07A4F'}, {t: 'DFlash 2：并发 32 时 1.01–1.45 倍', sub: 'MT-Bench 只有 1.01 倍（模型卡）', c: SEL}]} />
           <Card x={1240} y={700} w={584} a={ease(f, b[4], 16)} rows={[{t: 'DSpark 的调度器正是冲着这一点', sub: '按当前负载，决定每个请求核几个：人少多核，人多少核', c: C.model}]} />
-          <Src t="各家论文 / 博客原表，测试条件不同 · EAGLE-3 §4.3、DFlash Table 3、DFlash 2 模型卡" a={q} />
+          <Src t="卡片：V3 §5.4.3、EAGLE-3 Table 1、DFlash Table 1、DSpark Figure 7、DFlash 2 模型卡 · 斜线：EAGLE-3 §4.3、DFlash Table 3、DFlash 2 模型卡" a={q} />
         </>
       );
     }}
@@ -284,7 +284,7 @@ const PosterLoop: React.FC<{tall: boolean}> = ({tall}) => {
   );
   const boxW = tall ? 370 : 620;
   return (
-    <div style={{position: 'absolute', left: tall ? 80 : 1180, top: tall ? 880 : 150, display: 'flex', flexDirection: 'column', gap: tall ? 30 : 18}}>
+    <div style={{position: 'absolute', left: tall ? 80 : 1180, top: tall ? 880 : 210, display: 'flex', flexDirection: 'column', gap: tall ? 30 : 18}}>
       <div style={{display: 'flex', flexDirection: tall ? 'row' : 'column', alignItems: tall ? 'center' : 'flex-start'}}>
         <PBox zh="草稿机" en="draft model" c={C.drafter} bg={C.drafterBg} w={boxW} note="便宜，先猜一串" stack={tall} />
         {arrow}

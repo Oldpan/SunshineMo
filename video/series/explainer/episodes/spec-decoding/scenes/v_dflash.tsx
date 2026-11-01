@@ -185,7 +185,7 @@ export const DflashInject: React.FC<{scene: Scene}> = () => (
               <rect x={DL.x} y={372} width={DL.w} height={38} rx={8} fill={pFrozen > 0.5 ? '#E9EEF6' : C.card} stroke={C.target} strokeWidth={2} strokeDasharray={pFrozen > 0.5 ? '7 5' : undefined} />
               <TermS x={DL.x + DL.w / 2} y={399} zh={pFrozen > 0.5 ? '输出头：借目标模型的，冻住' : '输出头'} en="LM head" c={C.target} size={20} anchor="middle" />
               <Arrow pts={[[DL.x + 60, dly(4) - 2], [DL.x + 60, 414]]} color={C.drafter} tone="drafter" />
-              <Arrow pts={[[DL.x + DL.w - 60, 370], [DL.x + DL.w - 60, 346]]} color={C.draft} tone="draft" />
+              <Arrow pts={[[DL.x + DL.w - 60, 370], [DL.x + DL.w - 60, 352]]} color={C.draft} tone="draft" />
               <Label x={DL.x + DL.w - 72} y={366} t="15 个草稿词" anchor="end" color={C.draft} weight={600} size={19} />
               <Label x={DL.x - 34} y={dly(0) + DL.lh + 49} t="锚点 + 15 个遮罩" anchor="end" color={C.ink} size={20} />
               <Arrow pts={[[DL.x - 28, dly(0) + DL.lh + 42], [DL.x - 4, dly(0) + DL.lh + 42]]} color={C.ink} />

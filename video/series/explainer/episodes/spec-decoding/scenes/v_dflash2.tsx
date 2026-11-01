@@ -117,7 +117,7 @@ export const Dflash2Path: React.FC<{scene: Scene}> = () => (
               {taps.map((t, j) => (
                 <Arrow key={t} pts={[[SX + SW + 4, layerY(SY, SH, N, t)], [270, layerY(SY, SH, N, t)], [270, 600 + j * 14], [286, 600 + j * 14]]} color={C.target} tone="target" w={2} head={false} />
               ))}
-              <Box x={288} y={580} w={84} h={100} label="融合" size={20} fill={C.targetBg} stroke={C.target} />
+              <Box x={288} y={580} w={84} h={100} label="融合" sub="proj." size={20} fill={C.targetBg} stroke={C.target} />
               <line x1={386} y1={ly(4) + LH / 2} x2={386} y2={ly(0) + LH / 2} stroke={C.target} strokeWidth={3} />
               <Arrow pts={[[374, 630], [386, 630]]} color={C.target} tone="target" w={3} head={false} />
               {/* drafter: 5 layers, each [conv][attn][conv][MLP] */}
@@ -210,7 +210,8 @@ export const Dflash2Path: React.FC<{scene: Scene}> = () => (
             <g opacity={pV * (1 - table)}>
               <Box x={GX} y={372} w={1824 - GX} h={60} fill={C.targetBg} stroke={C.target} />
               <TermS x={(GX + 1824) / 2} y={411} zh="目标模型只核这一条路，一次前向" en="verify one path" c={C.target} size={23} anchor="middle" />
-              <Arrow pts={[[GX + 6 * CW + 30, GY + PATH[6] * RH - 2], [GX + 6 * CW + 30, 436]]} color={SEL} tone="ok" w={3} p={pV} />
+              <line x1={GX + 4} y1={454} x2={GX + 6 * CW + 56} y2={454} stroke={SEL} strokeWidth={3} opacity={pV} />
+              <Arrow pts={[[GX + 3 * CW + 30, 454], [GX + 3 * CW + 30, 436]]} color={SEL} tone="ok" w={3} p={pV} />
             </g>
           </Svg>
           {table > 0 && (
@@ -249,7 +250,7 @@ const TAU: [string, number, string][] = [
   ['DFlash 2', 5.97, SEL],
 ];
 export const Dflash2Num: React.FC<{scene: Scene}> = () => (
-  <Page tag="⑤ DFlash 2 · 数字" title="Qwen3.5 4B：平均 τ" sub="thinking 模式 · T = 1 · 博客 Table 3">
+  <Page tag="⑤ DFlash 2 · 数字" title="平均 τ 最高；27B 上单请求 3.43 倍" sub="左：Qwen3.5 4B · thinking 模式 · T = 1 · 博客 Table 3">
     {({f, b}) => (
       <>
         <Svg>
@@ -272,7 +273,7 @@ export const Dflash2Num: React.FC<{scene: Scene}> = () => (
           <line x1={130} y1={820} x2={1070} y2={820} stroke={C.ink} strokeWidth={2} />
           <Label x={130} y={300} t="纵轴从 3.5 起画" size={18} />
         </Svg>
-        <Card x={1160} y={250} w={664} a={ease(f, b[2], 16)} rows={[{t: '这里的 DFlash 和 DSpark 是 Inco 按同样设置自己训的', sub: '不是官方发布的那两版草稿机', c: C.bad}]} />
+        <Card x={1160} y={250} w={664} a={ease(f, b[2], 16)} rows={[{t: 'DFlash、DSpark 由 Inco 按同样设置自训', sub: '不是官方发布的那两版草稿机', c: C.bad}]} />
         <div style={{position: 'absolute', left: 1160, top: 420, width: 664, padding: '20px 26px', boxSizing: 'border-box', background: C.card, border: `2px solid ${C.line}`, borderRadius: 16, opacity: ease(f, b[3], 16)}}>
           <div style={{font: `700 22px ${ZH}`, color: C.dim}}>Qwen3.8-27B · 1 张 H200 · GSM8K · 对比不投机</div>
           {[

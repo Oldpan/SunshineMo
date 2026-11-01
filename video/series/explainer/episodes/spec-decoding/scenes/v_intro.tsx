@@ -74,7 +74,7 @@ export const Hook: React.FC<{scene: Scene}> = () => (
       const tl = ease(f, b[4] + 6, 18);
       const same = ease(f, b[2], 14);
       const methods = [
-        ['MTP', '2024.04', 'Meta / DeepSeek'],
+        ['MTP', '2024.04', 'Meta · DeepSeek-V3 2024.12'],
         ['EAGLE-3', '2025.03', '北大 · 微软 · 滑铁卢 · Vector'],
         ['DFlash', '2026.02', 'UCSD z-lab'],
         ['DSpark', '2026.07', 'DeepSeek · 北大'],
@@ -125,7 +125,7 @@ export const Hook: React.FC<{scene: Scene}> = () => (
                       <text x={x} y={TY + 48} textAnchor="middle" style={{font: `600 24px ${NUM}`, fill: C.dim}}>
                         {d}
                       </text>
-                      <text x={x} y={TY + 80} textAnchor="middle" style={{font: `500 19px ${ZH}`, fill: C.faint}}>
+                      <text x={x} y={TY + 80} textAnchor="middle" style={{font: `500 22px ${ZH}`, fill: C.dim}}>
                         {who}
                       </text>
                       <Arrow pts={[[x, TY + 230], [x, TY + 104]]} color={C.drafter} tone="drafter" w={2.5} p={part} />

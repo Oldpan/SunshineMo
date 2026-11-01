@@ -149,6 +149,7 @@ export const DsparkMarkov: React.FC<{scene: Scene}> = () => (
                 {/* anchor: position 1 is biased by B(很) */}
                 <Chip x={1170} y={566} t="很" s="done" size={26} />
                 <Arrow pts={[[1194, 566], [1214, 566], [1214, 663], [1236, 663]]} color={MK} tone="ink" w={2.5} p={walk(0)} />
+                <Label x={1206} y={640} t="查 W1[很]" anchor="end" color={MK} weight={600} size={17} a={walk(0)} />
                 {[0, 1, 2].map((k) => {
                   const x = 1290 + k * 200;
                   const w = walk(k);

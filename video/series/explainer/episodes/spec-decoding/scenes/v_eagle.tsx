@@ -360,7 +360,7 @@ export const EagleTree: React.FC<{scene: Scene}> = () => (
             <g opacity={pLoop}>
               <Arrow pts={[[1064, 486], [1064, 410], [376, 410]]} color={C.drafter} tone="drafter" w={3.5} dash p={pLoop} />
               <Box x={110} y={386} w={262} h={48} fill={C.drafterBg} stroke={C.drafter} label="下一轮草稿机 draft model" size={19} color={C.drafter} />
-              <Label x={420} y={442} t="这次前向的低 / 中 / 高层特征 → 下一轮" color={C.drafter} weight={600} size={21} />
+              <Label x={420} y={438} t="这次前向的低 / 中 / 高层特征 → 下一轮" color={C.drafter} weight={600} size={20} />
             </g>
           </Svg>
           <div style={{position: 'absolute', left: 1130, top: 440, width: 694, opacity: ease(f, b[4], 16)}}>

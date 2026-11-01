@@ -182,7 +182,7 @@ export const Box: React.FC<{x: number; y: number; w: number; h: number; fill?: s
       </text>
     )}
     {sub && (
-      <text x={x + w / 2} y={y + h / 2 + size * 0.36 + 18} textAnchor="middle" style={{font: `500 ${Math.max(17, Math.round(size * 0.72))}px ${ZH}`, fill: C.dim}}>
+      <text x={x + w / 2} y={y + h / 2 + size * 0.36 + 18} textAnchor="middle" style={{font: `500 ${Math.max(18, Math.round(size * 0.72))}px ${ZH}`, fill: C.dim}}>
         {sub}
       </text>
     )}
@@ -339,7 +339,7 @@ export const TermS: React.FC<{x: number; y: number; zh: string; en: string; c?: 
 }) => (
   <text x={x} y={y} textAnchor={anchor} opacity={a}>
     <tspan style={{font: `700 ${size}px ${ZH}`, fill: c}}>{zh}</tspan>
-    <tspan dx={8} style={{font: `italic 500 ${Math.round(size * 0.8)}px ${NUM}`, fill: C.dim}}>
+    <tspan dx={8} style={{font: `italic 500 ${Math.max(18, Math.round(size * 0.82))}px ${NUM}`, fill: C.dim}}>
       {en}
     </tspan>
   </text>

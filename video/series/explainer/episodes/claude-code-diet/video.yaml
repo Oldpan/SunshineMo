@@ -10,3 +10,11 @@ deliver:
   - {from: out/封面_16x9.png, as: Claude Code 提示词减负_封面_16x9.png}
   - {from: out/封面_3x4.png, as: Claude Code 提示词减负_封面_3x4.png}
   - {from: source/video.md, as: 介绍和文案.md}
+drive:
+  folder: video_from_opus/Claude Code 提示词减负
+  url: https://drive.google.com/drive/folders/1SmjLsfDHGkJEcWUvtfFp7Jtle3QwqZDa
+  files:
+  - {name: Claude Code 提示词减负_ClaudeCodeDiet.mp4, id: 1fx6MDswzlWtu3jvwckRnL0Z-3CFxHCn4, bytes: 180556763}
+  - {name: Claude Code 提示词减负_封面_16x9.png, id: 1tPeHMRAL5a6WRm_5EYJSJZKtSO7ny1cw, bytes: 194293}
+  - {name: Claude Code 提示词减负_封面_3x4.png, id: 1EHLUepGQZq_lDMBKZQ76Bw7Enva4QJFT, bytes: 164687}
+  - {name: 介绍和文案.md, id: 1099eLLxx0f9HJJeaqeAfXWLyRccK9h-u, bytes: 403}

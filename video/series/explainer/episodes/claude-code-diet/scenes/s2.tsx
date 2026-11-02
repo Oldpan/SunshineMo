@@ -18,6 +18,8 @@ export const Goal: React.FC = () => {
   const active = b[5] > 0 ? 2 : b[4] > 0 ? 1 : b[3] > 0 ? 0 : -1;
   const round = b[3] > 0 ? 3 + Math.min(1, Math.floor(prog(b[3], 40, 30))) : 3;
   const pass = active === 1;
+  // results start only after the two command lines have typed out
+  const rs = Math.min(b[1], b[0] - 4 - 30 - 50);
   return (
     <Board>
       <Head num="2.1" title="/goal 的一轮：执行和判定分开" />
@@ -29,12 +31,13 @@ export const Goal: React.FC = () => {
         <div style={{marginTop: 10}}>
           <TypeLine f={b[0] - 4} cps={46} color={W.clay} text="> /goal tests/api 的回归测试全部通过；" caret={b[1] < 0} />
           <TypeLine f={b[0] - 4 - 30} cps={46} color={W.clay} text="  贴出命令、退出码和结果摘要。" />
-          <TypeLine f={b[1]} cps={60} text="● Bash(uv run pytest -q tests/api)" />
-          <TypeLine f={b[1] + 16} cps={60} color={pass ? W.green : '#F0A08E'} text={pass ? '  ⎿ 43 passed in 8.9s' : '  ⎿ 41 passed, 2 failed in 8.3s'} />
-          <TypeLine f={b[1] + 26} cps={60} color={pass ? W.green : '#F0A08E'} text={pass ? '  ⎿ exit code 0' : '  ⎿ exit code 1'} />
-          <TypeLine f={b[1] + 40} cps={50} color={W.faint} text="● 命令、退出码、结果摘要已写进对话" />
+          <TypeLine f={rs} cps={60} text="● Bash(uv run pytest -q tests/api)" />
+          <TypeLine f={rs - 16} cps={60} color={pass ? W.green : '#F0A08E'} text={pass ? '  ⎿ 43 passed in 8.9s' : '  ⎿ 41 passed, 2 failed in 8.3s'} />
+          <TypeLine f={rs - 26} cps={60} color={pass ? W.green : '#F0A08E'} text={pass ? '  ⎿ exit code 0' : '  ⎿ exit code 1'} />
+          <TypeLine f={rs - 40} cps={50} color={W.faint} text="● 命令、退出码、结果摘要已写进对话" />
         </div>
       </Box>
+      <Illus x={880} y={186} />
       <Note x={110} y={575} p={prog(b[1], 22, 50)} rot={-2} size={30}>
         证据写进对话 ↗
       </Note>
@@ -75,7 +78,7 @@ export const Goal: React.FC = () => {
       <Note x={760} y={690} p={prog(b[3], 20, 30) * (1 - prog(b[4], 10))} rot={-3} size={30} color={W.clay}>
         未达成 → 再来一轮
       </Note>
-      <Src>据原文图 2 重绘 · 依据 Claude Code /goal 文档（2026-10）</Src>
+      <Src>据原文图 2 重绘；终端输出为示意 · 依据 Claude Code /goal 文档（2026-10）</Src>
     </Board>
   );
 };
@@ -306,10 +309,10 @@ export const Evaluator: React.FC = () => {
         p={prog(b[1], 20, 30)}
         title="它能看到的：对话（示意）"
         lines={[
-          ['> 改了 3 个文件，跑了测试', b[1] + 40, W.faint],
-          ['$ npm test', b[1] + 56],
-          ['  58 passing', b[1] + 70, '#9FD28E'],
-          ['  exit code 0', b[1] + 80, '#9FD28E'],
+          ['> 改了 3 个文件，跑了测试', b[1] - 40, W.faint],
+          ['$ npm test', b[1] - 56],
+          ['  58 passing', b[1] - 70, '#9FD28E'],
+          ['  exit code 0', b[1] - 80, '#9FD28E'],
         ]}
       />
       <Box x={110} y={580} w={800} h={170} p={prog(b[3], 18)} seed={161} bg={W.yellow} pad="22px 28px">
@@ -375,9 +378,9 @@ export const Safety: React.FC = () => {
         h={200}
         p={prog(b[4], 18)}
         lines={[
-          ['> /goal', b[4] + 10, W.clay],
-          ['  条件 · 已跑时长 · 评估轮次 · Token 消耗 · 上一轮理由', b[4] + 24, W.faint],
-          ['> /goal clear', b[4] + 60, W.clay],
+          ['> /goal', b[4] - 10, W.clay],
+          ['  条件 · 已跑时长 · 评估轮次 · Token 消耗 · 上一轮理由', b[4] - 24, W.faint],
+          ['> /goal clear', b[4] - 60, W.clay],
         ]}
       />
       <Note x={1260} y={680} p={prog(b[4], 20, 40)} size={26} rot={-2} w={560}>

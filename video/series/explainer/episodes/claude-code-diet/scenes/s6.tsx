@@ -14,7 +14,7 @@ export const Cloud: React.FC = () => {
     {t: '~/.claude 用户级配置', ok: false},
     {t: '本地 GPU、数据库、内网服务', ok: false},
   ];
-  const lit = (i: number) => (i === 0 ? b[3] : i === 3 ? b[4] : b[3] + 20 + i * 8);
+  const lit = (i: number) => (i === 0 ? b[3] : i === 3 ? b[4] : b[3] - 20 - i * 8);
   return (
     <Board>
       <Head num="6.1" title="cloud session 有自己的机器" />
@@ -58,7 +58,7 @@ export const Cloud: React.FC = () => {
       <Box x={1220} y={170} w={600} h={520} p={prog(b[2], 20)} seed={262} bg={W.yellow} pad="20px 26px">
         <Hd size={34}>云端 VM（每个任务一台）</Hd>
         <Hd size={40} color={W.clay} style={{display: 'block', marginTop: 8}}>
-          4 vCPU · 16 GB · 30 GB
+          约 4 vCPU · 16 GB · 30 GB
         </Hd>
         <Zh size={24} style={{display: 'block', marginTop: 10}}>
           clone 到新的 claude/ 分支，只能 push 自己的工作分支
@@ -72,7 +72,7 @@ export const Cloud: React.FC = () => {
           </Hd>
         </div>
       </Box>
-      <Stamp x={260} y={740} f={b[3] + 50} size={32}>
+      <Stamp x={260} y={740} f={b[3] - 50} size={32}>
         没 push 的、只在本机的，云端看不到
       </Stamp>
       <Src>据原文图 6 重绘 · 依据 Addy Osmani《Claude Code in the cloud》（2026-10-06）；无 GitHub remote 时改为上传仓库 bundle</Src>

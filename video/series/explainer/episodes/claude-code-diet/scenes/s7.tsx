@@ -2,7 +2,7 @@
 import React from 'react';
 import {interpolate, useCurrentFrame} from 'remotion';
 import {useBeats} from '@atv/lib/timing';
-import {Arrow, Board, Box, Cross, Hd, Head, HL, Item, Mo, Note, Pill, prog, rise, Src, Stamp, Strike, Term, Tick, usePopIn, W, Zh} from './common';
+import {Arrow, Board, Box, Cross, Hd, Head, HL, Illus, Item, Mo, Note, Pill, prog, rise, Src, Stamp, Strike, Term, Tick, usePopIn, W, Zh} from './common';
 
 export const Review: React.FC = () => {
   const b = useBeats();
@@ -26,7 +26,7 @@ export const Review: React.FC = () => {
         <div style={{display: 'flex', gap: 14, marginTop: 18, alignItems: 'center'}}>
           {[0, 1, 2, 3].map((k) => (
             <div key={k} style={pop(b[2], 10 + k * 6)}>
-              <Pill size={22}>扫缺陷 {k + 1}</Pill>
+              <Pill size={22}>{k < 3 ? `扫缺陷 ${k + 1}` : '…× N'}</Pill>
             </div>
           ))}
           <Mo size={30} style={{opacity: prog(b[2], 10, 40)}}>
@@ -39,7 +39,7 @@ export const Review: React.FC = () => {
           </div>
         </div>
         <Zh size={23} color={W.dim} style={{display: 'block', marginTop: 16, opacity: prog(b[2], 10, 50)}}>
-          无关痛痒的代码风格问题直接过滤
+          无关痛痒的风格问题直接过滤 · 本地可用 /code-review、/security-review
         </Zh>
       </Box>
       <div style={{position: 'absolute', left: 110, top: 480, opacity: prog(b[3], 12)}}>
@@ -82,7 +82,7 @@ export const ReviewPrompt: React.FC = () => {
   const startOf = (i: number) => {
     const bt = RP[i][1];
     const k = RP.slice(0, i).filter((l) => l[1] === bt).length;
-    return b[bt] + k * 14;
+    return b[bt] - k * 14;
   };
   return (
     <Board>
@@ -109,7 +109,7 @@ export const ReviewPrompt: React.FC = () => {
         ))}
       </Box>
       <Note x={1380} y={300} p={prog(b[2], 18)} size={28} rot={-2} w={440}>
-        全部列出、由人筛：只让它报高严重度，模型会按字面执行，少报漏报
+        全部列出、由人筛：只让它报高严重度，模型往往会按字面执行，少报漏报
       </Note>
       <Note x={1380} y={560} p={prog(b[3], 18, 20)} size={28} rot={-2} w={440} color={W.blue}>
         只报告，不改、不提交、不发布
@@ -136,7 +136,14 @@ export const Summary: React.FC = () => {
   const b = useBeats();
   const frame = useCurrentFrame();
   const pop = usePopIn();
-  const LINES = ['- 必须测试！！', '- 只做最小修改', '- 认真思考，全面检查', '- 改完反复确认三遍', '- 先列计划再动手'];
+  // only the "think harder / check again" style lines go; scope and test rules stay (as the article says)
+  const LINES: [string, boolean][] = [
+    ['- 只做最小修改', false],
+    ['- 认真思考，全面检查', true],
+    ['- 改完反复确认三遍', true],
+    ['- 请深入思考', true],
+    ['- 请派生 subagent 核查', true],
+  ];
   return (
     <Board>
       <div style={{position: 'absolute', left: 110, top: 70, ...rise(frame, 0)}}>
@@ -144,6 +151,7 @@ export const Summary: React.FC = () => {
           两件事：<HL p={prog(b[0], 20, 10)}>立好验收标准</HL> · <HL p={prog(b[0], 20, 30)} color={W.yellow}>给旧规则瘦身</HL>
         </Hd>
       </div>
+      <Illus x={780} y={202} />
       <Box x={110} y={190} w={800} h={640} p={prog(frame, 22)} seed={300} pad={0}>
         <div style={{height: 54, borderBottom: `3px solid ${W.ink}`, display: 'flex', alignItems: 'center', padding: '0 24px'}}>
           <Mo size={24} w={700}>
@@ -151,11 +159,15 @@ export const Summary: React.FC = () => {
           </Mo>
         </div>
         <div style={{padding: '18px 28px'}}>
-          {LINES.map((t, i) => (
+          {LINES.map(([t, cut], i) => (
             <div key={t} style={{marginTop: 12}}>
-              <Strike p={prog(b[1], 12, i * 8)} w={t.length * 30}>
+              {cut ? (
+                <Strike p={prog(b[1], 12, i * 8)} w={t.length * 26}>
+                  <Mo size={30}>{t}</Mo>
+                </Strike>
+              ) : (
                 <Mo size={30}>{t}</Mo>
-              </Strike>
+              )}
             </div>
           ))}
           {['## 完成条件', '- uv run pytest -q tests/api 通过', '## 继续还是停下', '- 被阻塞或要删数据时才问'].map((t, i) => (

@@ -2,7 +2,7 @@
 import React from 'react';
 import {useCurrentFrame} from 'remotion';
 import {useBeats} from '@atv/lib/timing';
-import {Arrow, Board, Box, Cross, Hd, Head, HL, Item, Mo, Note, Pill, prog, rise, Src, Stamp, Strike, Term, Tick, TypeLine, usePopIn, W, Zh} from './common';
+import {Arrow, Board, Box, Cross, Hd, Head, HL, Illus, Item, Mo, Note, Pill, prog, rise, Src, Stamp, Strike, Term, Tick, TypeLine, usePopIn, W, Zh} from './common';
 
 // ------------------------------------------------------------------ principles
 export const Principles: React.FC = () => {
@@ -53,6 +53,9 @@ export const Principles: React.FC = () => {
           </div>
         ))}
       </Box>
+      <Note x={1300} y={490} p={prog(b[2], 18, 40)} size={24} rot={-2} w={520} color={W.blue}>
+        原文叫“人工介入清单”
+      </Note>
       <Note x={1320} y={600} p={prog(b[4], 24, 60)} size={30} rot={-3} w={480}>
         只有测试里出现查不出原因的异常，才停下来找人
       </Note>
@@ -63,7 +66,7 @@ export const Principles: React.FC = () => {
 
 // ------------------------------------------------------------------ the example prompt
 const PROMPT: [string, number][] = [
-  ['把 src/api 下仍使用旧 SDK 的调用迁移到新 SDK。', 1],
+  ['把 src/api 下仍使用旧 SDK 的调用迁移到新 SDK。', 0],
   ['', 1],
   ['完成条件：', 1],
   ['- 对外响应字段、错误码和超时行为保持兼容。', 1],
@@ -80,7 +83,7 @@ const PROMPT: [string, number][] = [
   ['以及仍未验证的部分。', 4],
 ];
 const TAGS = [
-  {t: '要做什么', top: 176, h: 40, beat: 1},
+  {t: '要做什么', top: 176, h: 40, beat: 0},
   {t: '完成条件', top: 256, h: 200, beat: 1},
   {t: '范围 · 红线', top: 496, h: 40, beat: 2},
   {t: '停止点', top: 536, h: 80, beat: 3},
@@ -143,7 +146,7 @@ export const Stop: React.FC = () => {
   const startOf = (i: number) => {
     const bt = STOP[i][1];
     const k = STOP.slice(0, i).filter((l) => l[1] === bt).length;
-    return b[bt] + 20 + k * 12;
+    return b[bt] - 20 - k * 12;
   };
   const squash = prog(b[3], 40, 30);
   return (
@@ -224,6 +227,7 @@ export const Spec: React.FC = () => {
           </Zh>
         </div>
       </Box>
+      <Illus x={490} y={184} />
       <Arrow pts={[[610, 360], [700, 340], [770, 360]]} p={prog(b[0], 16, 60)} />
       <div style={{position: 'absolute', left: 780, top: 250, ...pop(b[0], 70)}}>
         <Box x={0} y={0} w={240} h={220} p={prog(b[0], 18, 70)} seed={141} bg={W.yellow} pad="26px 30px">
@@ -241,7 +245,7 @@ export const Spec: React.FC = () => {
           会话 B · 干净的新会话去实现
         </Zh>
         {['spec', '相关代码', '必要的背景'].map((t, i) => (
-          <Item key={t} f={b[1] + 16 + i * 8} size={30}>
+          <Item key={t} f={b[1] - 16 - i * 8} size={30}>
             带上 {t}
           </Item>
         ))}

@@ -81,11 +81,11 @@ export const Default: React.FC = () => {
         p={prog(b[4], 18)}
         size={23}
         lines={[
-          ['> /effort medium', b[4] + 8, W.clay],
-          ['{"model": "claude-opus-5-5",', b[4] + 40],
+          ['> /effort medium', b[4] - 8, W.clay],
+          ['{"model": "claude-opus-5-5",', b[4] - 40],
           [' "max_tokens": 128000,', b[5], '#F5C66B'],
-          [' "output_config": {"effort": "medium"},', b[4] + 60],
-          [' "messages": [...]}', b[4] + 74],
+          [' "output_config": {"effort": "medium"},', b[4] - 60],
+          [' "messages": [...]}', b[4] - 74],
         ]}
       />
       <Note x={1040} y={826} p={prog(b[5], 18, 20)} size={26} rot={-1} w={780}>

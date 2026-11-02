@@ -177,17 +177,17 @@ export const Audit: React.FC = () => {
         size={23}
         title="Claude Code ≥ v2.1.283"
         lines={[
-          ['> /doctor prompt-audit', b[1] + 14, W.clay],
+          ['> /doctor prompt-audit', b[1] - 14, W.clay],
           ['  过时指令  "think step by step before …"   ← 留给旧模型', b[2], '#F5C66B'],
-          ['  失效路径  docs/old-api.md 不存在', b[2] + 14, '#F5C66B'],
-          ['  规则冲突  "必须写注释" vs "不要加注释"', b[2] + 28, '#F5C66B'],
-          ['  - 第 12–18 行建议删除（diff 预览）', b[2] + 48, '#F0A08E'],
-          ['  + 合并成一条：跟周围代码的风格走', b[2] + 60, '#9FD28E'],
+          ['  失效路径  docs/old-api.md 不存在', b[2] - 14, '#F5C66B'],
+          ['  规则冲突  "必须写注释" vs "不要加注释"', b[2] - 28, '#F5C66B'],
+          ['  - 第 12–18 行建议删除（diff 预览）', b[2] - 48, '#F0A08E'],
+          ['  + 合并成一条：跟周围代码的风格走', b[2] - 60, '#9FD28E'],
           ['  确认后才写盘 [y/N]', b[3], W.faint],
         ]}
       />
       <div style={{position: 'absolute', left: 1230, top: 340, ...pop(b[3], 10)}}>
-        <Stamp x={0} y={0} f={b[3] + 10} size={30}>
+        <Stamp x={0} y={0} f={b[3] - 10} size={30}>
           确认前不改磁盘
         </Stamp>
       </div>
@@ -195,13 +195,13 @@ export const Audit: React.FC = () => {
         <Hd size={30} color={W.clay}>
           官方原则
         </Hd>
-        <Item f={b[4] + 10} size={25}>
+        <Item f={b[4] - 10} size={25}>
           单文件尽量压在 200 行以内
         </Item>
-        <Item f={b[4] + 24} size={25}>
+        <Item f={b[4] - 24} size={25}>
           局部规则挪进 .claude/rules/，配 glob 路径，用到才加载
         </Item>
-        <Item f={b[4] + 38} size={25}>
+        <Item f={b[4] - 38} size={25}>
           @path 只拆文件，不省上下文
         </Item>
       </Box>
@@ -275,8 +275,8 @@ export const Loop: React.FC = () => {
           {i < 2 && <Arrow pts={[[515 + i * 470, 245], [575 + i * 470, 245]]} p={prog(b[s.beat], 12, s.d + 20)} seed={225 + i} />}
         </React.Fragment>
       ))}
-      <Arrow pts={[[1050, 330], [1150, 420], [1250, 430]]} p={prog(b[2], 14)} color={W.green} seed={228} />
-      <Arrow pts={[[960, 330], [900, 520], [880, 560]]} p={prog(b[3], 14)} color={W.red} seed={229} />
+      <Arrow pts={[[1330, 325], [1380, 345], [1410, 366]]} p={prog(b[2], 14)} color={W.green} seed={228} />
+      <Arrow pts={[[1120, 325], [1000, 470], [900, 562]]} p={prog(b[3], 14)} color={W.red} seed={229} />
       <div style={{position: 'absolute', left: 1260, top: 370, ...pop(b[2], 10)}}>
         <Box x={0} y={0} w={550} h={160} p={prog(b[2], 18, 10)} seed={231} pad="18px 26px">
           <Hd size={32} color={W.green}>

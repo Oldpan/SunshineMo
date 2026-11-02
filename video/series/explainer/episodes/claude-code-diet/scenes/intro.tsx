@@ -2,7 +2,7 @@
 import React from 'react';
 import {useCurrentFrame} from 'remotion';
 import {useBeats} from '@atv/lib/timing';
-import {Board, Box, Hd, HL, Mo, Note, prog, rise, Sk, roughOpts, usePopIn, W, Zh} from './common';
+import {Board, Box, Hd, HL, Illus, Mo, Note, prog, rise, Sk, roughOpts, usePopIn, W, Zh} from './common';
 
 const BASE = ['# 项目说明', '- 用 uv 管 Python 依赖', '- 测试：uv run pytest'];
 const PATCHES = [
@@ -69,6 +69,7 @@ export const Cover: React.FC = () => {
           <div style={{position: 'absolute', left: 0, top: (1 - thumb) * 540 * (scroll > 0 ? 1 : 0), width: 12, height: thumb * 540, borderRadius: 6, background: W.dim}} />
         </div>
       </Box>
+      <Illus x={800} y={132} />
       <Note x={720} y={370} p={prog(b[3], 20, 30)} rot={-8} size={64}>
         ？？？
       </Note>
@@ -149,6 +150,7 @@ export const Thesis: React.FC = () => {
           </div>
         ))}
       </Box>
+      <Illus x={700} y={214} />
       <Sk x={120} y={200} w={700} h={330} p={prog(b[1], 18)} draw={(g) => [g.line(30, 300, 670, 40, roughOpts({stroke: W.red, sw: 7, seed: 102}))]} />
       {/* right: scope + acceptance */}
       <Sk x={840} y={340} w={160} h={40} p={prog(b[1], 16, 8)} draw={(g) => [g.line(0, 20, 150, 20, roughOpts({sw: 5, seed: 103})), g.linearPath([[126, 2], [150, 20], [126, 38]], roughOpts({sw: 5, seed: 104}))]} />

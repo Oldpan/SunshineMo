@@ -98,7 +98,7 @@ export const Poster: React.FC<{w: number; h: number}> = ({w, h}) => {
           )}
         </div>
         <div style={{marginTop: 34, display: 'flex', gap: 16, flexWrap: 'wrap', width: tall ? 920 : 860}}>
-          {(A ? ['你的 CLAUDE.md 也该瘦身', '/doctor prompt-audit'] : ['立好验收标准', '给旧规则瘦身', '/goal · medium']).map((t, i) => (
+          {(A ? ['删的是 Claude Code 自己的', '基准没掉', '你的 CLAUDE.md 别照搬比例'] : ['立好验收标准', '给旧规则瘦身', '/goal · medium']).map((t, i) => (
             <span key={t} style={{background: i === 0 ? W.yellow : W.card, border: `4px solid ${W.ink}`, borderRadius: 14, padding: '6px 22px', fontFamily: FONT_HANDW, fontWeight: 700, fontSize: 38, whiteSpace: 'nowrap'}}>
               {t}
             </span>

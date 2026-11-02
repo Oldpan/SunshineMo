@@ -96,7 +96,7 @@ export const Cost: React.FC = () => {
       <Head num="5" title="拆不拆，看能不能独立验收" />
       <Box x={110} y={160} w={1060} h={520} p={prog(b[0], 20)} seed={250} pad={0}>
         {SCN.map(([k, v], i) => {
-          const f = i < 2 ? b[0] + 10 + i * 12 : b[1] + (i - 2) * 12;
+          const f = i < 2 ? b[0] - 10 - i * 12 : b[1] - (i - 2) * 12;
           return (
             <div key={k} style={{position: 'absolute', left: 0, top: i * 104, width: 1060, height: 104, borderTop: i ? `2.5px dashed ${W.faint}` : undefined, display: 'flex', alignItems: 'center', opacity: 0.25 + 0.75 * prog(f, 12)}}>
               <div style={{width: 560, paddingLeft: 30}}>
@@ -116,7 +116,7 @@ export const Cost: React.FC = () => {
         输出长、要限权限、只交结论 → subagent
       </Note>
       <div style={{position: 'absolute', left: 1220, top: 420, ...pop(b[2], 0)}}>
-        <Box x={0} y={0} w={600} h={230} p={prog(b[2], 18)} seed={251} bg={W.yellow} pad="18px 26px">
+        <Box x={0} y={0} w={600} h={270} p={prog(b[2], 18)} seed={251} bg={W.yellow} pad="18px 26px">
           <Zh size={24}>每次调用单独计费，和主会话共用总用量</Zh>
           <Hd size={36} style={{display: 'block', marginTop: 10}}>
             最多 3 层嵌套
@@ -124,6 +124,9 @@ export const Cost: React.FC = () => {
           <Hd size={36} style={{display: 'block'}}>
             单次最多 20 个并行
           </Hd>
+          <Zh size={22} color={W.dim} style={{display: 'block', marginTop: 8}}>
+            内置 Explore / Plan 只读，不加载 CLAUDE.md
+          </Zh>
         </Box>
       </div>
       <div style={{position: 'absolute', left: 110, top: 720, opacity: prog(b[3], 12)}}>
@@ -137,6 +140,9 @@ export const Cost: React.FC = () => {
           “看起来没问题” × N 个 Agent ≠ 更可靠
         </Hd>
       </div>
+      <Note x={1230} y={716} p={prog(b[2], 18, 30)} size={26} rot={-2} w={600}>
+        基线场景：单 Agent + Skill 通常更快更省
+      </Note>
       <Src>原文表格；依据 Claude Code sub-agents 文档</Src>
     </Board>
   );

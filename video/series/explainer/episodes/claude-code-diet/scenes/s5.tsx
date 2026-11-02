@@ -72,7 +72,7 @@ export const What: React.FC = () => {
       {fan.map((k) => (
         <div key={k} style={{position: 'absolute', left: 1560 + (k % 2) * 120, top: 600 + Math.floor(k / 2) * 80, ...pop(b[4], 20 + k * 6)}}>
           <Pill size={20} bg={W.card}>
-            sub {k + 1}
+            {k < 3 ? `sub ${k + 1}` : "…×N"}
           </Pill>
         </div>
       ))}

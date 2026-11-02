@@ -151,7 +151,6 @@ export const Summary: React.FC = () => {
           两件事：<HL p={prog(b[0], 20, 10)}>立好验收标准</HL> · <HL p={prog(b[0], 20, 30)} color={W.yellow}>给旧规则瘦身</HL>
         </Hd>
       </div>
-      <Illus x={780} y={202} />
       <Box x={110} y={190} w={800} h={640} p={prog(frame, 22)} seed={300} pad={0}>
         <div style={{height: 54, borderBottom: `3px solid ${W.ink}`, display: 'flex', alignItems: 'center', padding: '0 24px'}}>
           <Mo size={24} w={700}>
@@ -179,6 +178,7 @@ export const Summary: React.FC = () => {
           ))}
         </div>
       </Box>
+      <Illus x={780} y={204} />
       {[
         ['目标 · 边界 · 验证方式交代清楚', 1],
         ['Opus 5.5 从 medium 起步', 2],

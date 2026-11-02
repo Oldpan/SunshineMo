@@ -54,7 +54,7 @@ export const Principles: React.FC = () => {
         ))}
       </Box>
       <Note x={1300} y={490} p={prog(b[2], 18, 40)} size={24} rot={-2} w={520} color={W.blue}>
-        原文叫“人工介入清单”
+        原文：等人工确认（Human-in-the-Loop）
       </Note>
       <Note x={1320} y={600} p={prog(b[4], 24, 60)} size={30} rot={-3} w={480}>
         只有测试里出现查不出原因的异常，才停下来找人

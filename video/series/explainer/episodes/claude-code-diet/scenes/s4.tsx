@@ -2,7 +2,7 @@
 import React from 'react';
 import {interpolate, useCurrentFrame} from 'remotion';
 import {useBeats} from '@atv/lib/timing';
-import {Board, Box, Hd, Head, HL, Mo, Note, prog, Src, Strike, Tick, usePopIn, W, Zh} from './common';
+import {Arrow, Board, Box, Cross, Hd, Head, HL, Item, Mo, Note, Pill, prog, rise, Src, Stamp, Strike, Term, Tick, usePopIn, W, Zh} from './common';
 
 export const Eighty: React.FC = () => {
   const b = useBeats();
@@ -154,6 +154,158 @@ export const Eighty: React.FC = () => {
         能力没丢，每轮少塞一大段
       </Note>
       <Src>依据 Thariq Shihipar《The new rules of context engineering for Claude 5 generation models》（2026-07-24），样本量和评测细节未公开</Src>
+    </Board>
+  );
+};
+
+// ------------------------------------------------------------------ /doctor prompt-audit
+export const Audit: React.FC = () => {
+  const b = useBeats();
+  const pop = usePopIn();
+  return (
+    <Board>
+      <Head num="4.2" title="先审查，再决定删什么" />
+      <Box x={110} y={160} w={1700} h={110} p={prog(b[0], 18)} seed={200} bg={W.yellow} pad="22px 30px">
+        <Hd size={34}>CLAUDE.md：一两句项目定位 + 模型看代码推不出来的反直觉约定和坑（Gotchas）</Hd>
+      </Box>
+      <Term
+        x={110}
+        y={320}
+        w={1060}
+        h={470}
+        p={prog(b[1], 18)}
+        size={23}
+        title="Claude Code ≥ v2.1.283"
+        lines={[
+          ['> /doctor prompt-audit', b[1] + 14, W.clay],
+          ['  过时指令  "think step by step before …"   ← 留给旧模型', b[2], '#F5C66B'],
+          ['  失效路径  docs/old-api.md 不存在', b[2] + 14, '#F5C66B'],
+          ['  规则冲突  "必须写注释" vs "不要加注释"', b[2] + 28, '#F5C66B'],
+          ['  - 第 12–18 行建议删除（diff 预览）', b[2] + 48, '#F0A08E'],
+          ['  + 合并成一条：跟周围代码的风格走', b[2] + 60, '#9FD28E'],
+          ['  确认后才写盘 [y/N]', b[3], W.faint],
+        ]}
+      />
+      <div style={{position: 'absolute', left: 1230, top: 340, ...pop(b[3], 10)}}>
+        <Stamp x={0} y={0} f={b[3] + 10} size={30}>
+          确认前不改磁盘
+        </Stamp>
+      </div>
+      <Box x={1210} y={440} w={600} h={350} p={prog(b[4], 18)} seed={201} pad="20px 26px">
+        <Hd size={30} color={W.clay}>
+          官方原则
+        </Hd>
+        <Item f={b[4] + 10} size={25}>
+          单文件尽量压在 200 行以内
+        </Item>
+        <Item f={b[4] + 24} size={25}>
+          局部规则挪进 .claude/rules/，配 glob 路径，用到才加载
+        </Item>
+        <Item f={b[4] + 38} size={25}>
+          @path 只拆文件，不省上下文
+        </Item>
+      </Box>
+      <Note x={110} y={806} p={prog(b[2], 18, 70)} size={23} rot={0} w={1700}>
+        报告内容为示意 · 默认扫 CLAUDE.md、CLAUDE.local.md、AGENTS.md 和 .claude/、~/.claude/ 下的 rules、skills 等
+      </Note>
+      <Src>依据 Claude Code memory / commands 文档；/checkup 是 /doctor 的别名，单跑 /doctor 查的是环境</Src>
+    </Board>
+  );
+};
+
+// ------------------------------------------------------------------ six kinds of rules
+const ROWS = [
+  {k: '构建命令、目录关系、必须兼容的业务要求', v: '必须保留', c: W.green},
+  {k: '验收条件、数据安全与权限边界', v: '保留，能下沉到测试 / 权限 / Hook 的优先下沉', c: W.green},
+  {k: '“认真思考”“全面检查”“反复确认”', v: '测一下，没带来提升直接删', c: W.red},
+  {k: '每个任务都要走的冗长流程', v: '拆成按需调用的 Skill', c: W.blue},
+  {k: '只针对特定文件或子模块的规则', v: '带路径限定的 Rules 或 Skill', c: W.blue},
+  {k: '修旧模型 bug 加的临时补丁', v: '拿当年的 bad case 重测，不报错就删', c: W.red},
+];
+export const Table: React.FC = () => {
+  const b = useBeats();
+  const at = [1, 2, 3, 4, 4, 5];
+  return (
+    <Board>
+      <Head num="4.2" title="老潘的六类切法（经验，不是官方规范）" />
+      <Box x={110} y={160} w={1700} h={680} p={prog(b[0], 22)} seed={210} pad={0}>
+        {ROWS.map((r, i) => {
+          const f = b[at[i]] - (i === 4 ? -14 : 0);
+          return (
+            <div key={r.k} style={{position: 'absolute', left: 0, top: i * 112, width: 1700, height: 112, borderTop: i ? `2.5px dashed ${W.faint}` : undefined, display: 'flex', alignItems: 'center'}}>
+              <div style={{width: 860, paddingLeft: 34, opacity: 0.35 + 0.65 * prog(f, 12)}}>
+                <Zh size={28}>{r.k}</Zh>
+              </div>
+              <div style={{width: 820, opacity: prog(f, 12, 8), transform: `translateX(${(1 - prog(f, 14, 8)) * 30}px)`}}>
+                <Hd size={32} color={r.c}>
+                  → {r.v}
+                </Hd>
+              </div>
+            </div>
+          );
+        })}
+      </Box>
+      <Src>原文表格（作者经验整理）</Src>
+    </Board>
+  );
+};
+
+// ------------------------------------------------------------------ the deletion loop (figure 5)
+export const Loop: React.FC = () => {
+  const b = useBeats();
+  const pop = usePopIn();
+  const STEPS = [
+    {k: '备份', v: 'Git 标签 / 快照', beat: 0, d: 0},
+    {k: '删一组', v: '只动一类规则', beat: 0, d: 14},
+    {k: '复测', v: '日常任务 + 当初的 bad case', beat: 1, d: 0},
+  ];
+  return (
+    <Board>
+      <Head num="4.2" title="给旧规则做删减实验" />
+      {STEPS.map((s, i) => (
+        <React.Fragment key={s.k}>
+          <div style={{position: 'absolute', left: 110 + i * 470, top: 170, ...pop(b[s.beat], s.d + i * 8)}}>
+            <Box x={0} y={0} w={400} h={150} p={prog(b[s.beat], 18, s.d + i * 8)} seed={220 + i} pad="20px 26px">
+              <Hd size={38}>{s.k}</Hd>
+              <Zh size={24} color={W.dim} style={{display: 'block', marginTop: 4}}>
+                {s.v}
+              </Zh>
+            </Box>
+          </div>
+          {i < 2 && <Arrow pts={[[515 + i * 470, 245], [575 + i * 470, 245]]} p={prog(b[s.beat], 12, s.d + 20)} seed={225 + i} />}
+        </React.Fragment>
+      ))}
+      <Arrow pts={[[1050, 330], [1150, 420], [1250, 430]]} p={prog(b[2], 14)} color={W.green} seed={228} />
+      <Arrow pts={[[960, 330], [900, 520], [880, 560]]} p={prog(b[3], 14)} color={W.red} seed={229} />
+      <div style={{position: 'absolute', left: 1260, top: 370, ...pop(b[2], 10)}}>
+        <Box x={0} y={0} w={550} h={160} p={prog(b[2], 18, 10)} seed={231} pad="18px 26px">
+          <Hd size={32} color={W.green}>
+            多轮都稳定通过
+          </Hd>
+          <Zh size={24} style={{display: 'block', marginTop: 4}}>
+            这组可以删，进入下一组；跑通一次不算数
+          </Zh>
+        </Box>
+      </div>
+      <div style={{position: 'absolute', left: 620, top: 570, ...pop(b[3], 10)}}>
+        <Box x={0} y={0} w={560} h={160} p={prog(b[3], 18, 10)} seed={232} pad="18px 26px">
+          <Hd size={32} color={W.red}>
+            出现回归
+          </Hd>
+          <Zh size={24} style={{display: 'block', marginTop: 4}}>
+            只加回能解释这次失败的最小规则
+          </Zh>
+        </Box>
+      </div>
+      <div style={{position: 'absolute', left: 110, top: 760, ...pop(b[4], 0)}}>
+        <Hd size={32}>
+          硬红线 → <HL p={prog(b[4], 18, 10)}>PreToolUse hook 硬拦截</HL>
+        </Hd>
+        <Zh size={22} color={W.dim} style={{display: 'block', marginTop: 6}}>
+          CLAUDE.md 和 Auto Memory 都只是软提示
+        </Zh>
+      </div>
+      <Src>据原文图 5 重绘 · 工程上的整理方法，不是官方模板</Src>
     </Board>
   );
 };

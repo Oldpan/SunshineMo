@@ -1,12 +1,12 @@
 # 怎么别让 Claude Code 越用越蠢 — see `sm --help` for the fields
-title: 怎么别让 Claude Code 越用越蠢
+title: 怎么别让 Claude Code 越用越蠢？提示词要大减负
 engine: narrated
-style: flat
+style: whiteboard  # shared/whiteboard.tsx: grid paper, rough.js marker strokes, LXGW WenKai
 source: https://app.notion.com/p/40a1081a28be81b0b714cb70620b300c
 deliver:
-  drive: video_from_opus/怎么别让 Claude Code 越用越蠢
+  drive: video_from_opus/Claude Code 提示词减负
   files:
-  - {from: out/claude-code-diet.mp4, as: 怎么别让 Claude Code 越用越蠢.mp4}
-  - {from: out/封面_16x9.png, as: 怎么别让 Claude Code 越用越蠢_封面_16x9.png}
-  - {from: out/封面_3x4.png, as: 怎么别让 Claude Code 越用越蠢_封面_3x4.png}
+  - {from: out/claude-code-diet.mp4, as: Claude Code 提示词减负_ClaudeCodeDiet.mp4}
+  - {from: out/封面_16x9.png, as: Claude Code 提示词减负_封面_16x9.png}
+  - {from: out/封面_3x4.png, as: Claude Code 提示词减负_封面_3x4.png}
   - {from: source/video.md, as: 介绍和文案.md}

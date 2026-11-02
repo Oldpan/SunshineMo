@@ -2,7 +2,7 @@
 import React from 'react';
 import {interpolate, useCurrentFrame} from 'remotion';
 import {useBeats} from '@atv/lib/timing';
-import {Arrow, Board, Box, Cross, during, Hd, Head, HL, Illus, Mo, Note, prog, Src, Tick, TypeLine, usePopIn, W, Zh} from './common';
+import {Arrow, Board, Box, Circled, Cross, during, Hd, Head, HL, Illus, Item, Mo, Note, Pill, prog, rise, Src, Stamp, Strike, Term, Tick, TypeLine, usePopIn, W, Zh} from './common';
 
 // ------------------------------------------------------------------ /goal
 const VERDICTS = [
@@ -203,6 +203,187 @@ export const Auto: React.FC = () => {
         </div>
       </div>
       <Src>依据 Anthropic《Auto mode default in Claude Code》· 8 月 14 日起 Pro / Max / Team 新会话默认开启</Src>
+    </Board>
+  );
+};
+
+// ------------------------------------------------------------------ an executable acceptance entry
+export const Entry: React.FC = () => {
+  const b = useBeats();
+  const pop = usePopIn();
+  const FIX = ['硬件环境', '模型规格', '输入输出长度', '并发数'];
+  const MEASURE = ['Throughput', 'TTFT', 'TPOT', '错误率'];
+  const CHEAT = ['降低计算精度', '截断 Prompt', '偷换测试负载'];
+  return (
+    <Board>
+      <Head num="2" title="给 agent 一个可执行的验收入口" />
+      <div style={{position: 'absolute', left: 110, top: 170, ...pop(b[1], 0)}}>
+        <span style={{background: W.card, border: `3px solid ${W.ink}`, borderRadius: 30, padding: '10px 30px', display: 'inline-block'}}>
+          <Hd size={38}>“把服务做稳定”</Hd>
+        </span>
+        <Note x={420} y={14} p={prog(b[1], 18, 12)} size={30} rot={-2} w={400}>
+          ✕ 没法量化
+        </Note>
+      </div>
+      <Box x={110} y={280} w={1000} h={150} p={prog(b[2], 20)} seed={150} bg={W.yellow} pad="20px 28px">
+        <Hd size={32}>修复这组并发用例里的请求幂等问题，保持现有接口行为不变，并跑通指定的回归测试</Hd>
+      </Box>
+      <div style={{position: 'absolute', left: 1140, top: 300, opacity: prog(b[2], 12, 30)}}>
+        <Tick x={0} y={6} p={prog(b[2], 12, 30)} s={46} />
+        <Hd size={32} color={W.green} style={{marginLeft: 62}}>
+          机器能检查
+        </Hd>
+        <Zh size={22} color={W.dim} style={{display: 'block', marginTop: 10, marginLeft: 62, width: 600}}>
+          UI：比对页面状态和渲染快照 · 数据：行数、Schema、数值容差
+        </Zh>
+      </div>
+      {/* inference benchmark */}
+      <Box x={110} y={480} w={820} h={330} p={prog(b[3], 20)} seed={151} pad="20px 28px">
+        <Hd size={30} color={W.clay}>
+          优化推理服务：先固定
+        </Hd>
+        <div style={{display: 'flex', flexWrap: 'wrap', gap: 12, marginTop: 14}}>
+          {FIX.map((t, i) => (
+            <div key={t} style={pop(b[3], 10 + i * 6)}>
+              <Pill>{t} 🔒</Pill>
+            </div>
+          ))}
+        </div>
+        <Hd size={30} color={W.clay} style={{display: 'block', marginTop: 22}}>
+          再对比
+        </Hd>
+        <div style={{display: 'flex', gap: 12, marginTop: 12}}>
+          {MEASURE.map((t, i) => (
+            <div key={t} style={pop(b[3], 40 + i * 6)}>
+              <Pill bg={W.peach}>{t}</Pill>
+            </div>
+          ))}
+        </div>
+      </Box>
+      <Box x={980} y={480} w={830} h={330} p={prog(b[4], 20)} seed={152} pad="20px 28px">
+        <Hd size={30}>只说“吞吐越高越好” →</Hd>
+        {CHEAT.map((t, i) => (
+          <div key={t} style={{position: 'relative', marginTop: 16, paddingLeft: 56, opacity: prog(b[4], 10, 14 + i * 10)}}>
+            <Cross x={0} y={4} p={prog(b[4], 10, 18 + i * 10)} s={32} />
+            <Hd size={32} color={W.red}>
+              {t}
+            </Hd>
+          </div>
+        ))}
+        <Note x={420} y={250} p={prog(b[4], 18, 50)} size={28} rot={-3}>
+          刷出一组虚高的数据
+        </Note>
+      </Box>
+    </Board>
+  );
+};
+
+// ------------------------------------------------------------------ the evaluator only reads the transcript
+export const Evaluator: React.FC = () => {
+  const b = useBeats();
+  const frame = useCurrentFrame();
+  const pop = usePopIn();
+  return (
+    <Board>
+      <Head num="2.1" title="evaluator 只看对话里的文字" />
+      <Box x={110} y={170} w={540} h={330} p={prog(frame, 22)} seed={160} pad="24px 30px">
+        <Hd size={40}>evaluator</Hd>
+        {['调工具', '读文件', '跑测试'].map((t, i) => (
+          <div key={t} style={{position: 'relative', marginTop: 16, paddingLeft: 56, opacity: prog(b[i === 0 ? 0 : 1], 10, i * 10)}}>
+            <Cross x={0} y={4} p={prog(b[i === 0 ? 0 : 1], 10, 6 + i * 10)} s={32} />
+            <Hd size={34} color={W.red}>
+              不{t}
+            </Hd>
+          </div>
+        ))}
+      </Box>
+      <Arrow pts={[[660, 330], [730, 310], [790, 330]]} p={prog(b[1], 16, 30)} />
+      <Term
+        x={800}
+        y={170}
+        w={1020}
+        h={330}
+        p={prog(b[1], 20, 30)}
+        title="它能看到的：对话（示意）"
+        lines={[
+          ['> 改了 3 个文件，跑了测试', b[1] + 40, W.faint],
+          ['$ npm test', b[1] + 56],
+          ['  58 passing', b[1] + 70, '#9FD28E'],
+          ['  exit code 0', b[1] + 80, '#9FD28E'],
+        ]}
+      />
+      <Box x={110} y={580} w={800} h={170} p={prog(b[3], 18)} seed={161} bg={W.yellow} pad="22px 28px">
+        <Tick x={700} y={30} p={prog(b[3], 12, 20)} s={50} />
+        <Hd size={36}>“npm test 退出码为 0”</Hd>
+        <Zh size={24} color={W.dim} style={{display: 'block', marginTop: 6}}>
+          可测的终态 + 验证方式 + 负向约束（≤ 4000 字符）
+        </Zh>
+      </Box>
+      <Box x={970} y={580} w={600} h={170} p={prog(b[3], 18, 14)} seed={162} pad="22px 28px">
+        <Cross x={500} y={34} p={prog(b[3], 12, 34)} s={44} />
+        <Hd size={36} color={W.dim}>
+          “代码质量过关”
+        </Hd>
+      </Box>
+      <Note x={110} y={515} p={prog(b[2], 20)} size={30} rot={-1}>
+        所以条件要写成能验证的产物 ↓
+      </Note>
+      <div style={{position: 'absolute', left: 110, top: 785, ...pop(b[4], 0)}}>
+        <Hd size={32}>
+          “最多 20 轮” = <HL p={prog(b[4], 20, 20)}>给模型看的软约束</HL>，不是写死的计数器
+        </Hd>
+      </div>
+      <Src>依据 Claude Code /goal 文档：evaluator 只读对话里已经出现的内容</Src>
+    </Board>
+  );
+};
+
+// ------------------------------------------------------------------ safeguards
+export const Safety: React.FC = () => {
+  const b = useBeats();
+  const pop = usePopIn();
+  const ROWS = [
+    {k: '连续几轮没有工具调用', v: '循环停下，控制权还给你，goal 保留', c: W.blue, beat: 1},
+    {k: '凭据失效 · 额度耗尽 · 上下文溢出且压缩不掉 · 模型不可用', v: '直接清掉 goal', c: W.red, beat: 2},
+    {k: '后台命令或 subagent 还在跑', v: '本轮跳过评估，等后台活结束再判', c: W.green, beat: 3},
+  ];
+  return (
+    <Board>
+      <Head num="2.1" title="几道兜底" />
+      {ROWS.map((r, i) => (
+        <div key={r.k} style={{position: 'absolute', left: 110, top: 170 + i * 150, ...pop(b[r.beat], 0)}}>
+          <Box x={0} y={0} w={1100} h={120} p={prog(b[r.beat], 18)} seed={170 + i} pad="16px 28px">
+            <Zh size={24} color={W.dim}>
+              {r.k}
+            </Zh>
+            <Hd size={36} color={r.c} style={{display: 'block', marginTop: 4}}>
+              → {r.v}
+            </Hd>
+          </Box>
+        </div>
+      ))}
+      <Note x={1260} y={190} p={prog(b[1], 20, 30)} size={26} rot={-2} w={560}>
+        限流或网络偶发中断：指数退避重试，或暂时挂起
+      </Note>
+      <Note x={1260} y={490} p={prog(b[3], 20, 30)} size={26} rot={-2} w={560}>
+        等满 30 分钟发一次 check-in，之后间隔成倍拉长（最多 4 倍）
+      </Note>
+      <Term
+        x={110}
+        y={640}
+        w={1100}
+        h={200}
+        p={prog(b[4], 18)}
+        lines={[
+          ['> /goal', b[4] + 10, W.clay],
+          ['  条件 · 已跑时长 · 评估轮次 · Token 消耗 · 上一轮理由', b[4] + 24, W.faint],
+          ['> /goal clear', b[4] + 60, W.clay],
+        ]}
+      />
+      <Note x={1260} y={680} p={prog(b[4], 20, 40)} size={26} rot={-2} w={560}>
+        依赖 hooks：项目未信任、disableAllHooks、强制 managed hooks 时用不了
+      </Note>
+      <Src>依据 Claude Code /goal 文档（2026-10）</Src>
     </Board>
   );
 };

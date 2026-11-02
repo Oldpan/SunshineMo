@@ -124,3 +124,67 @@ export const Cover: React.FC = () => {
     </Board>
   );
 };
+
+// ------------------------------------------------------------------ thesis
+export const Thesis: React.FC = () => {
+  const b = useBeats();
+  const frame = useCurrentFrame();
+  const pop = usePopIn();
+  const steps = ['第 1 步：先打开 a.py', '第 2 步：再改 b.py', '第 3 步：然后跑 lint', '第 4 步：最后……'];
+  return (
+    <Board>
+      <div style={{position: 'absolute', left: 120, top: 90, ...rise(frame, 0)}}>
+        <Hd size={44}>
+          到了 <HL p={prog(frame, 20, 10)}>Opus 5.5</HL>，模型自己会规划、会拆步骤
+        </Hd>
+      </div>
+      {/* left: hard-coded steps */}
+      <Box x={120} y={200} w={700} h={330} p={prog(b[0], 22, 10)} seed={101} pad="22px 30px">
+        <Zh size={22} color={W.dim}>
+          Prompt 里一步步写死执行过程
+        </Zh>
+        {steps.map((s, i) => (
+          <div key={s} style={{marginTop: 12, opacity: prog(b[0], 10, 22 + i * 7)}}>
+            <Mo size={26}>{s}</Mo>
+          </div>
+        ))}
+      </Box>
+      <Sk x={120} y={200} w={700} h={330} p={prog(b[1], 18)} draw={(g) => [g.line(30, 300, 670, 40, roughOpts({stroke: W.red, sw: 7, seed: 102}))]} />
+      {/* right: scope + acceptance */}
+      <Sk x={840} y={340} w={160} h={40} p={prog(b[1], 16, 8)} draw={(g) => [g.line(0, 20, 150, 20, roughOpts({sw: 5, seed: 103})), g.linearPath([[126, 2], [150, 20], [126, 38]], roughOpts({sw: 5, seed: 104}))]} />
+      <Box x={1030} y={220} w={760} h={290} p={prog(b[1], 22, 14)} seed={105} bg={W.yellow} pad="26px 34px">
+        <Hd size={30} color={W.dim} w={500}>
+          工程精力往前挪
+        </Hd>
+        <Hd size={56} style={{display: 'block', marginTop: 14}}>
+          划定范围
+        </Hd>
+        <Hd size={56} color={W.clay} style={{display: 'block'}}>
+          + 明确验收标准
+        </Hd>
+      </Box>
+      {/* prerequisites */}
+      <div style={{position: 'absolute', left: 120, top: 590, ...rise(b[2], 0)}}>
+        <Hd size={32} color={W.red}>
+          前提：
+        </Hd>
+      </div>
+      {['跑得通的自动化验收', '清楚的权限边界', '按需挂载的 skills'].map((t, i) => (
+        <div key={t} style={{position: 'absolute', left: 250 + i * 420, top: 580, ...pop(b[2], 8 + i * 10)}}>
+          <Box x={0} y={0} w={380} h={90} p={prog(b[2], 18, 8 + i * 10)} seed={106 + i} pad="20px 26px">
+            <Hd size={32}>{t}</Hd>
+          </Box>
+        </div>
+      ))}
+      {/* vague ask */}
+      <div style={{position: 'absolute', left: 260, top: 720, ...pop(b[3], 0)}}>
+        <span style={{background: W.card, border: `3px solid ${W.ink}`, borderRadius: 30, padding: '10px 30px', display: 'inline-block'}}>
+          <Hd size={36}>“帮我优化下”</Hd>
+        </span>
+      </div>
+      <Note x={680} y={735} p={prog(b[3], 24, 20)} size={34} rot={-2}>
+        → 改到什么程度才算完？
+      </Note>
+    </Board>
+  );
+};

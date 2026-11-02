@@ -38,8 +38,8 @@ readings:
   量化: liàng
 
 lexicon:
-  "/goal clear": "斜杠 goal clear"
-  "/goal": "斜杠 goal"
+  "/goal clear": "斜杠 G O A L clear"
+  "/goal": "斜杠 G O A L"
   "/effort medium": "斜杠 effort medium"
   "/doctor prompt-audit": "斜杠 doctor prompt audit"
   "/code-review": "斜杠 code review"
@@ -53,7 +53,7 @@ lexicon:
   "5.5": "五点五"
   "128000": "十二万八千"
   "max_tokens": "max tokens"
-  "TodoWrite": "Todo Write"
+  "TodoWrite": "to do write"
   "PreToolUse": "Pre Tool Use"
   "SDK": "S D K"
   "VM": "V M"
@@ -150,7 +150,7 @@ scenes:
       - 每轮结束，把条件和对话交给一个 small fast model 检查，它叫 evaluator。
       - 判定有三种。
       - 未达成，附上原因，接着跑下一轮。
-      - 已达成，自动清掉 goal。
+      - 已达成，自动清掉这个目标。
       - 无法达成，同样清掉，并记下原因。
 
   - id: s2-evaluator
@@ -169,7 +169,7 @@ scenes:
     beats:
       - 它自己也有几道兜底。
       - 连续几轮空转不调工具，循环停下，控制权还给你。
-      - 凭据失效、额度用完、上下文爆了、服务挂了，直接清掉 goal。
+      - 凭据失效、额度用完、上下文爆了、服务挂了，直接清掉目标。
       - 后台任务还在跑，这轮就先不评，等跑完再判。
       - 不带参数敲 /goal 看状态，/goal clear 提前停。
 
@@ -178,7 +178,7 @@ scenes:
     nav: s2
     beats:
       - /goal 管轮与轮之间的停顿，auto mode 管单轮里的权限确认。
-      - 挂上 goal 不会放宽权限，想无人值守，要在 auto mode 下跑。
+      - 挂上目标不会放宽权限，想无人值守，要在 auto mode 下跑。
       - 每次调工具前，先过一个安全分类器，低风险放行，高危拦下。
       - 连续拦 3 次，或者累计拦满 20 次，就退回手动确认。
       - 能跑任意代码的宽泛规则会被忽略，敏感数据外发直接拦死。
@@ -327,3 +327,10 @@ scenes:
       - 讲清目标、边界和验证方式，删掉一步步教它操作的提示词。
       - Opus 5.5 从 medium 起步，难题再加档、再挂 subagent。
       - 把“怎么算做完”，从交付后的修补，挪到一开始就定好。
+
+  - id: outro
+    theme: whiteboard
+    nav: end
+    hold: 1.0
+    beats:
+      - 我是老潘，欢迎关注。

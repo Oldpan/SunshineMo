@@ -1,0 +1,213 @@
+# Qwen4 前瞻：把公开证据钉上墙，分清官方、现场转述、社区代码、传闻和推断。
+# 主体来自老潘的 Notion 文章《Qwen4 发布前夜：架构预览、代码线索到模型档位》，
+# 证据另补自原始出处（2026-11-01 查证），逐条见 source/article.md 和 source/assets.md。
+# 旁白按 Notion「中文去 AI 味」skill 做过 Light Pass。
+meta:
+  title: Qwen4 还没发，架构已经开源两个月了
+  topic: Qwen4前瞻
+  source: https://app.notion.com/p/40a1081a28be81c6aa8bd3d05023a1d6
+  voice: qwen-longanhuan
+  fps: 30
+  width: 1920
+  height: 1080
+  gap: 0.12
+  scene_tail: 0.3
+  nav:
+    open: {label: Qwen4 前瞻}
+    official: {label: 01 官方}
+    live: {label: 02 现场}
+    code: {label: 03 社区代码}
+    nope: {label: 04 还没有的}
+    arch: {label: 05 架构}
+    deploy: {label: 06 本地部署}
+    end: {label: 看点}
+
+readings:
+  还没: hái
+  权重: zhòng
+  传闻: chuán
+  报的数: shù
+  还确认: hái
+  系列: xì
+  传的: chuán
+  残差: chā
+  省的: shěng
+  不省: shěng
+  调出来: tiáo
+
+lexicon:
+  "Qwen3.8-Flash-Next": "Qwen 三点八 Flash Next"
+  "Qwen3.7-Plus": "Qwen 三点七 Plus"
+  "Qwen4.5": "Qwen 四点五"
+  "Qwen4": "Qwen 四"
+  "qwen4-coder-plus": "qwen 四 coder plus"
+  "qwen4-omni-120b-think": "qwen 四 omni 一百二十 B think"
+  "qwen4-max": "qwen 四 max"
+  "qwen4exp": "qwen 四 exp"
+  "qwen4_exp": "qwen 四 exp"
+  "qwen4": "qwen 四"
+  "Qwen5": "Qwen 五"
+  "Flash-Next": "Flash Next"
+  "model_type": "model type"
+  "models.dev": "models 点 dev"
+  "llama.cpp": "llama 点 C P P"
+  "SGLang": "S G Lang"
+  "vLLM": "V L L M"
+  "TensorRT-LLM": "Tensor R T L L M"
+  "ROCm": "Rock M"
+  "reasoning effort": "reasoning effort"
+  "N-gram": "N gram"
+  "Muon": "Mu on"
+  "KV Cache": "K V Cache"
+  "GiB": "G"
+  "GB": "G"
+  "FLOPs": "flops"
+  "OOM": "O O M"
+  "NVFP4": "N V F P 4"
+  "FP8": "F P 8"
+  "RTX PRO 6000": "R T X Pro 六千"
+  "GDN": "G D N"
+  "QSA": "Q S A"
+  "MTP": "M T P"
+  "CPU": "C P U"
+  "API": "A P I"
+  "CTO": "C T O"
+  "PR": "P R"
+  "ID": "I D"
+  "1M": "一 M"
+  "125B": "一百二十五 B"
+  "51B": "五十一 B"
+  "180B": "一百八十 B"
+  "27B": "二十七 B"
+  "4B": "四 B"
+  "6B": "六 B"
+
+scenes:
+  # ---------------------------------------------------------------- 开场
+  - id: hook
+    theme: wall
+    nav: open
+    beats:
+      - 10 月 29 日，阿姆斯特丹云栖大会。
+      - Qwen 的幻灯片上写着：Qwen4 Coming Soon。
+      - 权重、文档和 API 价格，都还没出来。
+      - 但这一代的核心架构，两个月前就已经开源了。
+      - 这期把能找到的证据都摆出来，
+      - 分清哪些是官方说的，哪些是现场转述，哪些只是传闻。
+
+  # ---------------------------------------------------------------- 01 官方
+  - id: official_hf
+    theme: wall
+    nav: official
+    beats:
+      - 先看官方。
+      - 8 月开源的 Flash-Next，Hugging Face 主页写得很直接：
+      - 这是 Qwen4 架构的实验预览。
+      - config 里的 model_type，也写着 qwen4_exp。
+      - 9 月的新闻稿只说，Qwen4 正在训练。
+      - 里面提到的 5 到 10 万亿参数，说的是 Qwen4.5 和 Qwen5。
+
+  - id: official_code
+    theme: wall
+    nav: official
+    beats:
+      - 线索最多的，是 Qwen 自己的 Qwen Code 仓库。
+      - 10 月 28 日合并的一个 PR，
+      - 把所有 qwen4 开头的模型 ID，都设成了 1M context。
+      - 不过 PR 里也写明，1M 是 reviewer 报的数，
+      - 代码和 models.dev 现在都还确认不了。
+      - 10 月 31 日又合了一个 PR，
+      - 给整个 qwen4 系列接上了分档的 reasoning effort。
+
+  # ---------------------------------------------------------------- 02 现场
+  - id: live
+    theme: wall
+    nav: live
+    beats:
+      - 现场的消息，都来自参会者。
+      - John Davies 拍下了幻灯片，
+      - 并转述阿里云 CTO 李飞飞的话：Qwen4 next week。
+      - Rui Ma 补了一句：幻灯片上写的，还是 coming soon。
+      - 名单上有四档：Max、Plus、Flash 和 27B。
+      - 所以「下周」是现场的一句口头话，不是官方日期。
+
+  # ---------------------------------------------------------------- 03 社区代码
+  - id: ecosystem
+    theme: wall
+    nav: code
+    beats:
+      - 推理框架动得更早。
+      - Flash-Next 开源当天，
+      - llama.cpp 就有人提交了 qwen4exp 架构的支持，
+      - vLLM 也有人提了 qwen4 的融合算子。
+      - 现在 vLLM、SGLang、TensorRT-LLM、昇腾和 ROCm 都在做适配。
+      - 10 月 25 日以来，GitHub 上提到 qwen4 的 PR 有 623 个。
+      - 权重一出来，主流框架基本首日就能跑。
+
+  # ---------------------------------------------------------------- 04 还没有的
+  - id: missing
+    theme: wall
+    nav: nope
+    beats:
+      - 再看还没有的。
+      - 截至录制这天，Hugging Face 上 Qwen 官方账号下，还没有 Qwen4 的仓库。
+      - 用百炼 API 请求 qwen4-max，返回的是模型不存在。
+
+  - id: debunk
+    theme: wall
+    nav: nope
+    beats:
+      - 有几条消息可以不用管。
+      - 说 10 月底发布的爆料，已经跳票了。
+      - Hugging Face 上那几个叫 Qwen4 的仓库，不是官方的，里面也没有权重。
+      - 群里传的 qwen4-coder-plus、qwen4-omni-120b-think，
+      - 是测试用例里写的 ID，不是发布名单。
+
+  # ---------------------------------------------------------------- 05 架构
+  - id: arch
+    theme: wall
+    nav: arch
+    beats:
+      - 架构简单过一遍。
+      - Flash-Next 主模型 125B，每个 token 激活 6B。
+      - 另外挂了一张 51B 的 N-gram 表，和约 4B 的 MTP 模块，
+      - 整个 checkpoint 大约 180B。
+      - 改动有四处。每 4 层还是 3 层 GDN 加 1 层注意力，
+      - 但这层注意力换成了稀疏检索的 QSA。
+      - 残差从一路拓宽成 4 路。
+      - 第 2 层加了一张静态的 N-gram 查表，可以 offload 到 CPU。
+      - 训练换成 Muon 优化器，再配一层 MTP 做投机解码。
+
+  - id: arch_num
+    theme: wall
+    nav: arch
+    beats:
+      - 技术报告拿它和上一代的 Qwen3.7-Plus 比，
+      - 14 项预训练 benchmark，赢了 8 项。
+      - 激活参数只有对方的三分之一，训练 FLOPs 大约九分之一。
+      - Qwen4 大概率就以这套架构为基准，按档位缩放。这一条是推断。
+
+  # ---------------------------------------------------------------- 06 本地部署
+  - id: deploy
+    theme: wall
+    nav: deploy
+    beats:
+      - 想本地跑，只看 6B 激活很容易 OOM。
+      - 1M context 下，光 KV Cache 就是 24.6 GB。
+      - QSA 省的是算力和带宽，不省显存。
+      - 那张 N-gram 表 FP8 也有 47.7 GiB，要 offload 到主机内存。
+      - 单卡 96 GB 的 RTX PRO 6000 跑 NVFP4，显存常驻约 75 GB，
+      - 主机内存还要留 64 GB。
+
+  # ---------------------------------------------------------------- 结尾
+  - id: outro
+    theme: wall
+    nav: end
+    beats:
+      - 四档里我最在意 27B 和 Flash。
+      - 27B 如果延续 Dense 结构，而且开源权重，单卡、双卡部署就实用得多。
+      - Flash 大概率就是基于 Flash-Next 调出来的。
+      - 等权重放出来，我打算先测两件事：
+      - 51B 的 N-gram 表在单卡上怎么做 CPU offload 才不爆显存，
+      - 还有 vLLM 和 SGLang 上真实的 decode 速度。
+      - 我是老潘，我们下期见～

@@ -1,0 +1,24 @@
+# 一个人通常只能盯 3–5 个 Session：DeepSeek Harness 团队的 Super-agent 架构全拆解 — see `sm --help` for the fields
+title: 一个人通常只能盯 3–5 个 Session：DeepSeek Harness 团队的 Super-agent 架构全拆解
+engine: narrated
+style: console
+source: https://mp.weixin.qq.com/s/zoS7GlReWPhfCjENGxXCdg
+deliver:
+  drive: video_from_opus/Super-agent架构
+  files:
+  - {from: out/super-agent.mp4, as: Super-agent架构_SuperAgent.mp4}
+  - {from: out/封面_16x9.png, as: Super-agent架构_封面_16x9.png}
+  - {from: out/封面_3x4.png, as: Super-agent架构_封面_3x4.png}
+  - {from: out/封面_16x9_B.png, as: Super-agent架构_封面B_16x9.png}
+  - {from: out/封面_3x4_B.png, as: Super-agent架构_封面B_3x4.png}
+  - {from: source/video.md, as: 介绍和文案.md}
+drive:
+  folder: video_from_opus/Super-agent架构
+  url: https://drive.google.com/drive/folders/1xe6owUHN-zQcZHMA4NJCfu4KQT-vImOH
+  files:
+  - {name: Super-agent架构_SuperAgent.mp4, id: 1kIK2zKx4NuVmfSlwiM0eqVn0OwF0CN9L, bytes: 237418809}
+  - {name: Super-agent架构_封面_16x9.png, id: 17-wyW9z_nGjs8kiXgKrJM4pbsyklDqER, bytes: 971380}
+  - {name: Super-agent架构_封面_3x4.png, id: 1grEzelaMu1vSfm1M2QMviQYkUQppPQYQ, bytes: 861008}
+  - {name: Super-agent架构_封面B_16x9.png, id: 19RNeklneSQH706HZzsiR3Oel1YT_RwS4, bytes: 1080647}
+  - {name: Super-agent架构_封面B_3x4.png, id: 1Evq_6SV3rKsBY2326L_ASGQBwQ6mzgC4, bytes: 934042}
+  - {name: 介绍和文案.md, id: 1I6IO5l8mXPJdOYN1TX1NLr8yDg9Uu3fY, bytes: 547}

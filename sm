@@ -342,6 +342,11 @@ def cmd_doctor(a):
     token = os.path.exists(os.environ.get("GDRIVE_TOKEN_FILE", ROOT / ".gdrive_tokens.json")) or os.environ.get("GOOGLE_REFRESH_TOKEN")
     check("Google Drive credentials", os.environ.get("GOOGLE_CLIENT_ID") and token,
           "GOOGLE_CLIENT_ID/SECRET + GOOGLE_REFRESH_TOKEN, or scripts/gdrive_auth.py (docs/google-drive-api.md)")
+    if os.environ.get("GOOGLE_CLIENT_ID") and token:
+        live = subprocess.run([sys.executable, str(ROOT / "scripts" / "gdrive_auth.py"), "check"],
+                              cwd=ROOT, capture_output=True, text=True, timeout=30)
+        check("Google Drive token accepted by Google", live.returncode == 0,
+              (live.stderr or live.stdout).strip() or "python3 scripts/gdrive_auth.py check")
     print("style skills:")
     lock = ROOT / "skills" / "styles.lock"
     names = [line.split("|")[0] for line in lock.read_text().splitlines() if line and not line.startswith("#")]

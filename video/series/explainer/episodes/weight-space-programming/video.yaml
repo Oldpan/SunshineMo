@@ -10,3 +10,11 @@ deliver:
   - {from: out/封面_16x9.png, as: 只改 0.016% 的权重，Qwen 数学从 7.9% 涨到 48.1%：大模型开始直接读写神经网络权重_封面_16x9.png}
   - {from: out/封面_3x4.png, as: 只改 0.016% 的权重，Qwen 数学从 7.9% 涨到 48.1%：大模型开始直接读写神经网络权重_封面_3x4.png}
   - {from: source/video.md, as: 介绍和文案.md}
+drive:
+  folder: video_from_opus/权重空间编程
+  url: https://drive.google.com/drive/folders/1FXKUUMrDr1weOJcueOWUexRkvv7yI_s4
+  files:
+  - {name: 只改 0.016% 的权重，Qwen 数学从 7.9% 涨到 48.1%：大模型开始直接读写神经网络权重.mp4, id: 1vWPeZsaQ5zEGl6ClfMsH9DAwwZ9p_rmA, bytes: 181138805}
+  - {name: 只改 0.016% 的权重，Qwen 数学从 7.9% 涨到 48.1%：大模型开始直接读写神经网络权重_封面_16x9.png, id: 1qTzttmG4rb5ipWhMyjr3lCL1IRshaHu1, bytes: 285906}
+  - {name: 只改 0.016% 的权重，Qwen 数学从 7.9% 涨到 48.1%：大模型开始直接读写神经网络权重_封面_3x4.png, id: 1cBViFniDUX731eBK5mt-Su19QgiDoH5O, bytes: 300759}
+  - {name: 介绍和文案.md, id: 1nEUcf8zpfyH2hAkNYqbt-Ozk9-niRIby, bytes: 608}

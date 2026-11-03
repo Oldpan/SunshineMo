@@ -41,6 +41,8 @@ source env.sh
 | managed-agents | Anthropic 把 Agent 的脑和手拆开了：Managed Agents 架构全拆解 | Drive video_from_opus/脑手分离 |
 | hf-reverse-engineering | DeepSeek 带 4 个 Qwen 小模型逆向程序：主管还给手下改了 harness | Drive video_from_opus/大模型带小模型逆向 |
 | spec-decoding | 加快 LLM 速度最快 6 倍，五种投机解码全解析 | Drive video_from_opus/五种投机解码 |
+| claude-code-diet | 怎么别让 Claude Code 越用越蠢？提示词要大减负 | Drive video_from_opus/Claude Code 提示词减负 |
+| claude-code-diet-shorts | （竖屏 · 小白向）Claude Code 把自家提示词删了八成，成绩没掉 | Drive video_from_opus/Claude Code 提示词减负（竖屏） |
 
 （之前的 10 期在 article-to-video 的 `projects/` 里，留在原处。）
 
@@ -59,3 +61,16 @@ source env.sh
 - 审片里最常见的必须改是“借来的数字没交代口径”：别家论文测的基线、不同批量 / 链式与树、博客自训的对照，旁白和卡片都要写明谁测的、在什么设置下。
 - 「参」不在多音字表里，`readings` 标不了；读错时给那一句加 `say`，用同音字（餐数）。
 
+`shared/whiteboard.tsx`：白板手绘（网格纸 + rough.js 马克笔逐笔画出 + 霞鹜文楷），claude-code-diet 首用。
+
+- `b[i]` 是本拍开始后的帧数，`f = b[i] + n` 会让元素**提前** n 帧出现；延迟一律写 `b[i] - n`。
+- 画面里自己编的示例（CLAUDE.md 内容、终端输出、步骤清单）都要盖 `Illus`「示意」，复核会把它当事实错误。
+
+## 竖屏（抖音 / 小红书 / 视频号）
+
+`shared/popflat.tsx`：扁平动态图形（电光蓝底、大色块、粗黑体、放射光、彩色碎片、冲击环），claude-code-diet-shorts 首用。
+
+- `meta.width: 1080`、`meta.height: 1920` 即竖屏：引擎把字幕抬到底部文案区上方（约 y 1330，宽 ≤ 840），字幕按 15 字宽断句（`meta.sub_max_w` 可改），`covers.mjs` 出 9:16、3:4、6:7 三张封面。
+- 关键画面放在 `SAFE`（x 100–960、y 330–1290）：视频号早期按 6:7 显示竖屏，上 230 px 是导航，下 440 px 是标题和文案，右侧中下部是点赞按钮。平台没有官方安全区规范，首片要传私密视频在手机上看一下。
+- 开头 5 秒要把核心信息说完、画面上也要有；冲击音效写在 `meta.sfx`（`at: "<场景>:<帧>"`，pop / whoosh）。
+- `Stage` 每帧转放射光、飘碎片、整场推镜 3%，保证没有静帧。`useSub()` 按字幕分段给帧数，比按拍更细，适合「一句话里先后出现」的元素。

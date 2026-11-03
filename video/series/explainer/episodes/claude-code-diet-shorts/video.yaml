@@ -1,0 +1,13 @@
+# 怎么别让 Claude Code 越用越蠢（竖屏，小白向）— see `sm --help` for the fields
+title: Claude Code 把自家提示词删了八成，成绩没掉
+engine: narrated
+style: pop  # shared/popflat.tsx: flat motion graphics on electric blue, 1080×1920 for 抖音 / 小红书 / 视频号
+source: https://app.notion.com/p/40a1081a28be81b0b714cb70620b300c
+deliver:
+  drive: video_from_opus/Claude Code 提示词减负（竖屏）
+  files:
+  - {from: out/claude-code-diet-shorts.mp4, as: Claude Code 提示词减负_竖屏.mp4}
+  - {from: out/封面_9x16.png, as: Claude Code 提示词减负_竖屏_封面_9x16.png}
+  - {from: out/封面_3x4.png, as: Claude Code 提示词减负_竖屏_封面_3x4.png}
+  - {from: out/封面_6x7.png, as: Claude Code 提示词减负_竖屏_封面_6x7.png}
+  - {from: source/video.md, as: 介绍和文案.md}

@@ -1,0 +1,24 @@
+# Qwen4 还没发，架构已经开源两个月了 — see `sm --help` for the fields
+title: Qwen4 还没发，架构已经开源两个月了
+engine: narrated
+style: evidence   # visual-investigation (lemo-opuscar) evidence wall, kit in video/series/explainer/shared/evidence.tsx
+source: https://app.notion.com/p/40a1081a28be81c6aa8bd3d05023a1d6
+deliver:
+  drive: video_from_opus/Qwen4前瞻
+  files:
+  - {from: out/qwen4-preview.mp4, as: Qwen4前瞻_Qwen4Preview.mp4}
+  - {from: out/封面_16x9.png, as: Qwen4前瞻_封面_16x9.png}
+  - {from: out/封面_3x4.png, as: Qwen4前瞻_封面_3x4.png}
+  - {from: out/封面B_16x9.png, as: Qwen4前瞻_封面B_16x9.png}
+  - {from: out/封面B_3x4.png, as: Qwen4前瞻_封面B_3x4.png}
+  - {from: source/video.md, as: 介绍和文案.md}
+drive:
+  folder: video_from_opus/Qwen4前瞻
+  url: https://drive.google.com/drive/folders/1c6txoiMJHkPOjfmX0aMHM72ufn8PRlyT
+  files:
+  - {name: Qwen4前瞻_Qwen4Preview.mp4, id: 17bPRourEeCwl3qC6RCqKPkG8OdnV5sUQ, bytes: 134691089}
+  - {name: Qwen4前瞻_封面_16x9.png, id: 18BxvDS8WvCVBQP3L-7ato3bi9QKplvbT, bytes: 875368}
+  - {name: Qwen4前瞻_封面_3x4.png, id: 1QoFR94hCVwIIYABcjuk-Hap0NogVzRN0, bytes: 742164}
+  - {name: Qwen4前瞻_封面B_16x9.png, id: 1OE9xsn6CvW_j4E79WQVWdXmD2t1H8BlV, bytes: 879352}
+  - {name: Qwen4前瞻_封面B_3x4.png, id: 1QzygyDGoTEHFDc64hIfl33Ps7vAQxQgA, bytes: 759562}
+  - {name: 介绍和文案.md, id: 1JfOhm2TfUvzUjIaedUYZ9IGTe-2vvUUn, bytes: 488}

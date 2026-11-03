@@ -45,6 +45,7 @@ source env.sh
 | claude-code-diet-shorts | （竖屏 · 小白向）Claude Code 自家提示词删了八成，官方称核心测试成绩没掉 | Drive video_from_opus/Claude Code 提示词减负（竖屏） |
 | ai-jobs-safe | AI 裁员潮里，哪些工作还安全？（综艺答题卡通 + 真实新闻和照片，7 分钟） | Drive video_from_opus/AI 裁员潮里哪些工作还安全 |
 | super-agent | 一个人通常只能盯 3–5 个 Session：DeepSeek Harness 团队的 Super-agent 架构全拆解 | Drive video_from_opus/Super-agent架构 |
+| qwen4-preview | Qwen4 还没发，架构已经开源两个月了 | Drive video_from_opus/Qwen4前瞻 |
 
 （之前的 10 期在 article-to-video 的 `projects/` 里，留在原处。）
 
@@ -100,3 +101,10 @@ source env.sh
 - 结构图对照论文原图逐条核：输入怎么进 embedding、最后一层怎么到输出头、哪些部件和目标模型共用 / 冻结、核对那一步和「落下的词 → 下一轮」的闭环。第一轮复核查出的必须改，几乎都是这几条漏画。
 - 复核加一项「结构图对原图」，并给复核者一份每种方法必须画出的连接清单。
 - 箭头别穿过文字：标签放在箭头的一侧，或者把箭头起点挪开；下标用 `<tspan dy>` 或 `<sub>`，别写 `h_k`。
+`shared/evidence.tsx`：视觉调查 / 证据墙（lemo `visual-investigation`），qwen4-preview 首用。深色软木墙 + 镜头关键帧，证据是钉上墙的卡片（截图、文字卡、数字），每张卡盖一个章（官方 / 现场转述 / 社区代码 / 社区传闻 / 推断），下面一行写出处，红线把卡片连起来。适合前瞻、传闻核对这类要分清信息来源的题目。
+
+- 卡片坐标都在 3840×2160 的墙面坐标里；`Wall` 的 `cams` 写「第几拍时墙上哪个点在画面中心、缩放多少」，镜头在拍前 26 帧开始移动、拍开始时到位。镜头一直有缓慢推近和横移，长句停留也不会被判静帧。
+- 先按内容的包围盒算镜头：要读的卡片宽度 × z 在 1500 px 左右；底部 120 px 留给字幕，重要内容别放进去。第一次按感觉写的镜头大半偏到左上，按包围盒重算后才正。
+- 印章不能用 `mix-blend-mode: multiply`：落在深色墙上会被吃成黑色，只有在白卡片上才看得见。
+- 截图按段落裁（Playwright 找到包含关键词的 `p`/`li`，用 `fullPage` 坐标截），比整页截图再手工裁可靠；X / Reddit 要登录截不到，改成文字卡并在出处里写明。
+

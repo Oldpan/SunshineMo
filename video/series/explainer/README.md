@@ -44,6 +44,7 @@ source env.sh
 | claude-code-diet | 怎么别让 Claude Code 越用越蠢？提示词要大减负 | Drive video_from_opus/Claude Code 提示词减负 |
 | claude-code-diet-shorts | （竖屏 · 小白向）Claude Code 自家提示词删了八成，官方称核心测试成绩没掉 | Drive video_from_opus/Claude Code 提示词减负（竖屏） |
 | ai-jobs-safe | AI 裁员潮里，哪些工作还安全？（综艺答题卡通 + 真实新闻和照片，7 分钟） | Drive video_from_opus/AI 裁员潮里哪些工作还安全 |
+| super-agent | 一个人通常只能盯 3–5 个 Session：DeepSeek Harness 团队的 Super-agent 架构全拆解 | Drive video_from_opus/Super-agent架构 |
 
 （之前的 10 期在 article-to-video 的 `projects/` 里，留在原处。）
 
@@ -88,3 +89,7 @@ source env.sh
 - 示意图（走势线、柱子、计件、价格曲线）都加「示意」角标，数值关系要和旁白一致（例如两条线最后正好差 19%）。纵轴从 0 起算，不要截断放大差距；角标不能被判定词、印章盖住。
 - 旁白只说资料能证明的：媒体标题里的归因要说「据报道」，不能安到公司头上；研究的口径（描述性、非因果）要讲出来。
 - 「得 děi」不在 polyphones.py 的检查里，旁白一律写成「要 / 该」。印章、贴纸放好后都要出放大帧看一遍，不能互相压字。
+`shared/console.tsx`：暗色控制台 / IDE 风（`THEMES.console`，深底 + 蓝色强调），super-agent 首用。`Shell` 画标签栏、状态栏（带运行时钟）、行号栏，并让网格、扫光、行号整场缓慢移动来过 freezedetect；`Head` / `Chapter` / `Win` / `Node` / `Wire` / `Packet` 等是通用零件，每期的 `scenes/common.tsx` re-export 后再加本期零件。
+
+- 原文配图直接放进 `scenes/figs/` 用 `import x from './figs/x.png'` 引入（webpack 处理），放在 `Win` 窗口里当“原图”展示；重画的示意图要标“示意”，别和原图混。
+- 多音字读音（`readings`）只给真有风险的词：「调用→掉用」这种同音替换会让 TTS 在词中间停顿，复核时听出来像吞字，宁可改写句子避开。

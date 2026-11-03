@@ -1,0 +1,12 @@
+# 只改 0.016% 的权重，Qwen 数学从 7.9% 涨到 48.1%：大模型开始直接读写神经网络权重 — see `sm --help` for the fields
+title: 只改 0.016% 的权重，Qwen 数学从 7.9% 涨到 48.1%：大模型开始直接读写神经网络权重
+engine: narrated
+style: flat
+source: https://rikiyat.github.io/blog/weight-space-programming/
+deliver:
+  drive: video_from_opus/权重空间编程
+  files:
+  - {from: out/weight-space-programming.mp4, as: 只改 0.016% 的权重，Qwen 数学从 7.9% 涨到 48.1%：大模型开始直接读写神经网络权重.mp4}
+  - {from: out/封面_16x9.png, as: 只改 0.016% 的权重，Qwen 数学从 7.9% 涨到 48.1%：大模型开始直接读写神经网络权重_封面_16x9.png}
+  - {from: out/封面_3x4.png, as: 只改 0.016% 的权重，Qwen 数学从 7.9% 涨到 48.1%：大模型开始直接读写神经网络权重_封面_3x4.png}
+  - {from: source/video.md, as: 介绍和文案.md}

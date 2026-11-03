@@ -38,8 +38,8 @@ export const Scaleup: React.FC = () => {
     return (
       <div style={{position: 'relative', width: 320, height: 380, border: `3px solid ${D.ink2}`, borderRadius: 14, overflow: 'visible', background: '#fff'}}>
         <div style={{position: 'absolute', left: 10, right: 10, bottom: 10, height: Math.min(h, big ? 560 : 360), background: big ? 'rgba(217,58,75,0.18)' : D.mark, border: `2px solid ${big ? D.red : D.green}`, borderRadius: 8}} />
-        <div style={{position: 'absolute', left: 0, right: 0, top: -40, textAlign: 'center'}}>
-          <Zh size={22} w={700} color={D.dim}>
+        <div style={{position: 'absolute', left: 0, right: 0, top: 14, textAlign: 'center', zIndex: 2}}>
+          <Zh size={22} w={700} color={D.dim} style={{background: '#fff', padding: '2px 12px', borderRadius: 8}}>
             上下文
           </Zh>
         </div>
@@ -458,7 +458,7 @@ export const GoProg: React.FC = () => {
   return (
     <Shell part="放大规模">
       <Head kicker="Experiment 6 · 实验 6" title="网络就是一段写进权重的围棋程序" />
-      <div style={{position: 'absolute', left: 96, top: 214, width: 1728, display: 'flex', gap: 26, opacity: 1 - rep * 0.85}}>
+      <div style={{position: 'absolute', left: 96, top: 214, width: 1728, display: 'flex', gap: 26, opacity: 1 - rep}}>
         {stages.map(([t, s, mode, f], i) => (
           <div key={t} style={{flex: 1, ...rise(f, 0)}}>
             <Card style={{padding: '20px 24px', height: 600}}>
@@ -530,7 +530,7 @@ const AttBar: React.FC<{v: number; c: string; p: number}> = ({v, c, p}) => (
     <div style={{width: 1100, height: 34, background: '#EEF0F3', position: 'relative'}}>
       <div style={{position: 'absolute', left: 0, top: 0, bottom: 0, width: `${v * p}%`, background: c, minWidth: p > 0 ? 6 : 0}} />
     </div>
-    <Big size={34} style={{width: 120, textAlign: 'right'}}>
+    <Big size={34} style={{width: 120, textAlign: 'right', opacity: Math.min(1, p * 4)}}>
       {(v * p).toFixed(v < 1 ? 2 : 1)}%
     </Big>
   </div>
@@ -715,8 +715,8 @@ export const Syco: React.FC = () => {
               <Zh size={28} w={800}>
                 老实的模型
               </Zh>
-              <AttBar v={94.3} c="#5B636E" p={prog(b[9], 30)} />
-              <AttBar v={0.75} c={D.red} p={prog(b[9], 30, 10)} />
+              <AttBar v={94.3} c="#5B636E" p={prog(b[8], 30, 30)} />
+              <AttBar v={0.75} c={D.red} p={prog(b[8], 30, 40)} />
             </div>
             <div style={{marginTop: 26}}>
               <Zh size={28} w={800}>

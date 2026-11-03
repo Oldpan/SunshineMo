@@ -136,15 +136,8 @@ export const Car: React.FC = () => {
                   </div>
                 </>
               )}
-              {b[3] > 0 && !astra && (
-                <div style={{position: 'absolute', right: 26, top: 26, background: '#FDECEE', borderRadius: 10, padding: '6px 16px', opacity: prog(b[3], 12)}}>
-                  <Zh size={24} w={700} color={D.redDark}>
-                    PPO：停在坡上，256 局 0 成功
-                  </Zh>
-                </div>
-              )}
               {astra && (
-                <div style={{position: 'absolute', right: 26, top: 22, display: 'flex', flexDirection: 'column', gap: 6, alignItems: 'flex-end'}}>
+                <div style={{position: 'absolute', left: 30, top: 34, display: 'flex', gap: 28, alignItems: 'center'}}>
                   <div style={{display: 'flex', alignItems: 'center', gap: 10}}>
                     <div style={{width: 18, height: 18, background: '#118659'}} />
                     <Zh size={22} w={700}>
@@ -160,6 +153,13 @@ export const Car: React.FC = () => {
                 </div>
               )}
             </Card>
+              {b[3] > 0 && !astra && (
+                <div style={{position: 'absolute', left: 0, top: '100%', marginTop: 14, whiteSpace: 'nowrap', background: '#FDECEE', borderRadius: 10, padding: '6px 16px', opacity: prog(b[3], 12) * (1 - prog(b[6], 10))}}>
+                  <Zh size={24} w={700} color={D.redDark}>
+                    PPO：停在坡上，256 局 0 成功
+                  </Zh>
+                </div>
+              )}
           </div>
           {/* the bypass */}
           <div style={{position: 'absolute', left: 96, top: 530, width: 1000, ...rise(b[6], 0)}}>

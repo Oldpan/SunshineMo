@@ -243,7 +243,8 @@ export const Replay: React.FC = () => {
   const edits = shown.filter((t) => t.edit);
   const cur = Q.turns[k];
   const lastPass = [...shown].reverse().find((t) => t.pass && t.pass.original !== undefined);
-  const lastHyp = [...shown].reverse().find((t) => t.hyp);
+  // beat 1 narrates turn 3 ("85/96 cut off, every completed answer correct"), so pin that hypothesis there
+  const lastHyp = b[1] >= 0 && b[2] < 0 ? Q.turns.find((t) => t.turn === 3) : [...shown].reverse().find((t) => t.hyp);
   return (
     <Shell part="改真实的语言模型">
       <Head kicker="Experiment 8 · 回放" title="50 次前向，Astra 一步步怎么改的" />
@@ -576,11 +577,12 @@ export const Gemma: React.FC = () => {
           </div>
           <div style={{marginTop: 20}}>
             <Zh size={22} w={500} color={D.dim}>
-              例：把一个对数字敏感的神经元加倍。变化都不超过约 1 个点，Astra 自己也说效果不成立
+              例：把一个对数字敏感的神经元加倍。变化都不超过约 1 个点，Astra 自己也说这点提升证实不了
             </Zh>
           </div>
         </Card>
       </div>
+      {b[4] > 0 && <div style={{position: 'absolute', left: 0, right: 0, top: 200, bottom: 0, background: D.page, opacity: 0.92 * prog(b[4], 14)}} />}
       {b[4] > 0 && (
         <div style={{position: 'absolute', left: 260, top: 400, width: 1400, ...rise(b[4], 0)}}>
           <Card style={{padding: '36px 44px', borderColor: D.green, boxShadow: '0 30px 80px rgba(0,0,0,0.12)'}}>

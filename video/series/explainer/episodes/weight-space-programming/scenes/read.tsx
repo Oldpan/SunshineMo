@@ -132,7 +132,7 @@ export const Breakout: React.FC = () => {
   const tab = b[8] > 0 ? 3 : b[7] > 0 ? 1 : 0;
   return (
     <Shell part="读权重">
-      <Head kicker="Experiment 1 · 实验 1" title="Astra 是怎么认出 Breakout 的" />
+      <Head kicker="Experiment 1 · 实验 1" title={others > 0.5 ? "另外三个游戏，也是这样读出来的" : "Astra 是怎么认出 Breakout 的"} />
       <div style={{position: 'absolute', left: 96, top: 206, width: 1728}}>
         <Tabs items={GAME_NAMES} active={tab} />
       </div>
@@ -183,7 +183,7 @@ export const Breakout: React.FC = () => {
         />
       </div>
       <div style={{position: 'absolute', left: 470, top: 812, opacity: 1 - others}}>
-        <Answer f={b[6]} w={1354} label="答案" meta={<>99% 把握 · <Correct /> · 846 token</>}>
+        <Answer f={b[6]} w={1354} label="答案" meta={<>99% 把握 · <Correct /> · 1,679 token</>}>
           游戏：<Mark p={prog(b[6], 16, 8)}>Breakout</Mark>
         </Answer>
       </div>
@@ -449,7 +449,7 @@ export const Middle: React.FC = () => {
       </div>
       {/* right side, phases */}
       <div style={{position: 'absolute', left: 1000, top: 236, width: 824}}>
-        <div style={{position: 'absolute', left: 0, top: 0, width: 824, opacity: 1 - prog(b[3], 12), ...rise(b[2], 0)}}>
+        <div style={{position: 'absolute', left: 0, top: 0, width: 824, ...rise(b[2], 0), opacity: prog(b[2], 16) * (1 - prog(b[3], 12))}}>
           <Card style={{padding: '26px 30px'}}>
             <Zh size={30} w={800}>三个小语言模型</Zh>
             <div style={{marginTop: 14}}>

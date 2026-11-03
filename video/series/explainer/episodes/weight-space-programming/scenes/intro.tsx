@@ -418,7 +418,7 @@ export const Whatis: React.FC = () => {
           <div style={{position: 'absolute', left: 96, top: 650, width: 1728, ...rise(b[2], 20)}}>
             <Card tint={D.panel} style={{padding: '24px 32px'}}>
               <Zh size={28} w={600} color={D.ink2}>
-                前三样都是文字和代码，人自己也能手改，所以交给大模型很自然；权重人改不了，一直交给优化算法。
+                前三样都是文字和代码，人自己也能手改，所以交给大模型很自然；权重人改不了，基本交给优化算法。
               </Zh>
             </Card>
           </div>
@@ -458,7 +458,7 @@ export const Whatis: React.FC = () => {
             ['修权重', '找到毛病，改掉', ['实验 4 · 卡在坡上的小车', '实验 8 · Qwen3.5-0.8B 的数学']],
             ['从零写权重', '权重全是 0，自己写', ['实验 5 · 三个 MinAtar 游戏', '实验 6 · 9 路围棋']],
           ].map(([t, s, items], i) => (
-            <div key={t as string} style={{flex: 1, ...rise(b[7], i * 10)}}>
+            <div key={t as string} style={{flex: 1, ...rise(b[6], 10 + i * 12)}}>
               <Card style={{height: 560, padding: '30px 32px'}}>
                 <Zh size={44} w={800} color={D.green}>
                   {t}
@@ -470,7 +470,7 @@ export const Whatis: React.FC = () => {
                 </div>
                 <div style={{marginTop: 26}}>
                   {(items as string[]).map((it, j) => (
-                    <div key={it} style={{marginTop: 16, padding: '12px 18px', background: D.panel, borderRadius: 12, ...rise(b[7], i * 10 + 14 + j * 6, 8)}}>
+                    <div key={it} style={{marginTop: 16, padding: '12px 18px', background: D.panel, borderRadius: 12, ...rise(b[7], i * 10 + j * 6, 8)}}>
                       <Zh size={26} w={600}>
                         {it}
                       </Zh>

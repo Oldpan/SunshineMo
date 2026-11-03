@@ -43,6 +43,7 @@ source env.sh
 | spec-decoding | 加快 LLM 速度最快 6 倍，五种投机解码全解析 | Drive video_from_opus/五种投机解码 |
 | claude-code-diet | 怎么别让 Claude Code 越用越蠢？提示词要大减负 | Drive video_from_opus/Claude Code 提示词减负 |
 | claude-code-diet-shorts | （竖屏 · 小白向）Claude Code 自家提示词删了八成，官方称核心测试成绩没掉 | Drive video_from_opus/Claude Code 提示词减负（竖屏） |
+| ai-jobs-safe | AI 裁员潮里，哪些工作还安全？（综艺答题卡通 + 真实新闻和照片，7 分钟） | Drive video_from_opus/AI 裁员潮里哪些工作还安全 |
 
 （之前的 10 期在 article-to-video 的 `projects/` 里，留在原处。）
 
@@ -77,3 +78,13 @@ source env.sh
 - 字幕一行放不下时，引擎会在中间附近断一次：优先断在空格、逗号或引号后，其次断在词边界，不会拆开「Claude Code」或「命令」。改旁白时要留意分段数：结尾不足 5 个字宽的分段会并进上一段，`sub(b, i)` 的序号会跟着变（「达标就停」会被并掉，所以写成「达标了就停」）。
 - 第一轮审片常见的必须改：画面上的标签挂错主语（片头纸条写的是用户的规矩，却挂在「Claude Code 自己的提示词」下面）；落下来的纸条、飞过的证据纸、回环箭头压住要点字；画面比旁白早 2 秒以上说出答案（标题里的文件名、合并后的结论卡）；自报数据没写「官方自报」。
 - `review_sheets.py` 对竖屏输出一行四张 540×960 的小图，不再把竖帧压扁。
+`shared/gameshow.tsx`：综艺答题扁平卡通（借 lemo-opuscar `game-show` 风格的画法，MIT），ai-jobs-safe 首用。糖果色布景（条纹 / 圆点 / 放射，整场都在动）、8 px 墨线、硬投影、跟节拍跳的豆子选手（`Bean`，可换帽子、道具，`kind="bot"` 是机器人）、关卡卡片 `RoundCard`、判定词 `Judge`、彩纸 `Confetti`、拍点轻推 `Punch`；真实照片放进 `Screen`（LED 框 + 慢推镜 + 出处）。
+
+- 子画面用本期 `common.tsx` 里的 `At`（`<Sequence from={at[k]} layout="none">`）包起来，里面的 `Pop` / `Stamp` / `Judge` 的 `f0` 就按这一拍算。直接在场景里写相对帧，元素会在出场时已经弹完，看不到入场动画。
+- 每个场景都有持续运动（布景图案、豆子跳、推镜），全片不靠漂移补救也过 freezedetect。
+- 真实素材：国会图书馆 Highsmith 合集是公有领域，JSON API 要带说明身份的 UA；Wikimedia 在云端被限流，Pexels / Pixabay 403。新闻截图用 Playwright 拒 cookie 后按 h1 位置裁。
+- 封面别写成片撑不住的话：「AI 抢不走」改成「不容易被 AI 替代」（第二关只是短期安全）。
+- 豆子名牌贴在肚子上（`NameTag y=-64`）：放在脚下会压进底部字幕区。豆子不说台词：说明文字用 `Sticker`，不用带尾巴的 `Bubble`，真人的话做成标了出处的转述卡。
+- 示意图（走势线、柱子、计件、价格曲线）都加「示意」角标，数值关系要和旁白一致（例如两条线最后正好差 19%）。纵轴从 0 起算，不要截断放大差距；角标不能被判定词、印章盖住。
+- 旁白只说资料能证明的：媒体标题里的归因要说「据报道」，不能安到公司头上；研究的口径（描述性、非因果）要讲出来。
+- 「得 děi」不在 polyphones.py 的检查里，旁白一律写成「要 / 该」。印章、贴纸放好后都要出放大帧看一遍，不能互相压字。

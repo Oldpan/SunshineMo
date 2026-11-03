@@ -38,7 +38,7 @@ if [ -f "$ATV/scripts/synth.py" ]; then
               "montserrat/Montserrat%5Bwght%5D.ttf Montserrat-VF.ttf" "jetbrainsmono/JetBrainsMono%5Bwght%5D.ttf JetBrainsMono-VF.ttf" \
               "zcoolkuaile/ZCOOLKuaiLe-Regular.ttf ZCOOLKuaiLe.ttf" \
               "lora/Lora%5Bwght%5D.ttf Lora-VF.ttf" "notoserifsc/NotoSerifSC%5Bwght%5D.ttf NotoSerifSC-VF.ttf" \
-              "jost/Jost%5Bwght%5D.ttf Jost-VF.ttf"; do
+              "jost/Jost%5Bwght%5D.ttf Jost-VF.ttf" "fredoka/Fredoka%5Bwdth,wght%5D.ttf Fredoka-VF.ttf"; do
     set -- $pair; [ -s "$F/$2" ] || curl -sL --fail -o "$F/$2" "$G/$1" || step "font $2 failed"
   done
   # pixel and handwriting fonts (paper / pixel styles) come from GitHub releases, as in setup.sh

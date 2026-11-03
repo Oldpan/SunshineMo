@@ -46,6 +46,7 @@ source env.sh
 | ai-jobs-safe | AI 裁员潮里，哪些工作还安全？（综艺答题卡通 + 真实新闻和照片，7 分钟） | Drive video_from_opus/AI 裁员潮里哪些工作还安全 |
 | super-agent | 一个人通常只能盯 3–5 个 Session：DeepSeek Harness 团队的 Super-agent 架构全拆解 | Drive video_from_opus/Super-agent架构 |
 | qwen4-preview | Qwen4 还没发，架构已经开源两个月了 | Drive video_from_opus/Qwen4前瞻 |
+| weight-space-programming | 只改 0.016% 的权重，Qwen 数学从 7.9% 涨到 48.1%：大模型开始直接读写神经网络权重 | Drive video_from_opus/权重空间编程 |
 
 （之前的 10 期在 article-to-video 的 `projects/` 里，留在原处。）
 
@@ -108,3 +109,10 @@ source env.sh
 - 印章不能用 `mix-blend-mode: multiply`：落在深色墙上会被吃成黑色，只有在白卡片上才看得见。
 - 截图按段落裁（Playwright 找到包含关键词的 `p`/`li`，用 `fullPage` 坐标截），比整页截图再手工裁可靠；X / Reddit 要登录截不到，改成文字卡并在出处里写明。
 
+
+`shared/distill.tsx`：Distill 博客风（白底 + 绿色高亮笔、Source Sans 3 + 思源黑体），weight-space-programming 首用。原文的交互图（Setup 表、Prompt 卡、推理逐条亮起、Answer 条、表格）都有现成组件，图上的数字从原文的 JSON 资源和开源日志现算（见那期的 `scenes/data/build.py`），不手抄。
+
+- 白底上点阵很淡，原先的漂移量（0.35 px/帧、整场下沉 10 px）不够，freezedetect（n=0.0005 d=0.5）查出几十处；现在是 0.6 px/帧、点更深一点、整场下沉 22 px，13 分钟成片 0 处。半透明白色蒙层（结论卡压在前面的内容上）会把点阵也盖掉，蒙层别用满不透明。
+- 给小白讲的那一期，两轮审片的大头都是“没解释的术语”和“比原文更绝对的说法”（只能 → 基本、不会 → 不容易、在这个例子里）。写稿时就过一遍：每个英文词或行话第一次出现有没有一句白话，原文的 most / can / about 有没有丢。
+- 原文场景里有方向的（小车先往右倒车再往左冲），箭头照原文的 JSON 关键帧核对，别凭直觉画。
+- 两张并排的格子图（Astra 读的 vs 实测）一张有表头一张没有时会错开一行，读者会以为没对上；没表头的那张补同高的空白。

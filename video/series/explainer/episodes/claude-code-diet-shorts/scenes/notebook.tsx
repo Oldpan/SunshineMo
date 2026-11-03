@@ -13,8 +13,9 @@ export const Notebook: React.FC = () => {
   const sub = useSub();
   // phase A (b0–b1): the code window; phase B (b2–b4): the notebook
   const aOut = b[2] >= 0 ? prog(b[2], 14) : 0;
-  const slapA = sub(3, 1) + 18; // "必须测试" lands
-  const slapB = sub(3, 2) + 18; // "只做最小修改" lands
+  // sub() counts frames since the chunk started: these land when the narration reaches the quoted rule
+  const slapA = sub(3, 1) - 23; // "必须测试" lands
+  const slapB = sub(3, 2) - 25; // "只做最小修改" lands
   const moreAt = (i: number) => b[4] - 8 - i * 8;
   const landed = MORE.filter((_, i) => moreAt(i) >= 0).length;
   const thick = (slapA >= 0 ? 1 : 0) + (slapB >= 0 ? 1 : 0) + landed;
@@ -25,7 +26,7 @@ export const Notebook: React.FC = () => {
       {aOut < 1 && (
         <div style={{position: 'absolute', inset: 0, opacity: 1 - aOut, transform: `translateY(${-aOut * 120}px)`}}>
           <Center y={340}>
-            <div style={pop(b[0], 0)}>
+            <div style={pop(frame, 0)}>
               <T size={88}>Claude Code</T>
             </div>
           </Center>

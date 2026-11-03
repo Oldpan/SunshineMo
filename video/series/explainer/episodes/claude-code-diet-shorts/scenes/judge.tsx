@@ -13,7 +13,7 @@ export const Judge: React.FC = () => {
   const partB = b[4] >= 0 ? 1 - prog(b[4], 12) : 1; // b3
   // evidence trips: first one is rejected, second one passes
   const trip1 = sub(2, 0);
-  const trip2 = sub(2, 2) - 26; // lands just before "达标了就停"
+  const trip2 = sub(2, 2) + 26; // takes off 26 frames before "达标了就停" (sub counts frames since the chunk began)
   const paperT = (f: number) => clamp01(f / 22);
   return (
     <Stage>
@@ -71,6 +71,15 @@ export const Judge: React.FC = () => {
               </T>
             </div>
           </Center>
+          {/* empty outlines hold the two seats while "/goal 就是这样" is said */}
+          {[
+            [100, 520, 400, 360, sub(1, 1)],
+            [560, 560, 400, 300, sub(1, 2)],
+          ].map(([x, y, w, h, at], k) =>
+            (at as number) < 8 ? (
+              <div key={k} style={{position: 'absolute', left: x, top: y, width: w, height: h, boxSizing: 'border-box', border: '6px dashed rgba(255,255,255,0.5)', borderRadius: 26, opacity: prog(sub(1, 0), 10, 24 + k * 8) * ((at as number) >= 0 ? 1 - prog(at as number, 6) : 1)}} />
+            ) : null,
+          )}
           {/* worker */}
           <div style={pop(sub(1, 1), 0, 0.5)}>
             <Window x={100} y={520} w={400} h={360} title="干活的">
@@ -246,6 +255,24 @@ export const Judge: React.FC = () => {
               </div>
             </Window>
           </div>
+          {/* what the fresh session gets: the original request and the final change (article §7: spec + diff) */}
+          {[
+            ['最初的需求', P.white, 160, 280],
+            ['最后的改动', P.yellow, 660, 600],
+          ].map(([t, bg, x0, x1], k) => {
+            const f = sub(4, 1) - 10 - k * 10;
+            if (f < 0 || sub(4, 2) > 14) return null;
+            const p = prog(f, 22);
+            return (
+              <div key={t as string} style={{position: 'absolute', left: (x0 as number) + ((x1 as number) - (x0 as number)) * p, top: 560 + 160 * p, opacity: sub(4, 2) >= 0 ? 1 - prog(sub(4, 2), 12) : prog(f, 6), transform: `rotate(${(k ? 6 : -6) * (1 - p)}deg)`}}>
+                <Card x={0} y={0} w={260} h={110} bg={bg as string} r={18} pad="0" style={{position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                  <T size={38} color={P.ink}>
+                    {t as string}
+                  </T>
+                </Card>
+              </div>
+            );
+          })}
           <Illus x={830} y={1196} />
           <Sparkles x={250} y={700} f={sub(4, 3)} n={5} r={160} />
         </>

@@ -51,12 +51,12 @@ export const poster: React.FC<{w: number; h: number}> = ({w, h}) => {
               ✓ 核心测试成绩没掉
             </Pill>
           </div>
-          <div style={{position: 'absolute', left: 0, width: w, top: top + 888, textAlign: 'center'}}>
-            <T size={36} color={P.sky}>
+          <div style={{position: 'absolute', left: 0, width: w, top: top + 904, textAlign: 'center'}}>
+            <Pill size={40} bg={P.navy} color={P.white}>
               官方自报 · 未公开评测细节
-            </T>
+            </Pill>
           </div>
-          <div style={{position: 'absolute', left: 0, width: w, top: top + 985, textAlign: 'center'}}>
+          <div style={{position: 'absolute', left: 0, width: w, top: top + 1000, textAlign: 'center'}}>
             <T size={60}>你的规矩，可能也太多了</T>
           </div>
         </>

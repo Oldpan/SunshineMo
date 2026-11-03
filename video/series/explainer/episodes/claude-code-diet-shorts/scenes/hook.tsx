@@ -15,6 +15,9 @@ const BOOM = 73; // explosion + "−80%"
 const KEEP = 3; // bottom slips that survive (≈20%)
 const MINE = ['必须测试！！', '只做最小修改', '认真思考', '不要加注释', '按需写文档', '反复确认三遍'];
 
+// navy outline so white titles stay readable while white / pale slips fall behind them
+const OUTLINE = [-5, 0, 5].flatMap((x) => [-5, 0, 5].map((y) => `${x}px ${y}px 0 ${P.navy}`)).join(', ');
+
 const BlankSlip: React.FC<{bg: string}> = ({bg}) => (
   <div style={{width: 300, height: 74, background: bg, borderRadius: 14, boxShadow: `0 8px 0 ${P.shadow}`, padding: '17px 24px', boxSizing: 'border-box'}}>
     <div style={{height: 14, width: '88%', background: `${P.ink}30`, borderRadius: 7}} />
@@ -58,7 +61,9 @@ export const Hook: React.FC = () => {
         </Center>
         <Center y={418}>
           <div style={pop(frame, 6)}>
-            <T size={76}>自己的提示词</T>
+            <T size={76} style={{textShadow: OUTLINE}}>
+              自己的提示词
+            </T>
           </div>
         </Center>
         <div style={{opacity: prog(frame, 8, 20)}}>
@@ -90,7 +95,7 @@ export const Hook: React.FC = () => {
           </div>
         </Center>
         <Center y={974}>
-          <div style={pop(b[1], 12)}>
+          <div style={pop(b[1], 2)}>
             <Pill size={30} bg={P.navy} color={P.white}>
               官方自报 · 未公开评测细节
             </Pill>
@@ -104,10 +109,12 @@ export const Hook: React.FC = () => {
         <>
           <Center y={360}>
             <div style={pop(out, 4)}>
-              <T size={72}>你给 AI 写的规矩</T>
+              <T size={72} style={{textShadow: OUTLINE}}>
+                你给 AI 写的规矩
+              </T>
             </div>
           </Center>
-          <div style={pop(out, 8, 0.6)}>
+          <div style={{...pop(out, 8, 0.6), transformOrigin: '530px 780px'}}>
             <Doc x={250} y={500} w={560} h={560} thick={Math.min(8, Math.max(0, (out - 14) / 6))} title="你的说明书" lines={9} />
           </div>
           {MINE.map((t, i) => {
@@ -116,7 +123,7 @@ export const Hook: React.FC = () => {
             const fall = clamp01(f / 7);
             const rr = rng(40 + i);
             const x = 300 + rr() * 260;
-            const y = 600 + i * 70 - (1 - fall) * 400;
+            const y = 600 + i * 70 - (1 - fall) * 150;
             return (
               <div key={t} style={{position: 'absolute', left: x, top: y, transform: `rotate(${(rr() - 0.5) * 14}deg)`, opacity: fall}}>
                 <Slip text={t} size={32} bg={i % 2 ? P.white : '#FFE1D8'} />
@@ -130,7 +137,7 @@ export const Hook: React.FC = () => {
               </Pill>
             </div>
           </div>
-          <Illus x={250} y={1110} />
+          <Illus x={120} y={1080} />
         </>
       )}
     </Stage>

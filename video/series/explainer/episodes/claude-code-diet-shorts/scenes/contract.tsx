@@ -13,7 +13,7 @@ export const Contract: React.FC = () => {
   const GAP = lerp(228, 128, shrink);
   const TOP = lerp(540, 470, shrink);
   const CARDS: {k: string; v: string; vf: number; bg: string; icon: React.ReactNode; extra?: React.ReactNode; note?: string}[] = [
-    {k: '要做什么', v: '迁移一批接口', vf: sub(2, 0), bg: P.yellow, icon: <IconTarget s={lerp(130, 80, shrink)} />},
+    {k: '要做什么', v: '迁移一批接口', note: '也就是把一批旧代码换成新写法', vf: sub(2, 0), bg: P.yellow, icon: <IconTarget s={lerp(130, 80, shrink)} />},
     {
       k: '不能碰什么',
       v: '不准部署到生产环境',
@@ -75,7 +75,7 @@ export const Contract: React.FC = () => {
       {/* three empty slots wait for the cards */}
       {[0, 1, 2].map((i) =>
         cardAt[i] < 8 ? (
-          <div key={i} style={{position: 'absolute', left: 100, top: TOP + i * GAP, width: 860, height: H, boxSizing: 'border-box', border: `6px dashed rgba(255,255,255,0.55)`, borderRadius: 28, display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: prog(sub(0, 2), 10, i * 5) * (cardAt[i] >= 0 ? 1 - prog(cardAt[i], 6) : 1)}}>
+          <div key={i} style={{position: 'absolute', left: 100, top: TOP + i * GAP, width: 860, height: H, boxSizing: 'border-box', border: `6px dashed rgba(255,255,255,0.55)`, borderRadius: 28, display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: prog(sub(0, 1), 10, 8 + i * 6) * (cardAt[i] >= 0 ? 1 - prog(cardAt[i], 6) : 1)}}>
             <T size={90} color="rgba(255,255,255,0.7)">
               {'①②③'[i]}
             </T>
@@ -96,7 +96,7 @@ export const Contract: React.FC = () => {
                 </T>
               )}
               {shrink < 0.6 && c.note && (
-                <T size={30} w={700} color={P.white} style={{display: 'block', marginTop: 4, opacity: 0.9 * prog(c.vf, 10, 14) * (1 - shrink / 0.6)}}>
+                <T size={30} w={700} color={i === 1 ? P.white : P.ink} style={{display: 'block', marginTop: 4, opacity: 0.9 * prog(c.vf, 10, 14) * (1 - shrink / 0.6)}}>
                   {c.note}
                 </T>
               )}
@@ -106,7 +106,7 @@ export const Contract: React.FC = () => {
         </div>
       ))}
       <Burst x={530} y={540 + 2 * 228 + 100} f={sub(2, 1) + 10} n={30} spread={380} seed={21} />
-      <Sparkles x={530} y={540 + 2 * 228 + 100} f={sub(2, 2)} n={6} r={420} />
+      <Sparkles x={830} y={540 + 2 * 228 + 40} f={sub(2, 2)} n={6} r={110} />
 
       {/* the steps are left to the model: it draws its own route */}
       {b[3] >= 0 && (

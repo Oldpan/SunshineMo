@@ -42,7 +42,7 @@ source env.sh
 | hf-reverse-engineering | DeepSeek 带 4 个 Qwen 小模型逆向程序：主管还给手下改了 harness | Drive video_from_opus/大模型带小模型逆向 |
 | spec-decoding | 加快 LLM 速度最快 6 倍，五种投机解码全解析 | Drive video_from_opus/五种投机解码 |
 | claude-code-diet | 怎么别让 Claude Code 越用越蠢？提示词要大减负 | Drive video_from_opus/Claude Code 提示词减负 |
-| claude-code-diet-shorts | （竖屏 · 小白向）Claude Code 把自家提示词删了八成，成绩没掉 | Drive video_from_opus/Claude Code 提示词减负（竖屏） |
+| claude-code-diet-shorts | （竖屏 · 小白向）Claude Code 自家提示词删了八成，官方称核心测试成绩没掉 | Drive video_from_opus/Claude Code 提示词减负（竖屏） |
 
 （之前的 10 期在 article-to-video 的 `projects/` 里，留在原处。）
 

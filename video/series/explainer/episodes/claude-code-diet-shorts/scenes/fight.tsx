@@ -3,7 +3,7 @@
 import React from 'react';
 import {useCurrentFrame} from 'remotion';
 import {useBeats} from '@atv/lib/timing';
-import {Burst, Card, Center, IconCross, Illus, P, Pill, pop, prog, Ring, shakeAt, slam, Slip, Sparkles, Stage, T, useSub} from './common';
+import {Burst, Card, Center, Illus, P, Pill, pop, prog, Ring, shakeAt, slam, Slip, Sparkles, Stage, T, useSub} from './common';
 
 export const Fight: React.FC = () => {
   const frame = useCurrentFrame();
@@ -135,9 +135,8 @@ export const Fight: React.FC = () => {
                 <div style={pop(sub(3, 0), i * 8)}>
                   <Slip text={`“${t}”`} size={54} />
                 </div>
-                <div style={{position: 'absolute', left: 30, top: -10, ...pop(sub(3, 0), 30 + i * 6)}}>
-                  <IconCross s={110} p={prog(sub(3, 0), 14, 30 + i * 6)} />
-                </div>
+                {/* a strike through the whole slip, not a cross over its first character */}
+                <div style={{position: 'absolute', left: -10, right: -10, top: '50%', height: 12, marginTop: -6, borderRadius: 6, background: P.coral, transformOrigin: 'left center', transform: `scaleX(${prog(sub(3, 0), 12, 30 + i * 6)})`}} />
               </div>
             );
           })}

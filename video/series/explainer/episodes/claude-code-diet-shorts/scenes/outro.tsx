@@ -64,7 +64,7 @@ export const Outro: React.FC = () => {
           </Center>
           <Center y={820}>
             <div style={pop(b[1], 18)}>
-              <Pill size={64}>欢迎关注</Pill>
+              <Pill size={64}>下期再见</Pill>
             </div>
           </Center>
           <Sparkles x={530} y={760} f={b[1] - 20} n={10} r={380} />

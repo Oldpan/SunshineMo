@@ -1,0 +1,336 @@
+# 怎么别让 Claude Code 越用越蠢 · 老潘 Notion 文章（2026-11，整理 Addy Osmani 等的官方资料）
+# 完整出处见 source/article.md（复核只认这份资料）。白板手绘风，全部自定义场景。
+# 旁白讲主干，细节（清单、数字、限定语）放在画面上。
+meta:
+  title: 怎么别让 Claude Code 越用越蠢
+  topic: Claude Code 减负
+  source: https://app.notion.com/p/40a1081a28be81b0b714cb70620b300c
+  voice: qwen-longanhuan
+  fps: 30
+  width: 1920
+  height: 1080
+  gap: 0.1
+  scene_tail: 0.3
+  nav:
+    intro: {label: 开场}
+    s1: {label: 1 · 完整任务}
+    s2: {label: 2 · 验收入口}
+    s3: {label: 3 · effort}
+    s4: {label: 4 · 删减实验}
+    s5: {label: 5 · skills / subagents}
+    s6: {label: 6 · 运行环境}
+    s7: {label: 7 · 审查}
+    end: {label: 总结}
+
+readings:
+  长出来: zhǎng
+  长轮次: cháng
+  冗长: cháng
+  长流程: cháng
+  重流程: zhòng
+  重测: chóng
+  不算数: shù
+  逐行: háng
+  几行: háng
+  200 行: háng
+  都行: xíng
+  调工具: diào
+  量化: liàng
+
+lexicon:
+  "/goal clear": "斜杠 G O A L clear"
+  "/goal": "斜杠 G O A L"
+  "/effort medium": "斜杠 effort medium"
+  "/doctor prompt-audit": "斜杠 doctor prompt audit"
+  "/code-review": "斜杠 code review"
+  "/security-review": "斜杠 security review"
+  "CLAUDE.md": "Claude 点 M D"
+  "TASKS.md": "Tasks 点 M D"
+  "REVIEW.md": "Review 点 M D"
+  "Opus 5.5": "Opus 五点五"
+  "Opus 5": "Opus 五"
+  "Claude 5": "Claude 五"
+  "5.5": "五点五"
+  "128000": "十二万八千"
+  "max_tokens": "max tokens"
+  "TodoWrite": "to do write"
+  "PreToolUse": "Pre Tool Use"
+  "SDK": "S D K"
+  "VM": "V M"
+  "MCP": "M C P"
+  "API": "A P I"
+  "System Prompt": "system prompt"
+
+scenes:
+  # ------------------------------------------------------------------ intro
+  - id: cover
+    theme: whiteboard
+    nav: intro
+    beats:
+      - 很多人的 CLAUDE.md，是这样一条条长出来的。
+      - 模型漏跑一次测试，就补一条“必须测试”。
+      - 改动范围大了，再补一条“只做最小修改”。
+      - 换了几代模型，规则还堆在那，自己也说不清哪条还有用。
+      - 这期讲老潘的一篇整理文章，主线是 Addy Osmani 的长文。
+      - Addy 现在在 Anthropic 主导 Claude Code，这篇把官方的 playbook 和文档理了一遍。
+
+  - id: thesis
+    theme: whiteboard
+    nav: intro
+    beats:
+      - 到了 Opus 5.5，模型自己会规划、会拆步骤。
+      - 精力应该往前挪，放在划定范围和验收标准上。
+      - 前提是自动化验收、权限边界和按需加载的 skills 先到位。
+      - 只留一句“帮我优化下”，Agent 不知道改到什么程度才算完。
+
+  # ------------------------------------------------------------------ 1
+  - id: s1-principles
+    theme: whiteboard
+    nav: s1
+    beats:
+      - 第一节，把完整任务一次交出去。
+      - 官方的 Opus 5.5 playbook，开头就是三条原则。
+      - 一次交出完整任务，讲清“做完”的标准，说明什么时候停下来等人。
+      - think carefully 这类话可以删，模型输出前本来就会思考。
+      - “做完”要写成机器能验证的状态，比如测试全部跑通。
+
+  - id: s1-prompt
+    theme: whiteboard
+    nav: s1
+    beats:
+      - 拿一个接口迁移任务举例，提示词可以这样写。
+      - 先说做什么，再写完成条件，接口兼容，指定测试通过，补新用例。
+      - 然后是范围，不改无关模块，不靠删测试来通过，不部署生产。
+      - 遇到缺凭据、需求冲突，先停下来说明。
+      - 最后交回 diff 摘要、跑过的命令，和没验证的部分。
+
+  - id: s1-contract
+    theme: whiteboard
+    nav: s1
+    beats:
+      - 这段 Prompt 不短，但每一条都有用。
+      - 兼容是业务约束，测试命令是验收入口，不部署生产是权限红线。
+      - 先看哪个文件、函数怎么拆，交给 Agent 自己定。
+      - 这就是一份任务契约，“认真思考、反复确认”这类话就可以删掉了。
+
+  - id: s1-stop
+    theme: whiteboard
+    nav: s1
+    beats:
+      - 什么时候该停，不用每次都说，playbook 建议写进 CLAUDE.md。
+      - 不需要人的步骤直接往下跑，只在被卡住或要做危险操作时停下来问。
+      - 汇报分三段，需要我处理，改了什么，发现了什么。
+      - 大任务再配一个 TASKS.md，上下文被压缩了，进度还在磁盘上。
+
+  - id: s1-spec
+    theme: whiteboard
+    nav: s1
+    beats:
+      - 需求还没想清楚时，先让 Claude 提问，理出一份 spec。
+      - 再开一个干净的新会话去实现，废弃的方案就不会被带进来。
+      - spec 也不一定是文档，一套测试、一段参考代码、一个 HTML mockup 都行。
+      - 它们往往比大段文字描述确定得多。
+
+  # ------------------------------------------------------------------ 2
+  - id: s2-entry
+    theme: whiteboard
+    nav: s2
+    beats:
+      - 第二节，给 agent 一个能执行的验收入口。
+      - “把服务做稳定”，在工程上没法量化。
+      - 改成修好这组并发用例的幂等问题，跑通指定回归测试，机器就能检查了。
+      - 优化推理服务时，硬件、模型、长度和并发先固定死，再比吞吐和延迟。
+      - 只说“吞吐越高越好”，Agent 可能会靠降精度、截断 Prompt 刷出虚高的数。
+
+  - id: s2-goal
+    theme: whiteboard
+    nav: s2
+    beats:
+      - Claude Code 的 /goal，能给会话设一个显式的终止条件。
+      - 每轮结束，把条件和对话交给一个 small fast model 检查，它叫 evaluator。
+      - 判定有三种。
+      - 未达成，附上原因，接着跑下一轮。
+      - 已达成，自动清掉这个目标。
+      - 无法达成，同样清掉，并记下原因。
+
+  - id: s2-evaluator
+    theme: whiteboard
+    nav: s2
+    beats:
+      - 要注意，evaluator 自己不调工具。
+      - 它不读文件，也不跑测试，只看对话里贴出来的文字。
+      - 所以条件要写成能验证的产物。
+      - “npm test 退出码为 0”，比“代码质量过关”管用得多。
+      - 至于“最多 20 轮”，只是给模型看的软约束，不是写死的计数器。
+
+  - id: s2-safety
+    theme: whiteboard
+    nav: s2
+    beats:
+      - 它自己也有几道兜底。
+      - 连续几轮空转不调工具，循环停下，控制权还给你。
+      - 凭据失效、额度用完、上下文爆了又压不下来、服务挂了，直接清掉目标。
+      - 后台任务还在跑，这轮就先不评，等跑完再判。
+      - 不带参数敲 /goal 看状态，/goal clear 提前停。
+
+  - id: s2-auto
+    theme: whiteboard
+    nav: s2
+    beats:
+      - /goal 管轮与轮之间的停顿，auto mode 管单轮里的权限确认。
+      - 挂上目标不会放宽权限，想无人值守，要在 auto mode 下跑。
+      - 每次调工具前，先过一个安全分类器，低风险放行，高危拦下。
+      - 连续拦 3 次，或者累计拦满 20 次，就退回手动确认。
+      - 能跑任意代码的宽泛规则会被忽略，敏感数据外发直接拦死。
+      - 分类器挡不住所有风险，发版这一步还是要单独卡一道人工审批。
+
+  # ------------------------------------------------------------------ 3
+  - id: s3-default
+    theme: whiteboard
+    nav: s3
+    beats:
+      - 第三节，Opus 5.5 从 medium 起步。
+      - Opus 5 默认是 high，Opus 5.5 降到了 medium。
+      - 官方基准里，5.5 的 medium 已经追平甚至超过 5 的 high。
+      - 这是官方数据，自己的业务最好再跑一遍。
+      - Claude Code 里敲 /effort medium，API 里传 effort 参数就行。
+      - max_tokens 直接给到 128000，长轮次 Agent 测试里这样最稳。
+
+  - id: s3-migrate
+    theme: whiteboard
+    nav: s3
+    beats:
+      - 同名档位，在不同模型上思考量不一样，5.5 想得更多。
+      - 照搬旧的 high 或 max，容易白白浪费 token。
+      - 迁移时有三个坑。
+      - 第一，中途改顶层 effort，Prompt Cache 会失效。
+      - 第二，5.5 关不掉思考，传 disabled 直接报 400。
+      - 第三，设置里顶层的 effortLevel，对 5.5 不生效。
+      - 比较档位，就拿同一组任务跑，记通过率、耗时、token 和返工次数。
+
+  # ------------------------------------------------------------------ 4
+  - id: s4-eighty
+    theme: whiteboard
+    nav: s4
+    beats:
+      - 第四节，给旧规则做一次删减实验。
+      - 针对 Claude 5 代模型，团队把 Claude Code 的 System Prompt 删了八成以上，核心基准没掉。
+      - 注意，删的是 Claude Code 自己的 System Prompt，不能照这个比例砍你的 CLAUDE.md。
+      - 这次清理动了三块。
+      - 第一，删掉互相冲突的指令，注释规矩只留一条，跟着周围代码写。
+      - 第二，压缩冗长示例，TodoWrite 的说明从快 9100 字符，缩成一句话加三个状态。
+      - 第三，重流程改成 skill 按需加载，不常用的工具也延迟加载。
+
+  - id: s4-audit
+    theme: whiteboard
+    nav: s4
+    beats:
+      - 自己的 CLAUDE.md，一两句讲定位，主要写模型看代码推不出来的约定和坑。
+      - 新版 Claude Code 内置了审计命令，/doctor prompt-audit。
+      - 它找出过时的指令、失效的路径和冲突的规则，给出 diff 预览。
+      - 你确认之前，它不改任何文件。
+      - 官方建议单文件压在 200 行以内，局部规则挪进按路径加载的 rules。
+
+  - id: s4-table
+    theme: whiteboard
+    nav: s4
+    beats:
+      - 老潘自己整理规则，按六类来切。
+      - 构建命令、目录关系、兼容要求，保留。
+      - 验收条件和权限边界也保留，能下沉到测试或 Hook 的优先下沉。
+      - “认真思考”这类空话，测一下，没用就删。
+      - 长流程拆成 skill，局部规则加路径限定。
+      - 修旧模型 bug 的补丁，拿当年的 bad case 重测，不出错就删。
+
+  - id: s4-loop
+    theme: whiteboard
+    nav: s4
+    beats:
+      - 删之前先打个 Git 标签，每次只删一组，删完马上跑回归。
+      - 当初逼你写下这条规则的 bad case，也要一起跑。
+      - 跑通一次不算数，要看多轮下来稳不稳。
+      - 出现回退，只加回能解决问题的那几行。
+      - 绝对不能碰的红线，别只写在文本里，用 PreToolUse hook 硬拦。
+
+  # ------------------------------------------------------------------ 5
+  - id: s5-what
+    theme: whiteboard
+    nav: s5
+    beats:
+      - 第五节，skills 和 subagents。
+      - skills 给 Agent 注入领域知识和流程规范。
+      - subagent 是隔离的执行单元，只接一条指令，只回一份摘要。
+      - 日常写代码，不用硬塞“必须用 subagents”，硬加只会让模型过度自查。
+      - 相互独立的大活，比如跨模块审计，才值得拆给多个 subagent 并行。
+
+  - id: s5-cost
+    theme: whiteboard
+    nav: s5
+    beats:
+      - 交互多、依赖上下文、对延迟敏感的，留在主会话。
+      - 输出很长、能独立推进只交结论的，派给 subagent。
+      - subagent 也单独计费，默认最多 3 层嵌套、20 个并行。
+      - 拆不拆，看能不能独立验收。
+      - 只回一句“看起来没问题”，堆再多 Agent 也不会更可靠。
+
+  # ------------------------------------------------------------------ 6
+  - id: s6-cloud
+    theme: whiteboard
+    nav: s6
+    beats:
+      - 第六节，长任务的运行环境。
+      - 环境里缺源码、依赖或测试数据，任务拆得再清楚也推不动。
+      - cloud session 每个任务一台新 VM，约 4 个 vCPU、16 GB 内存、30 GB 存储。
+      - 它从 GitHub clone 代码，所以本地 commit 要先 push，没 push 的云端看不到。
+      - 仓库里的 CLAUDE.md 和 skills 会带过去，本机的用户级配置不会。
+      - VM 空闲会被回收，没 commit 的改动会丢。
+
+  - id: s6-projects
+    theme: whiteboard
+    nav: s6
+    beats:
+      - 新版 Projects 里，主模型拆任务，每个子任务开一个 thread。
+      - 一个 thread 通常就是一个独立的 cloud session，有自己的分支。
+      - 要注意，云端 thread 启动时，只加载根目录的 CLAUDE.md 和全局 rules。
+      - 仓库里的 skills、路径规则、hooks 和权限设置，在这里都不生效。
+      - 所以所有 thread 都要守的底线，要写进 Project 指令或 Project Memory。
+      - 依赖本机资源的，可以用 Remote Control 跑在自己电脑上。
+
+  # ------------------------------------------------------------------ 7
+  - id: s7-review
+    theme: whiteboard
+    nav: s7
+    beats:
+      - 第七节，做完了还是要审查。
+      - Claude Code 团队说，Claude Code 约九成的代码是 Claude 写的。
+      - 每个 PR 都让多个 Agent 并行找缺陷，再由独立的评审 Agent 投票。
+      - 上线后，内部拿到实质审查意见的 PR，从 16% 涨到了 54%。
+      - 但计费、自动更新、CI 这类高危代码，还是资深工程师逐行把关。
+
+  - id: s7-prompt
+    theme: whiteboard
+    nav: s7
+    beats:
+      - 交付时，把最初的 spec 和最终 diff，交给一个全新的审查会话。
+      - 提示词让它把问题全部列出来，按严重度排，由人决定改哪些。
+      - 全列是有意的，只让它报高严重度，模型往往会按字面执行，少报漏报。
+      - 这轮只报告，不改文件、不提交、不发布。
+      - 生产发布和数据迁移，原有的审批流程一步都不能省。
+
+  # ------------------------------------------------------------------ end
+  - id: summary
+    theme: whiteboard
+    nav: end
+    hold: 0.6
+    beats:
+      - 总结一下，关键就两件事，立好验收标准，给旧规则瘦身。
+      - 讲清目标、边界和验证方式，删掉一步步教它操作的提示词。
+      - Opus 5.5 从 medium 起步，难题再加档、再挂 subagent。
+      - 把“怎么算做完”，从交付后的修补，挪到一开始就定好。
+
+  - id: outro
+    theme: whiteboard
+    nav: end
+    hold: 1.0
+    beats:
+      - 我是老潘，欢迎关注。

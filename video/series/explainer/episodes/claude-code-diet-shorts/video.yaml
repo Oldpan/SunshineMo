@@ -1,0 +1,28 @@
+# 怎么别让 Claude Code 越用越蠢（竖屏，小白向）— see `sm --help` for the fields
+title: Claude Code 自家提示词删了八成，官方称核心测试成绩没掉
+engine: narrated
+style: pop  # shared/popflat.tsx: flat motion graphics on electric blue, 1080×1920 for 抖音 / 小红书 / 视频号
+source: https://app.notion.com/p/40a1081a28be81b0b714cb70620b300c
+deliver:
+  drive: video_from_opus/Claude Code 提示词减负（竖屏）
+  files:
+  - {from: out/claude-code-diet-shorts.mp4, as: Claude Code 提示词减负_竖屏.mp4}
+  - {from: out/封面_9x16.png, as: Claude Code 提示词减负_竖屏_封面_9x16.png}
+  - {from: out/封面_3x4.png, as: Claude Code 提示词减负_竖屏_封面_3x4.png}
+  - {from: out/封面_6x7.png, as: Claude Code 提示词减负_竖屏_封面_6x7.png}
+  - {from: out/封面B_9x16.png, as: Claude Code 提示词减负_竖屏_封面B备选_9x16.png}
+  - {from: out/封面B_3x4.png, as: Claude Code 提示词减负_竖屏_封面B备选_3x4.png}
+  - {from: out/封面B_6x7.png, as: Claude Code 提示词减负_竖屏_封面B备选_6x7.png}
+  - {from: source/video.md, as: 介绍和文案.md}
+drive:
+  folder: video_from_opus/Claude Code 提示词减负（竖屏）
+  url: https://drive.google.com/drive/folders/17SGshexrmyA58DeE0wtpqF-xCqIlUh5s
+  files:
+  - {name: Claude Code 提示词减负_竖屏.mp4, id: 1MrgwlL1EJS5VCymGCVDOYEcKqFZ9fM7R, bytes: 37425593}
+  - {name: Claude Code 提示词减负_竖屏_封面_9x16.png, id: 1IgUazW7aTJZFqmcv_nXvJS94DMxjD-eb, bytes: 290803}
+  - {name: Claude Code 提示词减负_竖屏_封面_3x4.png, id: 1d5RxHfPoZNljOa7xGuYMQw7Gaz27L0-Z, bytes: 259117}
+  - {name: Claude Code 提示词减负_竖屏_封面_6x7.png, id: 1uJ2S2y9H0kWbbWYQ4Hw34anDlueJ_iLh, bytes: 243560}
+  - {name: Claude Code 提示词减负_竖屏_封面B备选_9x16.png, id: 12WEr8Ip4q88tkxmnIuGu4lGL4IZifEPK, bytes: 351959}
+  - {name: Claude Code 提示词减负_竖屏_封面B备选_3x4.png, id: 1KYrDGVPPfvZGM40_AS7WX1s1wIagvVdR, bytes: 320363}
+  - {name: Claude Code 提示词减负_竖屏_封面B备选_6x7.png, id: 1mbsXYROpD8mC4FJ5sNFDzXwz7edITukp, bytes: 304559}
+  - {name: 介绍和文案.md, id: 1QBSXK3BSI4jN6DEdcSGqH4TlnoxJvNmu, bytes: 579}

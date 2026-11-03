@@ -1,0 +1,108 @@
+# 怎么别让 Claude Code 越用越蠢 · 竖屏版（抖音 / 小红书 / 视频号），面向没有编程基础的观众
+# 内容只取横屏那期的四个关键点；出处同 ../claude-code-diet/source/article.md（复核只认这份资料）。
+# 1080×1920 母版：关键画面放 y 330–1290（视频号 6:7 安全带），字幕由引擎抬到底部文案区上方。
+meta:
+  title: 怎么别让 Claude Code 越用越蠢（竖屏）
+  topic: Claude Code 减负
+  source: https://app.notion.com/p/40a1081a28be81b0b714cb70620b300c
+  voice: qwen-longanhuan
+  fps: 30
+  width: 1080
+  height: 1920
+  gap: 0.08
+  scene_tail: 0.3
+  # hook impacts (frames in scene): slips landing, the slash + explosion, the mint pill, 「太多了？」; sign-off
+  sfx:
+    - {at: "hook:2", sound: pop, db: -27}
+    - {at: "hook:6", sound: pop, db: -27}
+    - {at: "hook:10", sound: pop, db: -27}
+    - {at: "hook:14", sound: pop, db: -27}
+    - {at: "hook:18", sound: pop, db: -27}
+    - {at: "hook:22", sound: pop, db: -27}
+    - {at: "hook:26", sound: pop, db: -27}
+    - {at: "hook:30", sound: pop, db: -27}
+    - {at: "hook:34", sound: pop, db: -27}
+    - {at: "hook:38", sound: pop, db: -27}
+    - {at: "hook:42", sound: pop, db: -27}
+    - {at: "hook:46", sound: pop, db: -27}
+    - {at: "hook:64", sound: whoosh, db: -12}
+    - {at: "hook:73", sound: pop, db: -9}
+    - {at: "hook:104", sound: pop, db: -14}
+    - {at: "hook:195", sound: pop, db: -16}
+    - {at: "outro:169", sound: pop, db: -13}
+
+readings:
+  长期: cháng
+  重跑: chóng
+  几行: háng
+
+lexicon:
+  "/goal": "斜杠 goal"
+  "/doctor prompt-audit": "斜杠 doctor prompt audit"
+  "CLAUDE.md": "Claude 点 M D"
+  "AI": "A I"
+
+scenes:
+  # ------------------------------------------------------------------ 0–5 s hook: the core fact first
+  - id: hook
+    theme: pop
+    beats:
+      - Claude Code 团队把自己的提示词删掉了八成，
+      - 核心测试成绩没掉。
+      - 你给 AI 写的规矩，可能也太多了。
+
+  # ------------------------------------------------------------------ 1 the notebook keeps growing
+  - id: notebook
+    theme: pop
+    beats:
+      - Claude Code 是一个会自己读代码、改代码的 AI。
+      - 你交代给它的话，叫提示词。
+      - 很多人还会给它备一份长期有效的说明书，叫 CLAUDE.md，它每次开工都先读一遍。
+      - 它漏跑一次测试，就补一条“必须测试”；改多了，再补一条“只做最小修改”。
+      - 几代模型换下来，说明书越写越厚，自己也说不清哪条还有用。
+
+  # ------------------------------------------------------------------ 2 rules fight each other
+  - id: fight
+    theme: pop
+    beats:
+      - 规矩一多，就会打架。
+      - 官方文章举过一个例子：一处写着“按需写文档”，另一处写着“不要加注释”，模型不知道该听谁的。
+      - Claude Code 新版的提示词干脆把这一堆收成一句：照周围代码的写法来。
+      - “认真思考”“反复检查”这类话也可以删，新模型本来就会先想再动手。
+
+  # ------------------------------------------------------------------ 3 the task contract (what each task prompt should pin down)
+  - id: contract
+    theme: pop
+    beats:
+      - 每次交任务，真正该写清楚的是一份任务契约，就三件事。
+      - 要做什么，不能碰什么，拿什么证明做完了。
+      - 比如迁移一批接口：测试全部跑通、旧代码删干净，这是“做完”；不准部署到生产环境，这是红线。
+      - 先改哪个文件、步骤怎么拆，交给它自己定。
+
+  # ------------------------------------------------------------------ 4 another model grades the work
+  - id: judge
+    theme: pop
+    beats:
+      - “做完”写清楚了，还可以请另一个模型来判卷。
+      - Claude Code 的 /goal 就是这样，一个负责干活，一个小模型负责检查。
+      - 检查的只看对话里贴出来的证据，没达标就退回去再来一轮，达标了就停。
+      - 所以“测试全部通过”，比一句“代码质量过关”管用得多。
+      - 交付前，再开一个全新的会话来审查，让它把问题全列出来，由你决定改哪些。
+
+  # ------------------------------------------------------------------ 5 put the old rules on a diet
+  - id: diet
+    theme: pop
+    beats:
+      - 旧规则也要定期减肥。
+      - 先备份，每次只删一组，再把日常任务和当初踩过的坑重跑一遍。
+      - 多跑几轮都稳，这组就真删；出了问题，只加回能解决它的那几行。
+      - 新版 Claude Code 还带了个体检命令，/doctor prompt-audit，专找过时、失效和互相打架的规则，你点头之前它不改文件。
+      - 注意，删掉八成的是 Claude Code 自己的提示词，你的说明书别照这个比例硬砍。
+
+  # ------------------------------------------------------------------ end
+  - id: outro
+    theme: pop
+    hold: 0.8
+    beats:
+      - 说到底就两件事，一开始讲清楚怎么算做完，再定期给旧规则瘦身。
+      - 我是老潘，下期再见。

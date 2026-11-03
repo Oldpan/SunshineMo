@@ -13,7 +13,7 @@ export const Judge: React.FC = () => {
   const partB = b[4] >= 0 ? 1 - prog(b[4], 12) : 1; // b3
   // evidence trips: first one is rejected, second one passes
   const trip1 = sub(2, 0);
-  const trip2 = sub(2, 2) - 4;
+  const trip2 = sub(2, 2) - 26; // lands just before "达标了就停"
   const paperT = (f: number) => clamp01(f / 22);
   return (
     <Stage>
@@ -32,7 +32,7 @@ export const Judge: React.FC = () => {
               <T size={44} color={P.ink}>
                 完成条件
               </T>
-              {['测试全部跑通', '旧代码删干净', '不碰生产环境'].map((t, i) => (
+              {['测试全部跑通', '旧代码删干净', '没删也没跳过测试'].map((t, i) => (
                 <div key={t} style={{display: 'flex', alignItems: 'center', gap: 18, marginTop: 34}}>
                   <IconCheck s={60} c={P.mint} p={prog(sub(0, 1), 10, 8 + i * 10)} />
                   <T size={40} w={800} color={P.ink}>
@@ -64,6 +64,13 @@ export const Judge: React.FC = () => {
               </span>
             </div>
           </Center>
+          <Center y={452}>
+            <div style={{...pop(sub(1, 0), 14), opacity: b[2] >= 0 ? 1 - prog(b[2], 8) : 1}}>
+              <T size={36}>
+                给这次对话设定完成条件的命令
+              </T>
+            </div>
+          </Center>
           {/* worker */}
           <div style={pop(sub(1, 1), 0, 0.5)}>
             <Window x={100} y={520} w={400} h={360} title="干活的">
@@ -75,7 +82,7 @@ export const Judge: React.FC = () => {
                   <div key={k} style={{flex: 1, height: 26, borderRadius: 13, background: ((frame / 6 + k) | 0) % 4 === 0 ? P.mint : 'rgba(255,255,255,0.18)'}} />
                 ))}
               </div>
-              <T size={28} color={P.sky} style={{display: 'block', marginTop: 26}}>
+              <T size={32} color={P.sky} style={{display: 'block', marginTop: 26}}>
                 改代码 · 跑测试
               </T>
             </Window>
@@ -92,41 +99,41 @@ export const Judge: React.FC = () => {
               </T>
             </Card>
           </div>
-          {/* evidence paper → checker */}
+          {/* evidence paper: from the worker's window into the checker's card */}
           {[trip1, trip2].map((f, k) =>
             f >= 0 && f < 40 ? (
-              <div key={k} style={{position: 'absolute', left: 300 + 360 * paperT(f), top: 900 - 220 * Math.sin(Math.PI * paperT(f)) * 0.5, opacity: 1 - prog(f, 8, 26), transform: `rotate(${-10 + 20 * paperT(f)}deg)`}}>
-                <Card x={0} y={0} w={190} h={130} bg={P.yellow} r={16} pad="16px 18px">
-                  <T size={30} color={P.ink}>
+              <div key={k} style={{position: 'absolute', left: 250 + 420 * paperT(f), top: 700 - 180 * Math.sin(Math.PI * paperT(f)), opacity: 1 - prog(f, 8, 26), transform: `rotate(${-10 + 20 * paperT(f)}deg) scale(${1 - 0.35 * prog(f, 10, 22)})`}}>
+                <Card x={0} y={0} w={200} h={140} bg={P.yellow} r={16} pad="16px 18px">
+                  <T size={32} color={P.ink}>
                     证据
                   </T>
-                  <Mono size={20} color={P.ink} style={{display: 'block', marginTop: 6}}>
-                    命令 · 结果
+                  <Mono size={26} color={P.ink} style={{display: 'block', marginTop: 6}}>
+                    命令·结果
                   </Mono>
                 </Card>
               </div>
             ) : null,
           )}
-          <Center y={920}>
+          <Center y={922}>
             <div style={pop(sub(2, 0), 0)}>
-              <T size={40} color={P.sky}>
-                只看对话里贴出来的证据
+              <T size={40}>
+                只看对话里贴出来的<span style={{color: P.yellow}}>证据</span>
               </T>
             </div>
           </Center>
-          {/* verdict 1: not yet → loop back */}
+          {/* verdict 1: not yet → loop back round the outside, under the line above */}
           {sub(2, 1) >= 0 && sub(2, 2) < 6 && (
             <>
-              <div style={{position: 'absolute', left: 640, top: 760, ...slam(sub(2, 1), 0, 2.4)}}>
+              <div style={{position: 'absolute', left: 600, top: 478, ...slam(sub(2, 1), 0, 2.4)}}>
                 <Pill size={44} bg={P.coral} color={P.white}>
                   ✕ 没达标
                 </Pill>
               </div>
               <svg width={1080} height={1920} style={{position: 'absolute', left: 0, top: 0}}>
-                <path d="M760 880 C 760 1120, 300 1120, 300 900" stroke={P.coral} strokeWidth={14} fill="none" strokeLinecap="round" pathLength={1} strokeDasharray={1} strokeDashoffset={1 - prog(sub(2, 1), 24, 8)} />
-                <path d="M270 930 L300 890 L332 930" stroke={P.coral} strokeWidth={14} fill="none" strokeLinecap="round" strokeLinejoin="round" opacity={prog(sub(2, 1), 6, 30)} />
+                <path d="M900 870 C 900 1130, 200 1130, 200 890" stroke={P.coral} strokeWidth={14} fill="none" strokeLinecap="round" pathLength={1} strokeDasharray={1} strokeDashoffset={1 - prog(sub(2, 1), 24, 8)} />
+                <path d="M170 930 L200 890 L232 930" stroke={P.coral} strokeWidth={14} fill="none" strokeLinecap="round" strokeLinejoin="round" opacity={prog(sub(2, 1), 6, 30)} />
               </svg>
-              <div style={{position: 'absolute', left: 400, top: 1080, ...pop(sub(2, 1), 24)}}>
+              <div style={{position: 'absolute', left: 450, top: 1090, ...pop(sub(2, 1), 24)}}>
                 <Pill size={38} bg={P.white}>
                   再来一轮
                 </Pill>
@@ -134,14 +141,14 @@ export const Judge: React.FC = () => {
             </>
           )}
           {/* verdict 2: done → stop */}
-          {sub(2, 2) >= 20 && (
+          {sub(2, 2) >= 0 && (
             <>
-              <div style={{position: 'absolute', left: 620, top: 760, ...slam(sub(2, 2), 20, 2.4)}}>
+              <div style={{position: 'absolute', left: 590, top: 478, ...slam(sub(2, 2), 0, 2.4)}}>
                 <Pill size={44} bg={P.mint} color="#0D2B1F">
                   ✓ 达标 · 停
                 </Pill>
               </div>
-              <Burst x={760} y={800} f={sub(2, 2) - 22} n={40} spread={380} seed={31} />
+              <Burst x={760} y={510} f={sub(2, 2) - 2} n={40} spread={380} seed={31} />
             </>
           )}
           <Illus x={100} y={1160} />
@@ -153,8 +160,8 @@ export const Judge: React.FC = () => {
         <div style={{position: 'absolute', inset: 0, opacity: partB}}>
           <Center y={340}>
             <div style={pop(b[3], 4)}>
-              <T size={72}>
-                能核对的才<span style={{color: P.yellow}}>管用</span>
+              <T size={68}>
+                哪句完成条件<span style={{color: P.yellow}}>更管用</span>？
               </T>
             </div>
           </Center>
@@ -202,13 +209,13 @@ export const Judge: React.FC = () => {
         <>
           <Center y={340}>
             <div style={pop(sub(4, 0), 4)}>
-              <T size={70}>
-                交付前：<span style={{color: P.yellow}}>换个新会话审查</span>
+              <T size={60}>
+                交付前：<span style={{color: P.yellow}}>新开一个对话来审查</span>
               </T>
             </div>
           </Center>
           <div style={rise(sub(4, 1), 0, 300)}>
-            <Window x={100} y={480} w={860} h={700} title="全新会话 · 审查">
+            <Window x={100} y={480} w={860} h={700} title="新开的对话 · 只做审查">
               {[
                 ['高', P.coral],
                 ['高', P.coral],

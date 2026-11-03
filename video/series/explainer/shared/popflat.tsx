@@ -315,7 +315,7 @@ export const Stage: React.FC<{children: React.ReactNode; shake?: {dx: number; dy
 }) => {
   const frame = useCurrentFrame();
   const scene = useScene();
-  const zoom = 1 + 0.03 * (frame / Math.max(1, scene.duration));
+  const zoom = 1 + 0.015 * (frame / Math.max(1, scene.duration)); // small enough that full-width cards stay in the safe band
   const rot = frame * spin;
   const r = rng(77);
   const bits = Array.from({length: 26}, () => ({x: r() * 1080, y: r() * 1920, s: 8 + r() * 18, c: [P.yellow, P.coral, P.mint, P.white, P.pink][Math.floor(r() * 5)], v: 0.4 + r() * 0.8, ph: r() * 6}));
@@ -397,7 +397,7 @@ export const Window: React.FC<{x: number; y: number; w: number; h: number; title
       {[P.coral, P.yellow, P.mint].map((c) => (
         <span key={c} style={{width: 18, height: 18, borderRadius: 9, background: c, display: 'inline-block'}} />
       ))}
-      <T size={28} w={800} color={P.sky} style={{marginLeft: 12}}>
+      <T size={32} w={800} color={P.sky} style={{marginLeft: 12}}>
         {title}
       </T>
     </div>

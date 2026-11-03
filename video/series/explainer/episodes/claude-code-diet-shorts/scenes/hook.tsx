@@ -1,16 +1,26 @@
-// 0–7 s hook: a tower of rule slips slams in, gets slashed, 80% explodes, "−80%" lands, "核心测试成绩没掉" pops;
+// 0–7 s hook: a tower of prompt slips slams in, gets slashed, 80% explodes, "−80%" lands, "核心测试成绩没掉" pops;
 // then your own CLAUDE.md starts filling up with slips again.
+// The labelled slips are what the article says left Claude Code's own system prompt (comment/docstring rules, the
+// ~9100-character TodoWrite manual, repeated tool descriptions, verification / Code Review moved into skills, rarely
+// used tools deferred); the three survivors stay blank, since the article doesn't list what remained.
 import React from 'react';
 import {useCurrentFrame} from 'remotion';
 import {useBeats} from '@atv/lib/timing';
 import {Burst, Center, clamp01, Doc, flyOut, Illus, P, Pill, pop, prog, Ring, rng, shakeAt, slam, Slip, Sparkles, Stage, T} from './common';
 
-const RULES = ['必须测试！！', '只做最小修改', '认真思考', '全面检查', '反复确认三遍', '不要加注释', '按需写文档', '先列计划再动手', 'think carefully', '请深入思考', '改完再检查一遍', '一定要仔细'];
+const RULES = ['', '', '', '注释规则', '工具用法示例', 'docstring 规矩', 'TodoWrite 长说明', '重复的工具说明', '验证流程', 'Code Review 流程', '不常用的工具', '重复的工具说明'];
 const LAND = (i: number) => 2 + i * 4; // slip i lands
 const CUT = 68; // slash
 const BOOM = 73; // explosion + "−80%"
 const KEEP = 3; // bottom slips that survive (≈20%)
 const MINE = ['必须测试！！', '只做最小修改', '认真思考', '不要加注释', '按需写文档', '反复确认三遍'];
+
+const BlankSlip: React.FC<{bg: string}> = ({bg}) => (
+  <div style={{width: 300, height: 74, background: bg, borderRadius: 14, boxShadow: `0 8px 0 ${P.shadow}`, padding: '17px 24px', boxSizing: 'border-box'}}>
+    <div style={{height: 14, width: '88%', background: `${P.ink}30`, borderRadius: 7}} />
+    <div style={{height: 14, width: '60%', background: `${P.ink}30`, borderRadius: 7, marginTop: 12}} />
+  </div>
+);
 
 export const Hook: React.FC = () => {
   const frame = useCurrentFrame();
@@ -27,6 +37,20 @@ export const Hook: React.FC = () => {
     <Stage shake={{dx: sh.dx + big.dx, dy: sh.dy + big.dy}} glow={clamp01(1 - Math.abs(frame - BOOM) / 30)} spin={frame < BOOM ? 0.12 : 0.35}>
       {/* ---------------- part 1: the tower */}
       <div style={{position: 'absolute', inset: 0, opacity: part1, transform: `translateY(${(1 - part1) * -200}px)`}}>
+        {RULES.map((t, i) => {
+          const s = slots[i];
+          const land = LAND(i);
+          const fall = clamp01((frame - land + 8) / 8);
+          const y = s.y - (1 - fall) * 320 - (i < KEEP ? i * 8 * prog(frame, 14, BOOM + 4) : 0);
+          const gone = i >= KEEP ? flyOut(frame, BOOM, s.dx, s.dy, s.spin) : {};
+          if (frame < land - 8) return null;
+          return (
+            <div key={i} style={{position: 'absolute', left: s.x, top: y, transform: `translate(-50%, -50%) rotate(${s.rot}deg)`}}>
+              <div style={gone}>{t ? <Slip text={t} size={38} bg={i % 3 === 0 ? P.white : i % 3 === 1 ? '#FFF4C2' : '#FFE1D8'} /> : <BlankSlip bg={i % 2 ? '#FFF4C2' : P.white} />}</div>
+            </div>
+          );
+        })}
+        {/* the title sits above the falling slips */}
         <Center y={340}>
           <div style={pop(frame, 0)}>
             <Pill size={40}>Claude Code 团队</Pill>
@@ -37,22 +61,7 @@ export const Hook: React.FC = () => {
             <T size={76}>自己的提示词</T>
           </div>
         </Center>
-        {RULES.map((t, i) => {
-          const s = slots[i];
-          const land = LAND(i);
-          const fall = clamp01((frame - land + 8) / 8);
-          const y = s.y - (1 - fall) * 320 - (i < KEEP ? i * 16 * prog(frame, 14, BOOM + 4) : 0);
-          const gone = i >= KEEP ? flyOut(frame, BOOM, s.dx, s.dy, s.spin) : {};
-          if (frame < land - 8) return null;
-          return (
-            <div key={i} style={{position: 'absolute', left: s.x, top: y, transform: `translate(-50%, -50%) rotate(${s.rot}deg)`}}>
-              <div style={gone}>
-                <Slip text={t} size={38} bg={i % 3 === 0 ? P.white : i % 3 === 1 ? '#FFF4C2' : '#FFE1D8'} />
-              </div>
-            </div>
-          );
-        })}
-        <div style={{opacity: frame < BOOM ? prog(frame, 8, 20) : 1 - prog(frame, 10, BOOM)}}>
+        <div style={{opacity: prog(frame, 8, 20)}}>
           <Illus x={800} y={1140} />
         </div>
         {/* slash */}
@@ -80,6 +89,13 @@ export const Hook: React.FC = () => {
             </Pill>
           </div>
         </Center>
+        <Center y={974}>
+          <div style={pop(b[1], 12)}>
+            <Pill size={30} bg={P.navy} color={P.white}>
+              官方自报 · 未公开评测细节
+            </Pill>
+          </div>
+        </Center>
         <Sparkles x={530} y={900} f={b[1] - 4} n={8} r={330} />
       </div>
 
@@ -88,11 +104,11 @@ export const Hook: React.FC = () => {
         <>
           <Center y={360}>
             <div style={pop(out, 4)}>
-              <T size={72}>你写给 AI 的规矩</T>
+              <T size={72}>你给 AI 写的规矩</T>
             </div>
           </Center>
           <div style={pop(out, 8, 0.6)}>
-            <Doc x={250} y={500} w={560} h={560} thick={Math.min(8, Math.max(0, (out - 14) / 6))} title="你的 CLAUDE.md" lines={9} />
+            <Doc x={250} y={500} w={560} h={560} thick={Math.min(8, Math.max(0, (out - 14) / 6))} title="你的说明书" lines={9} />
           </div>
           {MINE.map((t, i) => {
             const f = out - 14 - i * 7;

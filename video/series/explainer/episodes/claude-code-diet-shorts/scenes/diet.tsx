@@ -61,7 +61,7 @@ export const Diet: React.FC = () => {
           </div>
           {/* backup snapshot */}
           {b[1] >= 0 && (
-            <div style={{position: 'absolute', left: 620, top: 560, ...pop(sub(1, 0), 0)}}>
+            <div style={{position: 'absolute', left: 620, top: 560, ...pop(sub(1, 0), 0), opacity: sub(2, 0) >= 0 ? 1 - prog(sub(2, 0), 8) : 1}}>
               <Card x={0} y={0} w={330} h={150} bg={P.white} pad="20px 24px" style={{position: 'relative', display: 'flex', alignItems: 'center', gap: 18}}>
                 <IconCamera s={80} />
                 <T size={38} color={P.ink}>
@@ -111,7 +111,7 @@ export const Diet: React.FC = () => {
           )}
           {/* several runs stay green → delete for real */}
           {b[2] >= 0 && (
-            <div style={{position: 'absolute', left: 620, top: 750, display: 'flex', gap: 14, opacity: 1 - prog(sub(2, 1), 10)}}>
+            <div style={{position: 'absolute', left: 640, top: 590, display: 'flex', gap: 14, opacity: 1 - prog(sub(2, 1), 10)}}>
               {[0, 1, 2].map((k) => (
                 <div key={k} style={{...pop(sub(2, 0), k * 9)}}>
                   <div style={{width: 96, height: 96, borderRadius: 48, background: P.mint, display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
@@ -152,11 +152,12 @@ export const Diet: React.FC = () => {
           <div style={rise(sub(3, 0), 6, 120)}>
             <Window x={100} y={460} w={860} h={190} title="Claude Code">
               <Mono size={44} color={P.yellow}>
-                {'> ' + '/doctor prompt-audit'.slice(0, typed(sub(3, 1) + 4, '/doctor prompt-audit', 30))}
+                {'> ' + '/doctor prompt-audit'.slice(0, typed(sub(3, 1) + 6, '/doctor prompt-audit', 30))}
+                <span style={{opacity: Math.floor(frame / 12) % 2 ? 0 : 1}}>▍</span>
               </Mono>
             </Window>
           </div>
-          <div style={pop(sub(3, 1), 20, 0.7)}>
+          <div style={pop(sub(3, 0), 24, 0.7)}>
             <Doc x={100} y={700} w={860} h={470} lines={0} scan={sub(3, 2) >= 0 && sub(3, 4) < 0 ? clamp01((sub(3, 2) % 70) / 70) : -1}>
               {AUDIT.map(([t, tag, c], i) => {
                 const f = i < 2 ? sub(3, 2) - 14 - i * 10 : sub(3, 3) - (i - 2) * 12;
@@ -180,7 +181,7 @@ export const Diet: React.FC = () => {
           {/* nothing changes until you confirm */}
           {sub(3, 4) >= 0 && (
             <div style={{position: 'absolute', left: 230, top: 880, ...slam(sub(3, 4), 0, 1.6)}}>
-              <Card x={0} y={0} w={600} h={250} bg={P.white} pad="30px 40px" style={{position: 'relative', textAlign: 'center', boxShadow: `0 16px 0 ${P.shadow}, 0 0 0 2000px rgba(14,22,96,0.35)`}}>
+              <Card x={0} y={0} w={600} h={330} bg={P.white} pad="30px 40px" style={{position: 'relative', textAlign: 'center', boxShadow: `0 16px 0 ${P.shadow}, 0 0 0 2000px rgba(14,22,96,0.35)`}}>
                 <T size={44} color={P.ink} style={{display: 'block'}}>
                   确认修改？
                 </T>
@@ -192,10 +193,10 @@ export const Diet: React.FC = () => {
                     取消
                   </Pill>
                 </div>
+                <T size={36} color={P.ink} style={{display: 'block', marginTop: 28}}>
+                  你点头之前，不改文件
+                </T>
               </Card>
-              <div style={{marginTop: 24, textAlign: 'center'}}>
-                <T size={36}>你点头之前，不改文件</T>
-              </div>
             </div>
           )}
           <Illus x={830} y={712} color={P.ink} />

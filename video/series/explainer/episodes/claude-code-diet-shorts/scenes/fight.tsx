@@ -13,9 +13,10 @@ export const Fight: React.FC = () => {
   const sh = shakeAt(frame, b[1] < 0 ? bump : [], 12);
   // tug: the model circle sways toward each side while it can't decide
   const tugT = sub(1, 3);
-  const sway = tugT >= 0 && b[2] < 0 ? Math.sin(tugT / 5) * 70 * Math.min(1, tugT / 10) : 0;
-  const merge = b[2] >= 0 ? prog(b[2], 18, 4) : 0; // the two cards fly to the centre
-  const MERGE_AT = 22;
+  // the two cards fly together just before the narration says the one line (sub 2,1), and it lands on that word
+  const lineAt = sub(2, 1);
+  const merge = b[2] >= 0 ? prog(lineAt, 18, -22) : 0;
+  const sway = tugT >= 0 && merge < 1 ? Math.sin(tugT / 5) * 70 * Math.min(1, tugT / 10) * (1 - merge) : 0;
   const part12 = b[3] >= 0 ? 1 - prog(b[3], 12) : 1;
   return (
     <Stage shake={sh}>
@@ -48,33 +49,42 @@ export const Fight: React.FC = () => {
       {b[1] >= 0 && (
         <div style={{position: 'absolute', inset: 0, opacity: part12}}>
           <Center y={340}>
-            <div style={pop(sub(1, 0), 4)}>
+            <div style={{...pop(sub(1, 0), 4), opacity: b[2] >= 0 ? 1 - prog(b[2], 8) : 1}}>
               <Pill size={42}>官方文章里的例子</Pill>
             </div>
           </Center>
+          {b[2] >= 0 && (
+            <Center y={340}>
+              <div style={pop(b[2], 8)}>
+                <T size={50}>
+                  Claude Code 新版提示词<span style={{color: P.yellow}}>收成一句</span>
+                </T>
+              </div>
+            </Center>
+          )}
           {/* ropes */}
           {merge < 1 && (
             <svg width={1080} height={1920} style={{position: 'absolute', left: 0, top: 0, opacity: 1 - merge}}>
-              <path d={`M330 600 Q ${430 + sway * 0.5} 700 ${530 + sway} 830`} stroke={P.white} strokeWidth={10} fill="none" strokeDasharray="20 14" opacity={prog(sub(1, 1), 10)} />
-              <path d={`M730 1060 Q ${630 + sway * 0.5} 950 ${530 + sway} 830`} stroke={P.white} strokeWidth={10} fill="none" strokeDasharray="20 14" opacity={prog(sub(1, 2), 10)} />
+              <path d={`M360 670 Q ${440 + sway * 0.5} 760 ${530 + sway} 830`} stroke={P.white} strokeWidth={10} fill="none" strokeDasharray="20 14" opacity={prog(sub(1, 1), 10)} />
+              <path d={`M700 1000 Q ${620 + sway * 0.5} 900 ${530 + sway} 830`} stroke={P.white} strokeWidth={10} fill="none" strokeDasharray="20 14" opacity={prog(sub(1, 2), 10)} />
             </svg>
           )}
           {/* left card: leave documentation as appropriate */}
-          <div style={{position: 'absolute', left: 110 + merge * 220, top: 470 + merge * 300, transform: `scale(${1 - merge})`, transformOrigin: 'center', ...pop(sub(1, 1), 0)}}>
-            <Card x={0} y={0} w={440} h={170} bg={P.yellow} pad="20px 28px">
+          <div style={{position: 'absolute', left: 100 + merge * 170, top: 470 + merge * 260, transform: `scale(${1 - merge})`, transformOrigin: 'center', ...pop(sub(1, 1), 0)}}>
+            <Card x={0} y={0} w={520} h={200} bg={P.yellow} pad="20px 28px">
               <T size={48} color={P.ink}>
                 按需写文档
               </T>
-              <T size={24} w={700} color={P.ink} style={{display: 'block', opacity: 0.7, marginTop: 6, fontFamily: '"JetBrains Mono", monospace'}}>
+              <T size={30} w={700} color={P.ink} style={{display: 'block', opacity: 0.75, marginTop: 6, lineHeight: 1.25, whiteSpace: 'normal', fontFamily: '"JetBrains Mono", monospace'}}>
                 leave documentation as appropriate
               </T>
             </Card>
           </div>
           {/* right card: DO NOT add comments */}
-          <div style={{position: 'absolute', left: 510 - merge * 180, top: 1000 - merge * 230, transform: `scale(${1 - merge})`, transformOrigin: 'center', ...pop(sub(1, 2), 0)}}>
-            <Card x={0} y={0} w={440} h={170} bg={P.coral} pad="20px 28px">
+          <div style={{position: 'absolute', left: 440 - merge * 170, top: 1000 - merge * 270, transform: `scale(${1 - merge})`, transformOrigin: 'center', ...pop(sub(1, 2), 0)}}>
+            <Card x={0} y={0} w={520} h={200} bg={P.coral} pad="20px 28px">
               <T size={48}>不要加注释</T>
-              <T size={24} w={700} style={{display: 'block', opacity: 0.85, marginTop: 6, fontFamily: '"JetBrains Mono", monospace'}}>
+              <T size={30} w={700} style={{display: 'block', opacity: 0.9, marginTop: 6, fontFamily: '"JetBrains Mono", monospace'}}>
                 DO NOT add comments
               </T>
             </Card>
@@ -95,25 +105,18 @@ export const Fight: React.FC = () => {
             </div>
           ))}
           {/* merged into one line */}
-          <Burst x={530} y={830} f={b[2] - MERGE_AT} n={50} spread={520} seed={12} />
-          <Ring x={530} y={830} f={b[2] - MERGE_AT} color={P.mint} />
-          <Center y={560}>
-            <div style={pop(sub(2, 0), 20)}>
-              <T size={44} color={P.sky}>
-                Claude Code 新版提示词收成一句
-              </T>
-            </div>
-          </Center>
-          <Center y={700}>
-            <div style={slam(b[2], MERGE_AT, 2)}>
-              <Card x={0} y={0} w={860} h={250} bg={P.mint} style={{position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+          <Burst x={530} y={830} f={lineAt + 4} n={50} spread={520} seed={12} />
+          <Ring x={530} y={830} f={lineAt + 4} color={P.mint} />
+          {b[2] >= 0 && (
+            <div style={{position: 'absolute', left: 130, top: 700, ...slam(lineAt, -4, 2)}}>
+              <Card x={0} y={0} w={820} h={250} bg={P.mint} style={{position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                 <T size={74} color="#0D2B1F">
                   照周围代码的写法来
                 </T>
               </Card>
             </div>
-          </Center>
-          <Sparkles x={530} y={830} f={sub(2, 1)} n={8} r={460} />
+          )}
+          <Sparkles x={540} y={830} f={lineAt + 10} n={8} r={380} />
         </div>
       )}
 
@@ -126,7 +129,7 @@ export const Fight: React.FC = () => {
             </div>
           </Center>
           {['认真思考', '反复检查'].map((t, i) => {
-            const go = prog(sub(3, 0), 18, 52 + i * 8);
+            const go = prog(sub(3, 1), 18, -8 + i * 6); // they leave as the "new model" panel arrives
             return (
               <div key={t} style={{position: 'absolute', left: [150, 540][i], top: 480, opacity: 1 - go, transform: `translate(${(i ? 1 : -1) * go * 400}px, ${-go * 200}px) rotate(${(i ? 1 : -1) * (6 + go * 40)}deg)`}}>
                 <div style={pop(sub(3, 0), i * 8)}>

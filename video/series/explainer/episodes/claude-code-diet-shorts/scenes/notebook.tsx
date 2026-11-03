@@ -65,7 +65,7 @@ export const Notebook: React.FC = () => {
                 <div style={pop(b[1], 0)}>
                   <div style={{background: P.white, borderRadius: 30, padding: '20px 32px', boxShadow: `0 10px 0 ${P.shadow}`, position: 'relative'}}>
                     <T size={40} color={P.ink}>
-                      把这批接口迁到新 SDK
+                      把这批旧代码换成新写法
                     </T>
                     <div style={{position: 'absolute', left: 40, bottom: -26, width: 0, height: 0, borderLeft: '22px solid transparent', borderRight: '22px solid transparent', borderTop: `30px solid ${P.white}`}} />
                   </div>
@@ -89,19 +89,30 @@ export const Notebook: React.FC = () => {
           <Center y={340}>
             <div style={pop(b[2], 6)}>
               <T size={70}>
-                说明书 <span style={{color: P.yellow}}>CLAUDE.md</span>
+                说明书
+                {/* the file name arrives when the narration says it */}
+                <span style={{color: P.yellow, display: 'inline-block', marginLeft: 24 * prog(sub(2, 1), 10), maxWidth: 640 * prog(sub(2, 1), 10), overflow: 'hidden', verticalAlign: 'bottom', whiteSpace: 'nowrap'}}>CLAUDE.md</span>
               </T>
             </div>
           </Center>
           <Center y={448}>
-            <div style={pop(b[2], 16)}>
+            <div style={{...pop(b[2], 16), opacity: b[4] >= 0 ? 1 - prog(b[4], 8) : 1}}>
               <Pill size={36} bg={P.white}>
-                长期有效 · 每次开工先读一遍
+                长期有效
               </Pill>
             </div>
           </Center>
+          {b[4] >= 0 && (
+            <Center y={448}>
+              <div style={pop(sub(4, 0), 4)}>
+                <Pill size={36} bg={P.sky}>
+                  几代模型换下来
+                </Pill>
+              </div>
+            </Center>
+          )}
           <div style={{...pop(b[2], 10, 0.5)}}>
-            <Doc x={150} y={560} w={560} h={580} thick={Math.min(12, thick * 1.4)} scan={sub(2, 2) >= 0 && b[3] < 0 ? (sub(2, 2) % 40) / 40 : -1} lines={10} />
+            <Doc x={150} y={560} w={560} h={580} title={sub(2, 1) >= 0 ? 'CLAUDE.md' : ''} thick={Math.min(12, thick * 1.4)} scan={sub(2, 2) >= 0 && b[3] < 0 ? (sub(2, 2) % 40) / 40 : -1} lines={10} />
           </div>
           {/* small Claude Code window that reads it */}
           <div style={{position: 'absolute', left: 740, top: 600, ...pop(sub(2, 2), 0)}}>
@@ -111,10 +122,10 @@ export const Notebook: React.FC = () => {
                   <span key={c} style={{width: 14, height: 14, borderRadius: 7, background: c}} />
                 ))}
               </div>
-              <T size={26} color={P.sky} style={{display: 'block', marginTop: 14}}>
+              <T size={32} color={P.sky} style={{display: 'block', marginTop: 10}}>
                 开工前
               </T>
-              <T size={30} style={{display: 'block'}}>
+              <T size={36} style={{display: 'block'}}>
                 先读一遍
               </T>
             </div>
@@ -129,7 +140,7 @@ export const Notebook: React.FC = () => {
             <div style={{position: 'absolute', left: 740, top: 820, ...pop(sub(3, 0), 0)}}>
               <div style={{width: 210, background: P.white, borderRadius: 22, padding: '16px 10px', textAlign: 'center', boxShadow: `0 10px 0 ${P.shadow}`, opacity: b[4] >= 0 ? 1 - prog(b[4], 10) : 1}}>
                 <IconCross s={70} p={prog(sub(3, 0), 12, 6)} style={{margin: '0 auto'}} />
-                <T size={28} color={P.ink}>
+                <T size={34} color={P.ink}>
                   漏跑测试
                 </T>
               </div>
@@ -161,11 +172,6 @@ export const Notebook: React.FC = () => {
           })}
           {b[4] >= 0 && (
             <>
-              <div style={{position: 'absolute', left: 730, top: 830, ...pop(sub(4, 0), 0)}}>
-                <Pill size={32} bg={P.sky}>
-                  几代模型换下来
-                </Pill>
-              </div>
               {[0, 1, 2].map((k) => (
                 <div key={k} style={{position: 'absolute', left: [760, 860, 800][k], top: [960, 1020, 1110][k], ...slam(sub(4, 2), k * 6, 2.4)}}>
                   <T size={[110, 80, 96][k]} color={P.yellow} shadow={P.coral}>

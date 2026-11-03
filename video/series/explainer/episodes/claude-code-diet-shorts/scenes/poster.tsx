@@ -51,7 +51,12 @@ export const poster: React.FC<{w: number; h: number}> = ({w, h}) => {
               ✓ 核心测试成绩没掉
             </Pill>
           </div>
-          <div style={{position: 'absolute', left: 0, width: w, top: top + 950, textAlign: 'center'}}>
+          <div style={{position: 'absolute', left: 0, width: w, top: top + 888, textAlign: 'center'}}>
+            <T size={36} color={P.sky}>
+              官方自报 · 未公开评测细节
+            </T>
+          </div>
+          <div style={{position: 'absolute', left: 0, width: w, top: top + 985, textAlign: 'center'}}>
             <T size={60}>你的规矩，可能也太多了</T>
           </div>
         </>
@@ -66,13 +71,13 @@ export const poster: React.FC<{w: number; h: number}> = ({w, h}) => {
             </T>
           </div>
           {['必须测试！！', '只做最小修改', '认真思考', '反复确认三遍', '不要加注释', '按需写文档'].map((t, i) => (
-            <div key={t} style={{position: 'absolute', left: w / 2 - 200 + ((i * 53) % 120) - 40, top: top + 620 + i * 66, transform: `rotate(${((i * 37) % 13) - 6}deg)`}}>
+            <div key={t} style={{position: 'absolute', left: w / 2 - 200 + ((i * 53) % 120) - 40, top: top + 610 + i * 76, transform: `rotate(${((i * 37) % 13) - 6}deg)`}}>
               <Slip text={t} size={42} bg={i % 2 ? P.white : '#FFE1D8'} />
             </div>
           ))}
-          <div style={{position: 'absolute', left: w / 2 + 120, top: top + 1000, transform: 'rotate(-10deg)'}}>
+          <div style={{position: 'absolute', left: 0, width: w, top: top + 1090, textAlign: 'center', transform: 'rotate(-4deg)'}}>
             <Pill size={60} bg={P.coral} color={P.white}>
-              官方删了 80%
+              自家提示词删了 80%
             </Pill>
           </div>
         </>

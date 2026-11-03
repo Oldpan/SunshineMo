@@ -56,7 +56,7 @@ export const Scaleup: React.FC = () => {
             <Lab size={22} color={D.dim}>
               到这里为止
             </Lab>
-            {['网络小到能整个放进上下文', '不让用任何工具'].map((t, i) => (
+            {['大多数网络小到能整个放进上下文', '基本不让用工具'].map((t, i) => (
               <div key={t} style={{marginTop: 22, ...rise(b[0], 14 + i * 10, 8)}}>
                 <Zh size={32} w={700}>
                   {t}
@@ -65,7 +65,7 @@ export const Scaleup: React.FC = () => {
             ))}
             <div style={{marginTop: 40, ...rise(b[1], 0, 8)}}>
               <Mark p={prog(b[1], 18, 6)} size={28}>
-                为了说明：这种能力是大模型自带的
+                为了说明：大模型自带一定的这种能力
               </Mark>
             </div>
           </div>
@@ -176,8 +176,8 @@ const WinChart: React.FC<{f: number; g: number; w: number; h: number}> = ({f, g,
       )}
       {/* end labels */}
       {[
-        [GO.budgets[0].ppo_s0, D.green, -22, 0],
-        [GO.budgets[0].ppo_s2, D.greenLight, 30, 0],
+        [GO.budgets[0].ppo_s0, D.green, 30, 0],
+        [GO.budgets[0].ppo_s2, D.greenLight, -22, 0],
         [same[0]!, D.orange, 34, 0],
       ].map(([v, c, dy], j) => (
         <text key={j} x={X(0) + 16} y={Y(v as number) + (dy as number)} fontFamily={FONT_SANS} fontSize={23} fontWeight={800} fill={c as string} opacity={prog(f, 10, 10 + j * 6) * (1 - prog(g * 60, 10))}>
@@ -269,7 +269,7 @@ export const Go: React.FC = () => {
             {[
               ['小号 PPO 种子 0', D.green, false],
               ['小号 PPO 种子 2', D.greenLight, false],
-              ['和 Astra 一样大的 PPO（512 × 6）', D.orange, true],
+              ['和 Astra 一样大的 PPO（512 × 6，只测了 0 和 50 次）', D.orange, true],
             ].map(([l, c, dash]) => (
               <div key={l as string} style={{display: 'flex', alignItems: 'center', gap: 10}}>
                 <svg width={34} height={10}>

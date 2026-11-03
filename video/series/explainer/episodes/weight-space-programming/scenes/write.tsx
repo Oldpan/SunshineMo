@@ -119,14 +119,14 @@ export const Car: React.FC = () => {
               <CarScene t={t} w={968} ppo={astra ? 0.38 : 1} astra={astra ? 1 : 0} />
               {!astra && b[2] > 0 && (
                 <>
-                  <div style={{position: 'absolute', left: 250, top: 40, opacity: prog(b[2], 12, 30)}}>
+                  <div style={{position: 'absolute', left: 470, top: 40, opacity: prog(b[2], 12, 30)}}>
                     <Zh size={24} w={700} color={D.green}>
-                      ① 先倒车 ←
+                      ① 先往右倒车 →
                     </Zh>
                   </div>
-                  <div style={{position: 'absolute', left: 480, top: 40, opacity: prog(b[2], 12, 60)}}>
+                  <div style={{position: 'absolute', left: 220, top: 40, opacity: prog(b[2], 12, 60)}}>
                     <Zh size={24} w={700} color={D.green}>
-                      ② 加速冲过红条 →
+                      ← ② 再往左冲过红条
                     </Zh>
                   </div>
                   <div style={{position: 'absolute', left: 30, top: 40, opacity: prog(b[2], 12, 90)}}>

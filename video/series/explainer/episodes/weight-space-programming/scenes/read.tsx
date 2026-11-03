@@ -74,7 +74,7 @@ export const Games: React.FC = () => {
           </div>
         ))}
       </div>
-      <div style={{position: 'absolute', left: 96, top: 920 - 36, width: 820, textAlign: 'center', opacity: prog(b[4], 14)}}>
+      <div style={{position: 'absolute', left: 96, top: 920 - 22, width: 820, textAlign: 'center', opacity: prog(b[4], 14)}}>
         <Zh size={24} w={600} color={D.red}>
           四个网络形状完全一样，不读权重的内容分不出谁是谁
         </Zh>
@@ -397,7 +397,7 @@ const HeadGrid: React.FC<{cells: string[]; size?: number; p?: number; color?: st
         ))}
       </div>
     )}
-    <div>
+    <div style={{paddingTop: labels ? 0 : size * 0.9}}>
       {labels && (
         <div style={{display: 'flex', gap: 3, height: size * 0.9}}>
           {[0, 1, 2, 3, 4, 5].map((h) => (

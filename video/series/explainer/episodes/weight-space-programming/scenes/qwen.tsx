@@ -560,7 +560,7 @@ export const Gemma: React.FC = () => {
             {gm.map((v, i) => (
               <div key={i} style={{display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6}}>
                 <Zh size={24} w={700}>
-                  {v}
+                  {v.toFixed(1)}
                 </Zh>
                 <div style={{width: 90, height: v * 30 * prog(b[3], 24, i * 6), background: i ? D.green : D.faint}} />
               </div>

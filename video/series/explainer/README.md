@@ -47,6 +47,7 @@ source env.sh
 | super-agent | 一个人通常只能盯 3–5 个 Session：DeepSeek Harness 团队的 Super-agent 架构全拆解 | Drive video_from_opus/Super-agent架构 |
 | qwen4-preview | Qwen4 还没发，架构已经开源两个月了 | Drive video_from_opus/Qwen4前瞻 |
 | weight-space-programming | 只改 0.016% 的权重，Qwen 数学从 7.9% 涨到 48.1%：大模型开始直接读写神经网络权重 | Drive video_from_opus/权重空间编程 |
+| weight-space-programming-shorts | （竖屏 · 非技术向）AI 给 AI 动手术：只改 0.016% 的数字，千问数学答对率 7.9% 涨到 48.1% | Drive video_from_opus/权重空间编程（竖屏） |
 
 （之前的 10 期在 article-to-video 的 `projects/` 里，留在原处。）
 
@@ -117,3 +118,9 @@ source env.sh
 - 字幕一行放不下时，引擎会在中间附近断一次：优先断在空格、逗号或引号后，其次断在词边界，不会拆开「Claude Code」或「命令」。改旁白时要留意分段数：结尾不足 5 个字宽的分段会并进上一段，`sub(b, i)` 的序号会跟着变（「达标就停」会被并掉，所以写成「达标了就停」）。
 - 第一轮审片常见的必须改：画面上的标签挂错主语（片头纸条写的是用户的规矩，却挂在「Claude Code 自己的提示词」下面）；落下来的纸条、飞过的证据纸、回环箭头压住要点字；画面比旁白早 2 秒以上说出答案（标题里的文件名、合并后的结论卡）；自报数据没写「官方自报」。
 - `review_sheets.py` 对竖屏输出一行四张 540×960 的小图，不再把竖帧压扁。
+
+`shared/particles.tsx`：数字粒子（黑底、真实权重数字做的雨、薄荷绿发光字、数字粒子从四周飞进来拼成形状），weight-space-programming-shorts 首用；动效借 kinetic-reel 的粒子聚形、lemo-opuscar 的 HUD 锁定框和扫描线。
+
+- 面向非技术观众的竖屏：每段先翻特效库（`.claude/skills/README.md`），在方案里写清楚每段借哪个效果；文案只用白话，数字配一个看得见的对比（柱子冲上去、格子一片变绿）。
+- `Field` 每帧滚数字雨、整场推镜 1.8%，冻帧检测 n=0.0005 d=0.5 为 0。粒子用 `Swarm`（`to` 给目标点，`out` 让它们散开），文字要压在粒子上时给文字垫半透明黑底。
+- 横屏那期的图（游戏 GIF、热力图、小车、MinAtar 回放）直接从 `../weight-space-programming/scenes/common` 引，不复制数据；浅色的原图放进深色 `Panel` 里当“屏幕”。

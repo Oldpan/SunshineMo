@@ -14,3 +14,15 @@ deliver:
   - {from: out/封面B_3x4.png, as: 权重空间编程_竖屏_封面B备选_3x4.png}
   - {from: out/封面B_6x7.png, as: 权重空间编程_竖屏_封面B备选_6x7.png}
   - {from: source/video.md, as: 介绍和文案.md}
+drive:
+  folder: video_from_opus/权重空间编程（竖屏）
+  url: https://drive.google.com/drive/folders/1U4Vu0PlE8t5zOqO0k5N5oBYpu1svHEi3
+  files:
+  - {name: 权重空间编程_竖屏.mp4, id: 1qVOYxQnwpf-USiNIdtnMVWfn78KNfwzV, bytes: 83737300}
+  - {name: 权重空间编程_竖屏_封面_9x16.png, id: 1wvGeDWu8LieGOiFjoJt6_K6TFD_lDVK9, bytes: 1181651}
+  - {name: 权重空间编程_竖屏_封面_3x4.png, id: 1H60wKFYR74k4ZG9gF5JZyjS8Z7RAFJ1s, bytes: 1060402}
+  - {name: 权重空间编程_竖屏_封面_6x7.png, id: 1YAy9P7XutRYH-p09j5jMGcdpReolQY8J, bytes: 1009314}
+  - {name: 权重空间编程_竖屏_封面B备选_9x16.png, id: 199hLECV1bHtKSUJxxmFpMO1fkXsa9Fzx, bytes: 970842}
+  - {name: 权重空间编程_竖屏_封面B备选_3x4.png, id: 1XJZ3Su_KlkZbew3BVGJj-zHWSQCkGpf-, bytes: 848774}
+  - {name: 权重空间编程_竖屏_封面B备选_6x7.png, id: 1Z8WGd-hQUsBZT9C_17NgFcK68nloh2Hz, bytes: 800492}
+  - {name: 介绍和文案.md, id: 1BzOvwVbmW5lLTNsKTudiXkR2ly9P2Qyo, bytes: 630}

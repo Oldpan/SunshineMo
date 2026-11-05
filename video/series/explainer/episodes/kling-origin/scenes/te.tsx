@@ -122,6 +122,7 @@ export const Te: React.FC = () => {
             <Z size={26} w={800}>
               只差一个细节的句子对
             </Z>
+            <span style={{marginLeft: 12, fontFamily: FONT_ZH, fontSize: 18, fontWeight: 700, color: C.sub, border: `2px solid ${C.line}`, borderRadius: 6, padding: '0 8px'}}>示意</span>
             <div style={{marginTop: 12, display: 'flex', flexDirection: 'column', gap: 8}}>
               <Z size={25} w={600}>
                 ① 女孩<span style={{background: '#FFE3A3', padding: '0 4px'}}>向左</span>跑出画面
@@ -172,7 +173,7 @@ export const Te: React.FC = () => {
         <div style={{position: 'absolute', left: 1510, top: 590, ...pop(b[6])}}>
           <Box w={310} h={220} color={C.blue}>
             <Z size={21} color={C.sub}>
-              人工盲评偏好比
+              人工对比评测（GSB）偏好比
             </Z>
             <div style={{fontFamily: FONT_NUM, fontWeight: 900, fontSize: 92, color: C.blue, lineHeight: 1.05}}>{(1 + 0.27 * clamp01(prog(b[6], 20, 4))).toFixed(2)}</div>
             <Z size={20} color={C.sub} w={600}>
@@ -184,7 +185,7 @@ export const Te: React.FC = () => {
         </div>
       </Drift>
       <div style={{position: 'absolute', left: 96, bottom: 150, opacity: 0.85 * prog(b[4], 14)}}>
-        <Src>原文 §6.1、§6.2、表 14：用最小对比描述筛候选 · 偏好比 (G+S)/(S+B)，相对 Qwen 文本编码器</Src>
+        <Src>原文 §6.1、§6.2、表 14：用最小对比描述筛候选（例句为示意） · 偏好比 (G+S)/(S+B)，相对 Qwen 文本编码器</Src>
       </div>
     </>
   );

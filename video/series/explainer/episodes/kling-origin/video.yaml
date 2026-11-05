@@ -10,3 +10,11 @@ deliver:
   - {from: out/封面_16x9.png, as: 可灵是如何诞生的_封面_16x9.png}
   - {from: out/封面_3x4.png, as: 可灵是如何诞生的_封面_3x4.png}
   - {from: source/video.md, as: 介绍和文案.md}
+drive:
+  folder: video_from_opus/可灵是如何诞生的
+  url: https://drive.google.com/drive/folders/1aV2uEvjlojimsSbysW01p6LM8gxSkFE8
+  files:
+  - {name: 可灵是如何诞生的.mp4, id: 1pAfOWYygmC9rlmeL6o-8ghuHW1AlT1Pc, bytes: 137877260}
+  - {name: 可灵是如何诞生的_封面_16x9.png, id: 1QtuMBdmakT0D8G8kvfRHndfr0mr0sawh, bytes: 907284}
+  - {name: 可灵是如何诞生的_封面_3x4.png, id: 11EbHXGDwxrv5PQo_0Pe2WIFwYTRE8pog, bytes: 777872}
+  - {name: 介绍和文案.md, id: 1kSfCNqGzF9gzovGtRPf6KU49wZnrDmrH, bytes: 559}

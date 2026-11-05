@@ -143,7 +143,7 @@ export const Evals: React.FC = () => {
             </svg>
           </div>
         )}
-        <ScreenSrc f={b[0]}>原文 §8 · 公式 (3)：AVE-Compass 编辑意图分 = 指令遵循 × 保真</ScreenSrc>
+        <ScreenSrc f={b[0]}>原文 §8 · 公式 (3)：AVE-Compass 编辑意图分 = 指令遵循 × 保真 · 例子和数值为示意</ScreenSrc>
       </Monitor>
       <Inspector title={ph1 ? '第 8 节 · 自动评测' : '失败要留证据'}>
         {ph1 ? (

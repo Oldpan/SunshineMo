@@ -71,7 +71,7 @@ export const Poster: React.FC<{w: number; h: number}> = ({w, h}) => {
 
       {POSTER === 'A' && !tall && (
         <div style={{position: 'absolute', right: L, top: 200, width: 470, background: EB.p1, border: `1px solid ${EB.line}`, borderRadius: 10, padding: '22px 26px'}}>
-          <div style={{fontFamily: FONT_MONO, fontSize: 18, color: EB.faint}}>检查器 · 奖励模型准确率</div>
+          <div style={{fontFamily: FONT_MONO, fontSize: 18, color: EB.faint}}>检查器 · 内部成对测试准确率</div>
           {[
             ['可灵 DRM', 77.86, EB.head],
             ['Gemini-4-Argon', 73.54, EB.faint],

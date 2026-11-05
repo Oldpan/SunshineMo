@@ -250,7 +250,7 @@ export const GrmDrm: React.FC = () => {
         </div>
         {/* DRM */}
         <div style={{position: 'absolute', left: 1000, top: 220, ...rise(b[4])}}>
-          <PixelWindow w={820} h={660} title="DRM · 专门给训练用" tag="快">
+          <PixelWindow w={820} h={660} title="DRM · 主要给训练打分" tag="快">
             <P size={24} color={PX.dim}>
               答案位置直接写在输入里
             </P>

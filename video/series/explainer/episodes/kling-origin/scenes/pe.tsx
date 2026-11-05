@@ -25,6 +25,7 @@ const Clip: React.FC<{w: number; h: number; good?: boolean; seed?: number}> = ({
     <CrayonCanvas
       w={w}
       h={h}
+      style={{left: 0, top: 0}}
       deps={[good]}
       draw={(g) => [
         g.rectangle(4, 4, w - 8, h - 8, rs(CR.ink, seed, {fill: good ? '#FFE7A8' : '#DDD8D0', fillStyle: 'hachure', hachureGap: 9})),
@@ -148,7 +149,7 @@ export const Pe: React.FC = () => {
         </div>
         <CrayonCircle w={350} h={230} style={{left: 76, top: 596}} p={prog(b[6], 18, 6)} color={CR.orange} />
       </Drift>
-      <SrcC f={b[4]}>原文 §5：从高质量视频的 caption 反向生成用户提示，组成训练对</SrcC>
+      <SrcC f={b[4]}>原文 §5：从高质量视频的 caption 反向生成用户提示，组成训练对 · 猫的例子为示意</SrcC>
     </>
   );
 };

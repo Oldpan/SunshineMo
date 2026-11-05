@@ -1,0 +1,28 @@
+# AI 给 AI 动手术：只改 0.016% 的数字，千问数学答对率 7.9% 涨到 48.1% （竖屏，非技术向）— see `sm --help` for the fields
+title: AI 给 AI 动手术：只改 0.016% 的数字，千问数学答对率 7.9% 涨到 48.1%
+engine: narrated
+style: particle  # shared/particles.tsx: number particles on black, 1080×1920 for 抖音 / 小红书 / 视频号
+source: https://rikiyat.github.io/blog/weight-space-programming/
+deliver:
+  drive: video_from_opus/权重空间编程（竖屏）
+  files:
+  - {from: out/weight-space-programming-shorts.mp4, as: 权重空间编程_竖屏.mp4}
+  - {from: out/封面_9x16.png, as: 权重空间编程_竖屏_封面_9x16.png}
+  - {from: out/封面_3x4.png, as: 权重空间编程_竖屏_封面_3x4.png}
+  - {from: out/封面_6x7.png, as: 权重空间编程_竖屏_封面_6x7.png}
+  - {from: out/封面B_9x16.png, as: 权重空间编程_竖屏_封面B备选_9x16.png}
+  - {from: out/封面B_3x4.png, as: 权重空间编程_竖屏_封面B备选_3x4.png}
+  - {from: out/封面B_6x7.png, as: 权重空间编程_竖屏_封面B备选_6x7.png}
+  - {from: source/video.md, as: 介绍和文案.md}
+drive:
+  folder: video_from_opus/权重空间编程（竖屏）
+  url: https://drive.google.com/drive/folders/1U4Vu0PlE8t5zOqO0k5N5oBYpu1svHEi3
+  files:
+  - {name: 权重空间编程_竖屏.mp4, id: 1qVOYxQnwpf-USiNIdtnMVWfn78KNfwzV, bytes: 83737300}
+  - {name: 权重空间编程_竖屏_封面_9x16.png, id: 1wvGeDWu8LieGOiFjoJt6_K6TFD_lDVK9, bytes: 1181651}
+  - {name: 权重空间编程_竖屏_封面_3x4.png, id: 1H60wKFYR74k4ZG9gF5JZyjS8Z7RAFJ1s, bytes: 1060402}
+  - {name: 权重空间编程_竖屏_封面_6x7.png, id: 1YAy9P7XutRYH-p09j5jMGcdpReolQY8J, bytes: 1009314}
+  - {name: 权重空间编程_竖屏_封面B备选_9x16.png, id: 199hLECV1bHtKSUJxxmFpMO1fkXsa9Fzx, bytes: 970842}
+  - {name: 权重空间编程_竖屏_封面B备选_3x4.png, id: 1XJZ3Su_KlkZbew3BVGJj-zHWSQCkGpf-, bytes: 848774}
+  - {name: 权重空间编程_竖屏_封面B备选_6x7.png, id: 1Z8WGd-hQUsBZT9C_17NgFcK68nloh2Hz, bytes: 800492}
+  - {name: 介绍和文案.md, id: 1BzOvwVbmW5lLTNsKTudiXkR2ly9P2Qyo, bytes: 630}

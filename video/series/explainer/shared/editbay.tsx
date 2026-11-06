@@ -10,7 +10,7 @@ import {AbsoluteFill, interpolate, useCurrentFrame} from 'remotion';
 import {FONT_MONO, FONT_NUM, FONT_ZH, THEMES} from '@atv/lib/theme';
 import {clamp01, EASE, prog, useScene, useSpring} from '@atv/lib/timing';
 
-// Not flagged `dark`: keeps the default dark subtitle plate, which sits well under the timeline.
+// Not flagged `dark`: keeps the default dark subtitle plate, which sits on the timeline's S1 subtitle lane.
 THEMES.editbay = {bg: '#0D0E11', bg2: '#0D0E11', accent: '#FF7A3D', accentSoft: '#2A1B14', ink: '#E9EBEF'};
 
 export const EB = {
@@ -195,11 +195,17 @@ export const IBar: React.FC<{label: React.ReactNode; value: number; text?: strin
 );
 
 // ------------------------------------------------------------------ timeline
+// Timeline panel: from just under the monitors to 16 px above the frame edge; the bottom SUB_LANE px hold S1.
+const TL_Y = 684;
+const TL_H = 1080 - 16 - TL_Y;
+const SUB_LANE = 132;
 export type Clip = {a: number; b: number; label?: React.ReactNode; color: string; f?: number; o?: number; style?: React.CSSProperties; children?: React.ReactNode};
 export type Track = {name: string; desc?: string; clips: Clip[]; h?: number};
 /**
  * Bottom timeline. Clip a/b are 0..100 (% of the lane). `ph` is the playhead 0..1 (it creeps on its own so the
- * frame never freezes); `marks` label the ruler.
+ * frame never freezes); `marks` label the ruler. The panel always runs to the bottom of the frame: the tracks
+ * stretch to fill it and the last lane is an S1 subtitle track whose blocks are the scene's own subtitle chunks,
+ * so the engine's subtitle plate (bottom 54 px) sits on that lane instead of on an empty band (user 2026-11-06).
  */
 export const Timeline: React.FC<{tracks: Track[]; ph?: number; marks?: string[]; title?: React.ReactNode; x?: number; w?: number}> = ({
   tracks,
@@ -211,17 +217,24 @@ export const Timeline: React.FC<{tracks: Track[]; ph?: number; marks?: string[];
 }) => {
   const frame = useCurrentFrame();
   const scene = useScene();
-  const auto = 0.02 + 0.96 * clamp01(frame / Math.max(scene.duration, 1));
+  const dur = Math.max(scene.duration, 1);
+  const auto = 0.02 + 0.96 * clamp01(frame / dur);
   const head = ph ?? auto;
+  // tracks fill the space above the subtitle lane (TL_H − header 34 − ruler 26 − SUB_LANE − 8)
+  const room = TL_H - 60 - SUB_LANE - 8;
+  const sum = tracks.reduce((s, tr) => s + (tr.h ?? 40), 0);
+  const k = Math.min(1.6, room / Math.max(sum, 1));
   let y = 60;
   const rows = tracks.map((tr) => {
-    const h = tr.h ?? 40;
+    const h = Math.round((tr.h ?? 40) * k);
     const top = y;
     y += h;
     return {tr, h, top};
   });
+  const subs = scene.beats.flatMap((bt) => bt.subs);
+  const subOn = subs.findIndex((s) => frame >= s.from && frame < s.from + s.duration + 6);
   return (
-    <Panel x={x} y={684} w={w} h={y + 8} title="时间线" right={<Zh size={15} w={500} color={EB.dim}>{title}</Zh>}>
+    <Panel x={x} y={TL_Y} w={w} h={TL_H} title="时间线" right={<Zh size={15} w={500} color={EB.dim}>{title}</Zh>}>
       <div style={{position: 'absolute', left: 150, right: 0, top: 0, height: 26, borderBottom: `1px solid ${EB.line}`}}>
         {marks.map((m, i) => (
           <span key={i} style={{position: 'absolute', top: 6, left: `${(i / Math.max(marks.length - 1, 1)) * 96}%`, fontFamily: FONT_MONO, fontSize: 12, color: EB.faint, whiteSpace: 'nowrap'}}>
@@ -277,6 +290,37 @@ export const Timeline: React.FC<{tracks: Track[]; ph?: number; marks?: string[];
           </div>
         </div>
       ))}
+      {/* S1 subtitle lane: one block per subtitle chunk on the same clock as the playhead */}
+      <div style={{position: 'absolute', left: 0, right: 0, top: y - 34, bottom: 0, borderTop: `1px solid ${EB.line}`}}>
+        <div style={{position: 'absolute', left: 0, top: 0, bottom: 0, width: 150, background: EB.p2, borderRight: `1px solid ${EB.line}`, display: 'flex', alignItems: 'center', gap: 8, paddingLeft: 14}}>
+          <Mo size={13} color={EB.ink} w={700}>
+            S1
+          </Mo>
+          <Zh size={13} w={500} color={EB.dim}>
+            字幕
+          </Zh>
+        </div>
+        <div style={{position: 'absolute', left: 150, right: 0, top: 0, bottom: 0, background: 'repeating-linear-gradient(90deg, rgba(255,255,255,0.025) 0 2px, transparent 2px 48px)'}}>
+          {subs.map((s, i) => {
+            const on = i === subOn;
+            return (
+              <div
+                key={i}
+                style={{
+                  position: 'absolute',
+                  top: 14,
+                  bottom: 14,
+                  left: `${(0.02 + 0.96 * (s.from / dur)) * 100}%`,
+                  width: `calc(${0.96 * (s.duration / dur) * 100}% - 3px)`,
+                  borderRadius: 4,
+                  background: on ? 'rgba(46,196,182,0.22)' : 'rgba(46,196,182,0.07)',
+                  border: `1px solid rgba(46,196,182,${on ? 0.8 : 0.28})`,
+                }}
+              />
+            );
+          })}
+        </div>
+      </div>
       <div style={{position: 'absolute', left: 150, right: 0, top: -34, bottom: 0, pointerEvents: 'none'}}>
         <div style={{position: 'absolute', top: 34, bottom: 0, left: `${clamp01(head) * 100}%`, width: 2, background: EB.head, boxShadow: `0 0 12px ${EB.head}`}}>
           <div style={{position: 'absolute', top: -2, left: -7, width: 0, height: 0, borderLeft: '8px solid transparent', borderRight: '8px solid transparent', borderTop: `12px solid ${EB.head}`}} />
@@ -288,7 +332,7 @@ export const Timeline: React.FC<{tracks: Track[]; ph?: number; marks?: string[];
 
 /** Waveform drawn in a clip (deterministic). */
 export const Wave: React.FC<{w?: number; color?: string; amp?: number; seed?: number}> = ({w = 1700, color = EB.aud, amp = 1, seed = 0}) => (
-  <svg width={w} height={22} style={{position: 'absolute', left: 8, top: 4}}>
+  <svg width={w} height={22} style={{position: 'absolute', left: 8, top: 'calc(50% - 11px)'}}>
     <path
       d={Array.from({length: Math.floor(w / 5)}, (_, i) => {
         const k = i + seed;
@@ -315,6 +359,7 @@ export const Bay: React.FC<{children: React.ReactNode; project?: string}> = ({ch
   const push = 1 + 0.016 * t;
   return (
     <AbsoluteFill style={{background: EB.bg, overflow: 'hidden'}}>
+      <AbsoluteFill style={{opacity: 1 - veil * 0.9, transform: `translateY(${(1 - enter) * 16 - exit * 16 - sink}px) scale(${push})`, transformOrigin: '50% 45%'}}>{children}</AbsoluteFill>
       <div style={{position: 'absolute', left: 0, right: 0, top: 0, height: 46, background: EB.p1, borderBottom: `1px solid ${EB.line}`, display: 'flex', alignItems: 'center', padding: '0 22px', gap: 28}}>
         <div style={{display: 'flex', gap: 8}}>
           {[0, 1, 2].map((i) => (
@@ -335,7 +380,6 @@ export const Bay: React.FC<{children: React.ReactNode; project?: string}> = ({ch
           {tc(g)}
         </Mo>
       </div>
-      <AbsoluteFill style={{opacity: 1 - veil * 0.9, transform: `translateY(${(1 - enter) * 16 - exit * 16 - sink}px) scale(${push})`, transformOrigin: '50% 45%'}}>{children}</AbsoluteFill>
     </AbsoluteFill>
   );
 };

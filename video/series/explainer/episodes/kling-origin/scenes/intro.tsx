@@ -31,8 +31,8 @@ import {
 
 // ------------------------------------------------------------------ cover
 const DEFECTS = [
-  {label: '手指多一根', x: 598, y: 278, w: 72, h: 72},
-  {label: '物体穿模', x: 410, y: 380, w: 150, h: 70},
+  {label: '手指多一根', x: 570, y: 222, w: 88, h: 92},
+  {label: '物体穿模', x: 446, y: 386, w: 150, h: 66},
   {label: '画面闪烁', x: 760, y: 60, w: 190, h: 120},
 ];
 export const Cover: React.FC = () => {
@@ -41,7 +41,7 @@ export const Cover: React.FC = () => {
   const pop = usePopIn();
   const still = prog(b[3], 30); // 0 → 1: the model stops moving
   const amp = 1 - still;
-  const swing = 40 + 34 * Math.sin(frame / 7) * amp;
+  const swing = lerp(14, 128 + 26 * Math.sin(frame / 5), amp); // waving → arm down at rest
   const bob = 6 * Math.abs(Math.sin(frame / 7)) * amp;
   const nDef = b[1] < 0 ? 0 : Math.min(3, 1 + Math.floor(b[1] / 14));
   const defVis = (i: number) => (i < nDef ? 1 : 0) * (1 - still);
@@ -180,7 +180,7 @@ export const Cover: React.FC = () => {
 };
 
 const MotionLine: React.FC<{amp: number; f: number}> = ({amp, f}) => (
-  <svg width={1700} height={30} style={{position: 'absolute', left: 6, top: 0}}>
+  <svg width={1700} height={30} style={{position: 'absolute', left: 6, top: 'calc(50% - 15px)'}}>
     <polyline
       fill="none"
       stroke={EB.amber}

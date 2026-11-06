@@ -12,6 +12,10 @@ meta:
   height: 1080
   gap: 0.12
   scene_tail: 0.3
+  # 整首原创配乐（用户 2026-11-06：原来的 62 秒循环太短、太小声）：music.py 按章节作曲，读 build/timeline.json。
+  # 改了时间轴就重跑：build_timeline.py → /usr/local/bin/python3 music.py → build_timeline.py
+  bgm: build/music/music.wav
+  bgm_db: -12
   sfx:
     # 冷开场（像素风）：框出人物 / 机械手、清单打勾、碎成像素块、标题落下
     - {at: "hook:6", sound: pop, db: -22}

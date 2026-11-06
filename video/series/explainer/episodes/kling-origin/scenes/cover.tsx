@@ -9,6 +9,7 @@ import {
   Bean,
   Burst,
   Confetti,
+  Curtain,
   E,
   F_CJK,
   F_ROUND,
@@ -94,7 +95,7 @@ export const Cover: React.FC = () => {
   const tremble = !moving && f < at[5] ? Math.sin(f * 1.7) * 1.6 : 0;
   const sink = f >= d2 && moving ? 84 * E.out(seg(f, d2, d2 + 6)) : 0;
   const dy = hop + sink;
-  const pin = E.back(seg(f, 0, 12)); // drop-in at the start
+  const pin = E.back(seg(f, 5, 17)); // drop-in as the curtains open
   const enterY = (1 - pin) * -700;
   // hand anchor (for the 手指多一根 ring), rotated with the sway around the feet
   const hp = HAND[pose] ?? HAND.wave!;
@@ -118,6 +119,7 @@ export const Cover: React.FC = () => {
   const lean = f >= d1 && moving ? -10 : f >= at[4] ? 4 : 0;
   const Set = SETS.yellow;
   return (
+    <>
     <Punch hits={[...at, d1, d2, d3, freeze]}>
       <GSSet set="yellow" pattern="rays" floor={FLOOR} curtain={K.red} />
       {/* spotlight on the contestant */}
@@ -308,5 +310,8 @@ export const Cover: React.FC = () => {
         </Pop>
       )}
     </Punch>
+    {/* the curtains the cold open closed: they open on the stage */}
+    <Curtain p={1 - E.inOut(seg(f, 1, 18))} />
+    </>
   );
 };

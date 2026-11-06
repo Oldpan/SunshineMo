@@ -1016,3 +1016,59 @@ export const Layer: React.FC<{children: React.ReactNode}> = ({children}) => (
 
 
 export {staticFile, interpolate};
+
+// ------------------------------------------------------------------ scene change: stage curtains
+/**
+ * Two flat cartoon curtains for a scene change. p = 0: open (off frame) … 1: closed, meeting in the middle
+ * (p slightly above 1 is fine: the panels overlap a little, which reads as a bump). Close them over the end of
+ * the outgoing scene and open them over the start of the next one (both scenes draw it on top of everything).
+ * The folds ripple a little, so a closed curtain is never a frozen frame.
+ */
+export const Curtain: React.FC<{p: number; col?: string; dark?: string; light?: string; trim?: string}> = ({
+  p,
+  col = K.red,
+  dark = '#D8434A',
+  light = '#FF8E91',
+  trim = K.yellow,
+}) => {
+  const f = useCurrentFrame();
+  if (p <= 0) return null;
+  const W = 1010; // panel width; two panels overlap 100 px when closed
+  const H = 1120;
+  const folds = Array.from({length: 10}, (_, i) => -166 + i * 118);
+  const panel = (side: 'l' | 'r') => {
+    const x0 = side === 'l' ? -W + p * W : 1920 - p * W;
+    const flip = side === 'r' ? `translate(${W} 0) scale(-1 1)` : '';
+    const sway = Math.sin(f / 7 + (side === 'l' ? 0 : 2)) * 6;
+    // inner edge: full width at the top, gathered in a little towards the floor
+    const edge = `M ${W} -20 Q ${W + 24 + sway} 520 ${W - 34} ${H}`;
+    return (
+      <g key={side} transform={`translate(${x0} 0) ${flip}`}>
+        {/* the body runs 260 px past the outer side, so an overshooting close never shows the frame edge */}
+        <path d={`M -260 -20 L ${W} -20 Q ${W + 24 + sway} 520 ${W - 34} ${H} L -260 ${H} Z`} fill={col} />
+        {folds.map((x, i) => {
+          const w = Math.sin(f / 9 + i * 1.3) * 3;
+          const s = i % 2 ? 16 : -12; // folds slant a little
+          return (
+            <g key={i}>
+              <path d={`M ${x - 22} -20 L ${x + 22} -20 L ${x + 22 + s + w} ${H} L ${x - 22 + s + w} ${H} Z`} fill={dark} />
+              <path d={`M ${x + 40} -20 L ${x + 46} -20 L ${x + 46 + s + w} ${H} L ${x + 40 + s + w} ${H} Z`} fill={light} />
+            </g>
+          );
+        })}
+        {/* gold trim on the inner edge */}
+        <path d={edge} fill="none" stroke={K.ol} strokeWidth={34} />
+        <path d={edge} fill="none" stroke={trim} strokeWidth={20} />
+        <path d={`M -260 -20 L ${W} -20`} stroke={K.ol} strokeWidth={10} />
+      </g>
+    );
+  };
+  return (
+    <AbsoluteFill style={{pointerEvents: 'none'}}>
+      <svg width={1920} height={1080} viewBox="0 0 1920 1080" style={{position: 'absolute', inset: 0}}>
+        {panel('l')}
+        {panel('r')}
+      </svg>
+    </AbsoluteFill>
+  );
+};

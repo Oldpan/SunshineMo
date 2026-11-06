@@ -1,13 +1,15 @@
 // 5 s cold open, pixel style (user 2026-11-06 picked 方案 A 机器之眼 in pixel form): a real film shot plays full-frame
 // (Tears of Steel, CC BY 3.0) while a little pixel TV-bot "understanding model" watches it: tracked corner brackets
 // on the two people and the robot hand, a speech bubble that types the caption, a quest log whose bars fill and tick,
-// hearts for "0 defects", stars for "understood". Then the shot breaks into pixel blocks and the title drops in.
+// hearts for "0 defects", stars for "understood". Then the shot breaks into pixel blocks and the title drops in while
+// the voice reads it (beat 2), holds a moment, and stage curtains close: the next scene (cover) opens them again.
 // The pixelation is pre-rendered (assets.nosync/tos_px12/30/60.mp4) and swapped in, so every frame stays a real frame.
 import React from 'react';
 import {AbsoluteFill, OffthreadVideo, useCurrentFrame} from 'remotion';
 import {useScene} from '@atv/lib/timing';
 import {FONT_PIXEL} from '@atv/lib/theme';
 import {PixelBar, PixelPanel, PixelText, PixelWindow, PX, Sprite} from '@atv/lib/styles';
+import {Curtain, E} from '../../../shared/gameshow';
 import {TOS, TOS_CREDIT} from './assets';
 
 const INK = PX.ink;
@@ -89,8 +91,12 @@ const ROLES: [string, string, string][] = [
 export const Hook: React.FC = () => {
   const f = useCurrentFrame();
   const scene = useScene();
-  const T_OUT = Math.max(112, scene.duration - 42); // the shot breaks into pixels
+  // the shot breaks into pixels shortly after beat 2 starts, so the title lands as the voice reaches 「可灵…」
+  const T_OUT = Math.max(112, (scene.beats[1]?.from ?? 96) + 20);
   const T_TITLE = T_OUT + 7;
+  const C0 = scene.duration - 13; // curtains close over the last 13 frames
+  const curtain = E.back(seg(f, C0, C0 + 11));
+  const push = 1 + 0.035 * E.out(seg(f, T_TITLE, C0 + 6)); // slow push-in on the title card
   const t = f / 30;
   const hud = f < T_OUT ? 1 : 1 - seg(f, T_OUT, T_OUT + 5);
   const src = f < T_OUT ? TOS.clip : f < T_OUT + 3 ? TOS.px12 : f < T_OUT + 6 ? TOS.px30 : TOS.px60;
@@ -244,7 +250,7 @@ export const Hook: React.FC = () => {
 
       {/* ------------------------------------------------ title over the pixel blocks */}
       {f >= T_TITLE - 2 && (
-        <AbsoluteFill>
+        <AbsoluteFill style={{transform: `scale(${push})`}}>
           {[
             [180, 170, 64, '#BDE3FF'], [260, 120, 32, PX.yellow], [1640, 180, 64, '#F7A8C4'], [1720, 300, 32, PX.blue], [1500, 120, 32, PX.green],
             [330, 820, 48, '#F7A8C4'], [1580, 820, 48, PX.yellow], [120, 560, 32, PX.green], [1800, 620, 32, '#BDE3FF'],
@@ -302,6 +308,7 @@ export const Hook: React.FC = () => {
         </AbsoluteFill>
       )}
       <div style={{position: 'absolute', right: 28, bottom: 18, background: 'rgba(7,8,10,.7)', padding: '2px 8px', fontFamily: 'Noto Sans SC', fontSize: 16, color: '#8C929D'}}>{TOS_CREDIT}</div>
+      <Curtain p={curtain} />
     </AbsoluteFill>
   );
 };

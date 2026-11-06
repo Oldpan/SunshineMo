@@ -24,8 +24,10 @@ meta:
     - {at: "hook:112", sound: pop, db: -18}
     - {at: "hook:116", sound: whoosh, db: -12}
     - {at: "hook:126", sound: pop, db: -16}
-    # 卡通综艺台：落地、三个瑕疵、扣分、定住、满分、报告、打叉、五个模型
-    - {at: "cover:2", sound: whoosh, db: -14}
+    - {at: "hook:183", sound: whoosh, db: -13}  # 幕布合上
+    # 卡通综艺台：拉幕、落地、三个瑕疵、扣分、定住、满分、报告、打叉、五个模型
+    - {at: "cover:2", sound: whoosh, db: -14}  # 幕布拉开
+    - {at: "cover:13", sound: pop, db: -16}  # 鲸鱼娘落地
     - {at: "cover:160", sound: pop, db: -18}
     - {at: "cover:194", sound: pop, db: -18}
     - {at: "cover:214", sound: pop, db: -18}
@@ -71,13 +73,16 @@ scenes:
   # 真实片段：Tears of Steel（CC BY 3.0），见 source/assets.md
   - id: hook
     theme: editbay
-    hold: 1.9
+    data: {join: out}  # 结尾自己拉幕布，不淡出
+    hold: 0.7  # 标题念完停一下，再拉幕布切到综艺台（用户 2026-11-06：之前标题出来 1 秒没人说话就硬切）
     beats:
       - 要让 AI 拍视频，先得教它看懂视频
+      - 这期就讲讲，可灵是如何诞生的
 
   # ------------------------------------------------------------------ 0 开场 · 卡通综艺台（用户 2026-11-06：换卡通风，主角用鲸鱼娘）
   - id: cover
     theme: gameshow
+    data: {join: in}  # 开头拉开幕布，不淡入
     beats:
       - 如果一个视频模型，被奖励模型盯着训练，
       - 而奖励模型只会挑毛病：手指多一根、物体穿模、画面闪烁，

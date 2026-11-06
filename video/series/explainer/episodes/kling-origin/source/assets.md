@@ -1,4 +1,4 @@
-# 画面里的素材（文件在 assets.nosync/，不进 git；成片后传到 Drive 的 素材/ 子目录）
+# 画面里的素材（文件在 assets.nosync/，不进 git；备份在 Drive video_from_opus/可灵是如何诞生的/素材/，换机器时下载回 assets.nosync/）
 
 | 文件 | 内容 | 来源 | 授权 / 说明 |
 |---|---|---|---|

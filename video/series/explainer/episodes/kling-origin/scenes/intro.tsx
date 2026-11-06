@@ -1,22 +1,15 @@
-// 开场 / 引言 / 底座 — editbay chapters.
+// 引言 / 底座 — editbay chapters (the cover moved to cover.tsx, a cartoon gameshow, 2026-11-06).
 import React from 'react';
 import {useCurrentFrame} from 'remotion';
 import {useBeats} from '@atv/lib/timing';
 import {
   Bay,
   Bin,
-  clamp01,
-  count,
-  Dummy,
   EB,
-  EASE,
-  IBar,
-  Illus,
   Inspector,
   IRow,
   ISec,
   Lab,
-  lerp,
   Mo,
   Monitor,
   Num,
@@ -28,167 +21,6 @@ import {
   Wave,
   Zh,
 } from './common';
-
-// ------------------------------------------------------------------ cover
-const DEFECTS = [
-  {label: '手指多一根', x: 570, y: 222, w: 88, h: 92},
-  {label: '物体穿模', x: 446, y: 386, w: 150, h: 66},
-  {label: '画面闪烁', x: 760, y: 60, w: 190, h: 120},
-];
-export const Cover: React.FC = () => {
-  const frame = useCurrentFrame();
-  const b = useBeats();
-  const pop = usePopIn();
-  const still = prog(b[3], 30); // 0 → 1: the model stops moving
-  const amp = 1 - still;
-  const swing = lerp(14, 128 + 26 * Math.sin(frame / 5), amp); // waving → arm down at rest
-  const bob = 6 * Math.abs(Math.sin(frame / 7)) * amp;
-  const nDef = b[1] < 0 ? 0 : Math.min(3, 1 + Math.floor(b[1] / 14));
-  const defVis = (i: number) => (i < nDef ? 1 : 0) * (1 - still);
-  const penalty = DEFECTS.reduce((s, _, i) => s + (b[2] >= 0 && i < nDef ? 1 : 0), 0);
-  const score = b[4] >= 0 ? count(b[4], 2, 5, 40) : b[2] >= 0 ? 5 - penalty : 5;
-  const titleT = prog(b[6], 18);
-  const titleOn = b[6] >= 0;
-  return (
-    <Bay>
-      <Bin f={frame} />
-      <Monitor>
-        <div style={{position: 'absolute', inset: 0, background: 'linear-gradient(180deg,#141A28,#0A0C12)', opacity: 1 - 0.85 * titleT}} />
-        <div style={{position: 'absolute', left: 0, right: 0, bottom: 0, height: 110, background: '#1C1A18', opacity: 1 - 0.85 * titleT}} />
-        <div style={{position: 'absolute', left: 427, top: 150, opacity: 1 - titleT}}>
-          <Dummy swing={swing} bob={bob} />
-        </div>
-        {DEFECTS.map((d, i) => (
-          <div key={i} style={{position: 'absolute', left: d.x, top: d.y, opacity: defVis(i) * (1 - titleT)}}>
-            <div style={pop(b[1] - i * 14)}>
-            <div style={{width: d.w, height: d.h, border: `3px solid ${EB.red}`, borderRadius: 4, boxShadow: `0 0 16px ${EB.red}88`}} />
-            <div style={{position: 'absolute', left: 0, top: -34, background: EB.red, padding: '3px 10px', borderRadius: 3, whiteSpace: 'nowrap'}}>
-              <Zh size={17} w={700} color="#fff">
-                {d.label}
-              </Zh>
-              {b[2] >= 0 && (
-                <Mo size={16} color="#fff" w={700} style={{marginLeft: 8}}>
-                  −1
-                </Mo>
-              )}
-            </div>
-            </div>
-          </div>
-        ))}
-        {b[3] >= 0 && !titleOn && (
-          <div style={{position: 'absolute', right: 40, top: 40, ...pop(b[3], 10)}}>
-            <div style={{background: 'rgba(70,194,129,0.16)', border: `1px solid ${EB.aud}`, borderRadius: 6, padding: '8px 16px'}}>
-              <Zh size={20} w={700} color="#9BE3B0">
-                不动 · 未发现瑕疵
-              </Zh>
-            </div>
-          </div>
-        )}
-        <ScreenSrc f={b[0]}>{titleOn ? '' : '示意画面 · 一段生成的视频'}</ScreenSrc>
-        {/* title card */}
-        {titleOn && (
-          <div style={{position: 'absolute', inset: 0}}>
-            <div style={{position: 'absolute', left: 70, top: 56, ...rise(b[5] < 0 ? 0 : b[6], 0)}}>
-              <Lab size={17} color={EB.head} style={{letterSpacing: 4}}>
-                Kling Team · arXiv 2611.04916 · 2026-11-03
-              </Lab>
-            </div>
-            <div style={{position: 'absolute', left: 66, top: 100, ...rise(b[6], 4)}}>
-              <Zh size={92} w={900} style={{lineHeight: 1.15}}>
-                可灵是<span style={{color: EB.head}}>如何诞生</span>的
-              </Zh>
-            </div>
-            <div style={{position: 'absolute', left: 70, top: 236, ...rise(b[7], 0)}}>
-              <Zh size={30} w={500} color={EB.dim}>
-                视频生成背后，5 个负责「看懂」的模型
-              </Zh>
-            </div>
-            <div style={{position: 'absolute', left: 70, right: 70, bottom: 46, display: 'flex', gap: 14}}>
-              {[
-                ['Caption', EB.cap],
-                ['提示词增强', EB.vid],
-                ['文本编码器', EB.vid],
-                ['奖励模型', EB.red],
-                ['自动评测', EB.amber],
-              ].map(([n, c], i) => (
-                <div key={n} style={{flex: 1, border: `1px solid ${c}`, background: `color-mix(in srgb, ${c} 14%, transparent)`, borderRadius: 6, padding: '14px 16px', ...pop(b[7], 6 + i * 5)}}>
-                  <Mo size={12} color={c}>
-                    0{i + 1}
-                  </Mo>
-                  <div>
-                    <Zh size={24} w={700}>
-                      {n}
-                    </Zh>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-      </Monitor>
-      <Inspector title={titleOn ? '原文' : '奖励模型 · 只扣瑕疵'}>
-        {titleOn ? (
-          <>
-            <IRow k="作者" v="Kling Team" />
-            <IRow k="发布" v="2026-11-03 · arXiv" />
-            <IRow k="篇幅" v="38 页" />
-            <IRow k="代码 / 权重" v={<Zh size={18} w={600} color={EB.dim}>未开源</Zh>} />
-            <ISec>标题</ISec>
-            <div style={{padding: '0 16px'}}>
-              <Zh size={19} w={500} color={EB.dim} style={{lineHeight: 1.5}}>
-                Behind Video Generation: Observations and Insights on Multimodal Understanding from Kling
-              </Zh>
-            </div>
-          </>
-        ) : (
-          <>
-            <IRow k="规则" v="见一个瑕疵，扣一次分" o={prog(b[0], 12)} />
-            <IRow k="发现瑕疵" v={<Num size={26} color={nDef && !still ? EB.red : EB.aud}>{still > 0.5 ? 0 : nDef}</Num>} o={prog(b[1], 12)} />
-            <IRow k="运动幅度" v={<Num size={26} color={still > 0.5 ? EB.amber : EB.ink}>{(0.82 * (1 - still) + 0.02 * still).toFixed(2)}</Num>} o={prog(b[3], 12)} />
-            <ISec o={prog(b[2], 12)}>得分（满分 5，示意）</ISec>
-            <div style={{padding: '4px 16px', opacity: prog(b[2], 12), display: 'flex', alignItems: 'baseline', gap: 12}}>
-              <Num size={96} color={b[4] >= 0 ? EB.aud : EB.red}>
-                {score.toFixed(1)}
-              </Num>
-              {b[4] >= 0 && (
-                <Zh size={22} w={700} color={EB.aud}>
-                  不动，分反而更高
-                </Zh>
-              )}
-            </div>
-          </>
-        )}
-      </Inspector>
-      <Timeline
-        title={titleOn ? '全片 · 按原文章节' : '一段 rollout · 5 秒'}
-        marks={titleOn ? ['引言', '底座', 'Caption', '提示词', '编码器', '奖励模型', '评测'] : ['0s', '1s', '2s', '3s', '4s', '5s']}
-        tracks={
-          titleOn
-            ? [
-                {name: 'V1', desc: '章节', clips: [[0, 9, '引言', EB.dim], [9.2, 20, '01 底座', EB.violet], [20.2, 40, '02 Caption', EB.cap], [40.2, 58, '03 提示词', EB.vid], [58.2, 66, '04 编码器', EB.vid], [66.2, 88, '05 奖励模型', EB.red], [88.2, 99.6, '06 评测', EB.amber]].map(([a, bb, l, c], i) => ({a: a as number, b: bb as number, label: l as string, color: c as string, f: b[6] - i * 3}))},
-                {name: 'A1', desc: '旁白', clips: [{a: 0, b: 99.6, color: EB.aud, children: <Wave />}]},
-              ]
-            : [
-                {name: 'V1', desc: '生成视频', clips: [{a: 0, b: 99.6, label: 'rollout #3', color: EB.vid}]},
-                {name: 'E1', desc: '瑕疵', clips: DEFECTS.map((d, i) => ({a: 14 + i * 26, b: 30 + i * 26, label: d.label, color: EB.red, f: b[1] - i * 14, o: 1 - still}))},
-                {name: 'M', desc: '运动幅度', clips: [{a: 0, b: 99.6, color: EB.amber, children: <MotionLine amp={amp} f={frame} />}]},
-              ]
-        }
-      />
-    </Bay>
-  );
-};
-
-const MotionLine: React.FC<{amp: number; f: number}> = ({amp, f}) => (
-  <svg width={1700} height={30} style={{position: 'absolute', left: 6, top: 'calc(50% - 15px)'}}>
-    <polyline
-      fill="none"
-      stroke={EB.amber}
-      strokeWidth={2.5}
-      points={Array.from({length: 110}, (_, i) => `${i * 16},${15 - 11 * amp * Math.sin(i * 0.33 + f / 6)}`).join(' ')}
-    />
-  </svg>
-);
 
 // ------------------------------------------------------------------ chain (intro)
 const YEARS = [

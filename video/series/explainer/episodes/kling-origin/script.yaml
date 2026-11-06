@@ -1,6 +1,6 @@
 # 可灵技术报告《Behind Video Generation: Observations and Insights on Multimodal Understanding from Kling》
 # （Kling Team，arXiv 2611.04916，2026-11-03）。按原文顺序讲，次要细节按用户要求简化，横屏不超过 8 分钟。
-# 画风按章节切换（用户 2026-11-05 选定）：剪辑台 editbay（开场/引言/底座/评测/结尾）→ 纸张 caption →
+# 画风按章节切换（用户 2026-11-05 选定，11-06 改：冷开场像素风、开场卡通综艺台）：剪辑台 editbay（引言/底座/评测/结尾）→ 纸张 caption →
 # 蜡笔 提示词增强 → 扁平 文本编码器 → 像素 奖励模型。完整出处见 source/article.md（复核只认这份资料）。
 meta:
   title: 可灵是如何诞生的
@@ -12,7 +12,36 @@ meta:
   height: 1080
   gap: 0.12
   scene_tail: 0.3
-
+  sfx:
+    # 冷开场（像素风）：框出人物 / 机械手、清单打勾、碎成像素块、标题落下
+    - {at: "hook:6", sound: pop, db: -22}
+    - {at: "hook:16", sound: pop, db: -20}
+    - {at: "hook:22", sound: pop, db: -20}
+    - {at: "hook:26", sound: pop, db: -20}
+    - {at: "hook:72", sound: pop, db: -22}
+    - {at: "hook:80", sound: pop, db: -22}
+    - {at: "hook:98", sound: pop, db: -22}
+    - {at: "hook:112", sound: pop, db: -18}
+    - {at: "hook:116", sound: whoosh, db: -12}
+    - {at: "hook:126", sound: pop, db: -16}
+    # 卡通综艺台：落地、三个瑕疵、扣分、定住、满分、报告、打叉、五个模型
+    - {at: "cover:2", sound: whoosh, db: -14}
+    - {at: "cover:160", sound: pop, db: -18}
+    - {at: "cover:194", sound: pop, db: -18}
+    - {at: "cover:214", sound: pop, db: -18}
+    - {at: "cover:241", sound: pop, db: -20}
+    - {at: "cover:249", sound: pop, db: -20}
+    - {at: "cover:257", sound: pop, db: -20}
+    - {at: "cover:341", sound: whoosh, db: -16}
+    - {at: "cover:419", sound: pop, db: -16}
+    - {at: "cover:461", sound: whoosh, db: -14}
+    - {at: "cover:613", sound: whoosh, db: -16}
+    - {at: "cover:621", sound: pop, db: -14}
+    - {at: "cover:681", sound: pop, db: -20}
+    - {at: "cover:688", sound: pop, db: -20}
+    - {at: "cover:695", sound: pop, db: -20}
+    - {at: "cover:702", sound: pop, db: -20}
+    - {at: "cover:709", sound: pop, db: -20}
 readings:
   重建: chóng
   还要: hái
@@ -38,9 +67,17 @@ lexicon:
   "RL": "R L"
 
 scenes:
-  # ------------------------------------------------------------------ 0 开场 · 剪辑台
-  - id: cover
+  # ------------------------------------------------------------------ 冷开场 5 秒 · 像素风（用户 2026-11-06 选 A 机器之眼，改像素风）
+  # 真实片段：Tears of Steel（CC BY 3.0），见 source/assets.md
+  - id: hook
     theme: editbay
+    hold: 1.9
+    beats:
+      - 要让 AI 拍视频，先得教它看懂视频
+
+  # ------------------------------------------------------------------ 0 开场 · 卡通综艺台（用户 2026-11-06：换卡通风，主角用鲸鱼娘）
+  - id: cover
+    theme: gameshow
     beats:
       - 如果一个视频模型，被奖励模型盯着训练，
       - 而奖励模型只会挑毛病：手指多一根、物体穿模、画面闪烁，

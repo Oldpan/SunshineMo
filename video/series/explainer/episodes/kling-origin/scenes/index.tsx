@@ -1,9 +1,11 @@
 // Scene registry for 「可灵是如何诞生的」 (Kling Team, arXiv 2611.04916). Scene files sit beside this one and import the
-// renderer as '@atv/lib/...'. Editbay chapters use the shared kit (video/series/explainer/shared/editbay.tsx); the
+// renderer as '@atv/lib/...'. The cover is a cartoon gameshow (shared/gameshow.tsx); editbay chapters use the shared kit (video/series/explainer/shared/editbay.tsx); the
 // paper / crayon / flat / pixel chapters use the renderer's style kits, picked per scene by `style:` in script.yaml.
 import type {NavGroup} from '@atv/lib/chrome';
 import {defaultTipOf, SceneComponent} from '@atv/lib/Video';
 import * as intro from './intro';
+import * as cover from './cover';
+import * as hook from './hook';
 import * as caption from './caption';
 import * as pe from './pe';
 import * as te from './te';
@@ -18,7 +20,8 @@ export const nav: Record<string, NavGroup> = {};
 export const tipOf = defaultTipOf;
 
 export const registry: Record<string, SceneComponent> = {
-  cover: intro.Cover,
+  hook: hook.Hook,
+  cover: cover.Cover,
   chain: intro.Chain,
   base: intro.Base,
   capwhy: caption.CapWhy,

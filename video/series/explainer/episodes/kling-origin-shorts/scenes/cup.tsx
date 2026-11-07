@@ -176,7 +176,7 @@ export const CupScene: React.FC = () => {
           {/* the video AI has to make something up */}
           {f >= b[5] && f < b[6] && (
             <>
-              <Mascot src={WHALE.still} x={250} y={1186} s={0.26} />
+              <Mascot src={WHALE.still} x={250} y={1186} s={0.22} />
               <div style={{position: 'absolute', left: 340, top: 1050, transform: `scale(${pxPop(f, b[5] + 8)})`, transformOrigin: '0 100%'}}>
                 <Bubble tail="left">只能硬编……</Bubble>
               </div>

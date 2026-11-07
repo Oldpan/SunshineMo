@@ -1,0 +1,16 @@
+# 为什么 AI 视频里的人，经常一动不动 · 「可灵是如何诞生的」竖屏版（小白向）— see `sm --help` for the fields
+title: 为什么 AI 视频里的人，经常一动不动
+engine: narrated
+style: pixel  # shared/pixelplay.tsx: pixel game levels on a dark grid, 1080×1920 for 抖音 / 小红书 / 视频号
+source: https://arxiv.org/abs/2611.04916
+deliver:
+  drive: video_from_opus/可灵是如何诞生的（竖屏）
+  files:
+  - {from: out/kling-origin-shorts.mp4, as: 可灵是如何诞生的_竖屏.mp4}
+  - {from: out/封面_9x16.png, as: 可灵是如何诞生的_竖屏_封面_9x16.png}
+  - {from: out/封面_3x4.png, as: 可灵是如何诞生的_竖屏_封面_3x4.png}
+  - {from: out/封面_6x7.png, as: 可灵是如何诞生的_竖屏_封面_6x7.png}
+  - {from: out/封面B_9x16.png, as: 可灵是如何诞生的_竖屏_封面B备选_9x16.png}
+  - {from: out/封面B_3x4.png, as: 可灵是如何诞生的_竖屏_封面B备选_3x4.png}
+  - {from: out/封面B_6x7.png, as: 可灵是如何诞生的_竖屏_封面B备选_6x7.png}
+  - {from: source/video.md, as: 介绍和文案.md}

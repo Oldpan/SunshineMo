@@ -11,6 +11,7 @@ import {FONT_PIXEL} from '@atv/lib/theme';
 import {PixelBar, PixelPanel, PixelText, PixelWindow, PX, Sprite} from '@atv/lib/styles';
 import {Curtain, E} from '../../../shared/gameshow';
 import {TOS, TOS_CREDIT} from './assets';
+import {PP_PAL, PP_SP} from '../../../shared/pixelplay';
 
 const INK = PX.ink;
 const clamp01 = (x: number) => Math.max(0, Math.min(1, x));
@@ -18,15 +19,9 @@ const seg = (f: number, a: number, b: number) => clamp01((f - a) / (b - a));
 /** steppy pixel pop: 0 → 0.6 → 1.15 → 1 over three frames */
 const pxPop = (f: number, f0: number) => (f < f0 ? 0 : f < f0 + 1 ? 0.6 : f < f0 + 2 ? 1.15 : 1);
 
-const SP: Record<string, string[]> = {
-  bot: ['........kk........', '.......kyyk.......', '........kk........', '........kk........', '..kkkkkkkkkkkkkk..', '.kllllllllllllllk.', 'klkkkkkkkkkkkkkklk', 'klkmmmmmmmmmmmmklk', 'klkmmwwmmmmwwmmklk', 'klkmmwkmmmmwkmmklk', 'klkmmmmmmmmmmmmklk', 'klkmpmmmkkmmmpmklk', 'klkmmmmmmmmmmmmklk', 'klkkkkkkkkkkkkkklk', '.kllllllllllllllk.', '..kkkkkkkkkkkkkk..', '....kkk....kkk....', '...kkkk....kkkk...'],
-  happy: ['........kk........', '.......kyyk.......', '........kk........', '........kk........', '..kkkkkkkkkkkkkk..', '.kllllllllllllllk.', 'klkkkkkkkkkkkkkklk', 'klkmmmmmmmmmmmmklk', 'klkmmmwmmmmwmmmklk', 'klkmmwmwmmwmwmmklk', 'klkmmmmmmmmmmmmklk', 'klkmpmmkkkkmmpmklk', 'klkmmmmmkkmmmmmklk', 'klkkkkkkkkkkkkkklk', '.kllllllllllllllk.', '..kkkkkkkkkkkkkk..', '....kkk....kkk....', '...kkkk....kkkk...'],
-  arrow: ['kkkkkkk...', 'kyyyyk....', 'kyyyk.....', 'kyyyyk....', 'kykyyyk...', 'kk.kyyyk..', 'k...kyyyk.', '.....kyyyk', '......kyyk', '.......kk.'],
-  spark: ['...k...', '...y...', '.......', 'ky.w.yk', '.......', '...y...', '...k...'],
-  eye: ['...kkkkkk...', '.kkwwwwwwkk.', 'kwwwwkkwwwwk', 'kwwwkbbkwwwk', 'kwwwkbbkwwwk', 'kwwwwkkwwwwk', '.kkwwwwwwkk.', '...kkkkkk...'],
-  film: ['kkkkkkkkkkkk', 'kwkwkwkwkwkk', 'kkkkkkkkkkkk', 'kllllllllllk', 'kllbbllllllk', 'kllbbbbllllk', 'kllbbllllllk', 'kllllllllllk', 'kkkkkkkkkkkk', 'kwkwkwkwkwkk', 'kkkkkkkkkkkk'],
-};
-const PAL = {m: '#1B2350', l: '#BDE3FF', b: '#2A5BC4'};
+// the TV-bot and small sprites live in the shared pixel kit (also used by the vertical cut)
+const SP = PP_SP;
+const PAL = PP_PAL;
 
 // tracked boxes: [t (s), x, y, w, h]
 type Key = [number, number, number, number, number];

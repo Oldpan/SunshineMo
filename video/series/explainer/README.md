@@ -48,6 +48,7 @@ source env.sh
 | qwen4-preview | Qwen4 还没发，架构已经开源两个月了 | Drive video_from_opus/Qwen4前瞻 |
 | weight-space-programming | 只改 0.016% 的权重，Qwen 数学从 7.9% 涨到 48.1%：大模型开始直接读写神经网络权重 | Drive video_from_opus/权重空间编程 |
 | weight-space-programming-shorts | （竖屏 · 非技术向）AI 给 AI 动手术：只改 0.016% 的数字，千问数学答对率 7.9% 涨到 48.1% | Drive video_from_opus/权重空间编程（竖屏） |
+| agent-manager | Claude Code 团队的 Addy Osmani：天天用 AI 写代码，你已经是个经理了 | Drive video_from_opus/AI 让你成了经理 |
 
 （之前的 10 期在 article-to-video 的 `projects/` 里，留在原处。）
 
@@ -124,3 +125,9 @@ source env.sh
 - 面向非技术观众的竖屏：每段先翻特效库（`.claude/skills/README.md`），在方案里写清楚每段借哪个效果；文案只用白话，数字配一个看得见的对比（柱子冲上去、格子一片变绿）。
 - `Field` 每帧滚数字雨、整场推镜 1.8%，冻帧检测 n=0.0005 d=0.5 为 0。粒子用 `Swarm`（`to` 给目标点，`out` 让它们散开），文字要压在粒子上时给文字垫半透明黑底。
 - 横屏那期的图（游戏 GIF、热力图、小车、MinAtar 回放）直接从 `../weight-space-programming/scenes/common` 引，不复制数据；浅色的原图放进深色 `Panel` 里当“屏幕”。
+
+`shared/stylemix.tsx`：分场换风格的工具箱，agent-manager 首用。九套 `mx-*` 主题共用一套动效（`rise` / `slideX` / `Drift` 慢推镜）：瑞士排版（米白 + 红色竖条）、象形图标、案卷（牛皮纸夹 + 纸页 + 印章）、终端（`TermWin` + 逐字打出的 `TLine`）、蓝图（`BpBox` 描边画出、`Draw` 画线）、软木板（`Note` 便签）、战术板（`PitchBg` + `MarkerLabel`）、数据叙事、编辑排版（`OrgChart` 你 → agent 组织图）。
+
+- 讲解篇可以按内容逐场换风格：先给每场 2–4 个候选画面让用户挑，再按挑中的组合写场景，每场一个文件按风格分组（见 agent-manager/scenes）。
+- 配乐跟着画风换编曲：agent-manager/music.py 按 `STYLE` 表给每种风格一套写法，在每小节下垫一层很轻的弦乐 `bed`，避免鼓组空拍正好碰上句间停顿时出现近静音；script.yaml 里 `meta.bgm_db: -11`，人声比配乐高约 9 dB，听得清又不抢。
+- 战术板、案卷这类有边框的画面，最后一行字离边框至少留 24 px；印章别压在下一行要出的字上。

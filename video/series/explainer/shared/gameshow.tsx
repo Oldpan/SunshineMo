@@ -886,4 +886,189 @@ export const Screen: React.FC<{
   );
 };
 
+// ------------------------------------------------------------------ stage helpers
+// Promoted from ai-jobs-safe (2026-11-06) so later gameshow scenes reuse them; ai-jobs keeps its own copies.
+/** Tag sticker: small rounded plate, ink border, tilted. */
+export const Sticker: React.FC<{text: string; col?: string; fg?: string; size?: number; rot?: number; style?: React.CSSProperties; family?: string}> = ({
+  text,
+  col = K.yellow,
+  fg = K.ol,
+  size = 36,
+  rot = -4,
+  style,
+  family = F_CJK,
+}) => (
+  <div
+    style={{
+      display: 'inline-block',
+      fontFamily: family,
+      fontWeight: 900,
+      fontSize: size,
+      color: fg,
+      background: col,
+      border: `6px solid ${K.ol}`,
+      borderRadius: size * 0.45,
+      padding: `${size * 0.06}px ${size * 0.5}px`,
+      boxShadow: `6px 6px 0 ${K.ol}`,
+      transform: `rotate(${rot}deg)`,
+      whiteSpace: 'nowrap',
+      ...style,
+    }}
+  >
+    {text}
+  </div>
+);
+
+/** A number stamp that slams in at f0 (scale 1.6 → 1 with back-ease), tilted. */
+export const Stamp: React.FC<{f0: number; children: React.ReactNode; x: number; y: number; size?: number; col?: string; rot?: number; anchor?: 'left' | 'center' | 'right'}> = ({
+  f0,
+  children,
+  x,
+  y,
+  size = 96,
+  col = K.yellow,
+  rot = -8,
+  anchor = 'center',
+}) => {
+  const f = useCurrentFrame();
+  if (f < f0) return null;
+  const p = seg(f, f0, f0 + 7);
+  const s = 1.7 - 0.7 * E.back(p);
+  const tx = anchor === 'center' ? '-50%' : anchor === 'right' ? '-100%' : '0';
+  return (
+    <div style={{position: 'absolute', left: x, top: y, transform: `translate(${tx}, -50%) rotate(${rot}deg) scale(${s})`, opacity: Math.min(1, p * 3), whiteSpace: 'nowrap'}}>
+      <TelopDiv size={size} color={col} family={F_ROUND}>
+        {children}
+      </TelopDiv>
+    </div>
+  );
+};
+
+/** Rounded quote / speech bubble (cream card + tail). */
+export const Bubble: React.FC<{children: React.ReactNode; w: number; col?: string; tail?: 'left' | 'right' | 'down' | 'none'; style?: React.CSSProperties; size?: number}> = ({
+  children,
+  w,
+  col = K.cream,
+  tail = 'down',
+  style,
+  size = 40,
+}) => (
+  <div style={{position: 'relative', width: w, ...style}}>
+    <div
+      style={{
+        background: col,
+        border: `7px solid ${K.ol}`,
+        borderRadius: 30,
+        boxShadow: `12px 12px 0 ${K.ol}`,
+        padding: '20px 30px',
+        fontFamily: F_CJK,
+        fontWeight: 900,
+        fontSize: size,
+        color: K.ol,
+        lineHeight: 1.35,
+      }}
+    >
+      {children}
+    </div>
+    {tail !== 'none' && (
+      <svg width={70} height={60} style={{position: 'absolute', ...(tail === 'down' ? {left: 70, bottom: -50} : tail === 'left' ? {left: -50, top: 40} : {right: -50, top: 40})}}>
+        <path
+          d={tail === 'down' ? 'M 6 0 L 40 52 L 52 0' : tail === 'left' ? 'M 64 8 L 6 30 L 64 46' : 'M 6 8 L 64 30 L 6 46'}
+          fill={col}
+          stroke={K.ol}
+          strokeWidth={7}
+          strokeLinejoin="round"
+        />
+      </svg>
+    )}
+  </div>
+);
+
+/** Pop-in wrapper (absolute position, back-ease scale from f0, ease-in exit before f1). */
+export const Pop: React.FC<{f0: number; f1?: number; x: number; y: number; children: React.ReactNode; origin?: string; rot?: number; from?: 'scale' | 'drop' | 'left' | 'right'}> = ({
+  f0,
+  f1 = 1e9,
+  x,
+  y,
+  children,
+  origin = '50% 50%',
+  rot = 0,
+  from = 'scale',
+}) => {
+  const f = useCurrentFrame();
+  if (f < f0 || f >= f1) return null;
+  const p = E.back(seg(f, f0, f0 + 9));
+  const o = E.in(seg(f, f1 - 6, f1));
+  let tr = '';
+  if (from === 'scale') tr = `scale(${p * (1 - o)})`;
+  if (from === 'drop') tr = `translateY(${(1 - E.out(seg(f, f0, f0 + 9))) * -900 + o * 900}px)`;
+  if (from === 'left') tr = `translateX(${(1 - p) * -1400 - o * 1400}px)`;
+  if (from === 'right') tr = `translateX(${(1 - p) * 1400 + o * 1400}px)`;
+  return <div style={{position: 'absolute', left: x, top: y, transform: `${tr} rotate(${rot}deg)`, transformOrigin: origin}}>{children}</div>;
+};
+
+/** SVG layer helper: a full-frame svg for cast and drawings. */
+export const Layer: React.FC<{children: React.ReactNode}> = ({children}) => (
+  <svg width={1920} height={1080} viewBox="0 0 1920 1080" style={{position: 'absolute', inset: 0, overflow: 'visible'}}>
+    {children}
+  </svg>
+);
+
+
 export {staticFile, interpolate};
+
+// ------------------------------------------------------------------ scene change: stage curtains
+/**
+ * Two flat cartoon curtains for a scene change. p = 0: open (off frame) … 1: closed, meeting in the middle
+ * (p slightly above 1 is fine: the panels overlap a little, which reads as a bump). Close them over the end of
+ * the outgoing scene and open them over the start of the next one (both scenes draw it on top of everything).
+ * The folds ripple a little, so a closed curtain is never a frozen frame.
+ */
+export const Curtain: React.FC<{p: number; col?: string; dark?: string; light?: string; trim?: string}> = ({
+  p,
+  col = K.red,
+  dark = '#D8434A',
+  light = '#FF8E91',
+  trim = K.yellow,
+}) => {
+  const f = useCurrentFrame();
+  if (p <= 0) return null;
+  const W = 1010; // panel width; two panels overlap 100 px when closed
+  const H = 1120;
+  const folds = Array.from({length: 10}, (_, i) => -166 + i * 118);
+  const panel = (side: 'l' | 'r') => {
+    const x0 = side === 'l' ? -W + p * W : 1920 - p * W;
+    const flip = side === 'r' ? `translate(${W} 0) scale(-1 1)` : '';
+    const sway = Math.sin(f / 7 + (side === 'l' ? 0 : 2)) * 6;
+    // inner edge: full width at the top, gathered in a little towards the floor
+    const edge = `M ${W} -20 Q ${W + 24 + sway} 520 ${W - 34} ${H}`;
+    return (
+      <g key={side} transform={`translate(${x0} 0) ${flip}`}>
+        {/* the body runs 260 px past the outer side, so an overshooting close never shows the frame edge */}
+        <path d={`M -260 -20 L ${W} -20 Q ${W + 24 + sway} 520 ${W - 34} ${H} L -260 ${H} Z`} fill={col} />
+        {folds.map((x, i) => {
+          const w = Math.sin(f / 9 + i * 1.3) * 3;
+          const s = i % 2 ? 16 : -12; // folds slant a little
+          return (
+            <g key={i}>
+              <path d={`M ${x - 22} -20 L ${x + 22} -20 L ${x + 22 + s + w} ${H} L ${x - 22 + s + w} ${H} Z`} fill={dark} />
+              <path d={`M ${x + 40} -20 L ${x + 46} -20 L ${x + 46 + s + w} ${H} L ${x + 40 + s + w} ${H} Z`} fill={light} />
+            </g>
+          );
+        })}
+        {/* gold trim on the inner edge */}
+        <path d={edge} fill="none" stroke={K.ol} strokeWidth={34} />
+        <path d={edge} fill="none" stroke={trim} strokeWidth={20} />
+        <path d={`M -260 -20 L ${W} -20`} stroke={K.ol} strokeWidth={10} />
+      </g>
+    );
+  };
+  return (
+    <AbsoluteFill style={{pointerEvents: 'none'}}>
+      <svg width={1920} height={1080} viewBox="0 0 1920 1080" style={{position: 'absolute', inset: 0}}>
+        {panel('l')}
+        {panel('r')}
+      </svg>
+    </AbsoluteFill>
+  );
+};

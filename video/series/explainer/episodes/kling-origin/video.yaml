@@ -1,0 +1,20 @@
+# 可灵是如何诞生的 — see `sm --help` for the fields
+title: 可灵是如何诞生的
+engine: narrated
+style: flat
+source: https://arxiv.org/abs/2611.04916
+deliver:
+  drive: video_from_opus/可灵是如何诞生的
+  files:
+  - {from: out/kling-origin.mp4, as: 可灵是如何诞生的.mp4}
+  - {from: out/封面_16x9.png, as: 可灵是如何诞生的_封面_16x9.png}
+  - {from: out/封面_3x4.png, as: 可灵是如何诞生的_封面_3x4.png}
+  - {from: source/video.md, as: 介绍和文案.md}
+drive:
+  folder: video_from_opus/可灵是如何诞生的
+  url: https://drive.google.com/drive/folders/1aV2uEvjlojimsSbysW01p6LM8gxSkFE8
+  files:
+  - {name: 可灵是如何诞生的.mp4, id: 1S9c_WcOSiMvoPXr7_cYl9kuabYdk-1Pn, bytes: 157469928}
+  - {name: 可灵是如何诞生的_封面_16x9.png, id: 1R4tpZypFNffv_QRtII17N4L2-zMuhJNq, bytes: 907284}
+  - {name: 可灵是如何诞生的_封面_3x4.png, id: 19kvH_zIN5xea4tNBlFipnp_UlVWZ8RpI, bytes: 777872}
+  - {name: 介绍和文案.md, id: 1Gsf9--Ve7YE9AWTKfxphiIm9sG2BWTxd, bytes: 559}

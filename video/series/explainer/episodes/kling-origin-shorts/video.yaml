@@ -1,0 +1,28 @@
+# 为什么 AI 视频里的人，经常一动不动 · 「可灵是如何诞生的」竖屏版（小白向）— see `sm --help` for the fields
+title: 为什么 AI 视频里的人，经常一动不动
+engine: narrated
+style: pixel  # shared/pixelplay.tsx: pixel game levels on a dark grid, 1080×1920 for 抖音 / 小红书 / 视频号
+source: https://arxiv.org/abs/2611.04916
+deliver:
+  drive: video_from_opus/可灵是如何诞生的（竖屏）
+  files:
+  - {from: out/kling-origin-shorts.mp4, as: 可灵是如何诞生的_竖屏.mp4}
+  - {from: out/封面_9x16.png, as: 可灵是如何诞生的_竖屏_封面_9x16.png}
+  - {from: out/封面_3x4.png, as: 可灵是如何诞生的_竖屏_封面_3x4.png}
+  - {from: out/封面_6x7.png, as: 可灵是如何诞生的_竖屏_封面_6x7.png}
+  - {from: out/封面B_9x16.png, as: 可灵是如何诞生的_竖屏_封面B备选_9x16.png}
+  - {from: out/封面B_3x4.png, as: 可灵是如何诞生的_竖屏_封面B备选_3x4.png}
+  - {from: out/封面B_6x7.png, as: 可灵是如何诞生的_竖屏_封面B备选_6x7.png}
+  - {from: source/video.md, as: 介绍和文案.md}
+drive:
+  folder: video_from_opus/可灵是如何诞生的（竖屏）
+  url: https://drive.google.com/drive/folders/1nveBVWwStHUwhdsdaDfxPVu0sa3OQzCg
+  files:
+  - {name: 可灵是如何诞生的_竖屏.mp4, id: 15LNuII6D_kd4hls5lwXWmx4VDIukmiwa, bytes: 22816271}
+  - {name: 可灵是如何诞生的_竖屏_封面_9x16.png, id: 1JnlhxRARNpgpkRDgakL4Vgxl6Pw2KGuP, bytes: 225386}
+  - {name: 可灵是如何诞生的_竖屏_封面_3x4.png, id: 1569p5ZqCtzCKpNuUpOilT8S5_9OYtMQB, bytes: 213427}
+  - {name: 可灵是如何诞生的_竖屏_封面_6x7.png, id: 1ULa0ZkNBkmh5yzvPnbv9Dq8bpVARXFU8, bytes: 208874}
+  - {name: 可灵是如何诞生的_竖屏_封面B备选_9x16.png, id: 1mZ66pkJlsEi6kY_PqNYfRC5j5RWYEN4y, bytes: 155878}
+  - {name: 可灵是如何诞生的_竖屏_封面B备选_3x4.png, id: 1pda7Y_g8dZ3ScjUs_NzDVIZU3NF-VWdw, bytes: 145123}
+  - {name: 可灵是如何诞生的_竖屏_封面B备选_6x7.png, id: 1n8Orp5MfC7E74PpLEbkg7-9k67xQ0O54, bytes: 140722}
+  - {name: 介绍和文案.md, id: 1kbbks27ECDK9uaBTT-j8UDW5mF5LM_nE, bytes: 536}

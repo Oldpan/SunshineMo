@@ -1,0 +1,20 @@
+# 天天用 AI 写代码，你已经是个经理了 — see `sm --help` for the fields
+title: Claude Code 团队的 Addy Osmani：天天用 AI 写代码，你已经是个经理了
+engine: narrated
+style: mixed  # per-scene styles picked by the user: swiss / pictogram / halftone dossier / terminal / blueprint / corkboard / telestrator / dataviz / editorial (shared/stylemix.tsx)
+source: https://x.com/addyosmani/status/2119332146485891501
+deliver:
+  drive: video_from_opus/AI 让你成了经理
+  files:
+  - {from: out/agent-manager.mp4, as: AI 让你成了经理_AgentManager.mp4}
+  - {from: out/封面_16x9.png, as: AI 让你成了经理_封面_16x9.png}
+  - {from: out/封面_3x4.png, as: AI 让你成了经理_封面_3x4.png}
+  - {from: source/video.md, as: 介绍和文案.md}
+drive:
+  folder: video_from_opus/AI 让你成了经理
+  url: https://drive.google.com/drive/folders/1aoHDGIVLa7H7YGHeupfOgSYiUs-yrxSH
+  files:
+  - {name: AI 让你成了经理_AgentManager.mp4, id: 1pk8d3vCe3cPqRRQsPhOX9kHZ8IQu_p7U, bytes: 107672943}
+  - {name: AI 让你成了经理_封面_16x9.png, id: 1UigUR5fG4oAclKPVnZW-eHNeX0fLl87k, bytes: 96316}
+  - {name: AI 让你成了经理_封面_3x4.png, id: 1xoI-nWlIhqe3K2-JEB49N0D5rWZroPIk, bytes: 91087}
+  - {name: 介绍和文案.md, id: 1a5MmXzmSh86fSZo_Qgk27JQ3js70VSdM, bytes: 534}

@@ -128,6 +128,14 @@ source env.sh
 
 `shared/stylemix.tsx`：分场换风格的工具箱，agent-manager 首用。九套 `mx-*` 主题共用一套动效（`rise` / `slideX` / `Drift` 慢推镜）：瑞士排版（米白 + 红色竖条）、象形图标、案卷（牛皮纸夹 + 纸页 + 印章）、终端（`TermWin` + 逐字打出的 `TLine`）、蓝图（`BpBox` 描边画出、`Draw` 画线）、软木板（`Note` 便签）、战术板（`PitchBg` + `MarkerLabel`）、数据叙事、编辑排版（`OrgChart` 你 → agent 组织图）。
 
+`shared/scene-styles.yaml`：分场候选清单（2026-11-10，来自 Drive 参考集）。一个母版（产品页舞台）加 14 种风格插曲，每种写明用在什么内容、不适合什么、一次最长多久、底纹怎么动、对应哪个套件。出分场候选板时从这里挑：每个场景给母版 + 最合适的插曲 + 一个备选。拆解和选风格表见 `docs/reference/ai-news-explainer-style.md`。
+
+`shared/prodpage.tsx`：产品页舞台，参考集里 20 条 AI 新闻讲解的共同母版（奶油 / 淡蓝底 + 点阵缓移 + 白卡片 + 一个强调色）。`Head` 画等宽小标题 + 粗黑体大标题（`<A>` 染关键词），`Card` 三种状态（`wait` 灰占位 → `lit` 强调色描边 → `done` 变淡，配 `cardState(b, k)` 跟旁白节拍走），还有 `Ghost`、`Chip`、`Struck`（被推翻的旧说法）、`Arrow`、`Num`、`Gauge`、`Bar`、开场用的 `Poster`（两侧大数字）和倒数榜单用的 `RankBadge`。字幕仍由引擎画。
+`shared/comicpop.tsx`：美漫波普插曲（青色半调圆点底、5 px 墨线、硬投影、`Burst` 星爆、`Bubble` 气泡、`Banner`、`InkStamp` 红印、`Sweat`）。只用来表达痛点和吐槽，一次别超过 15 秒。
+`shared/notebook.tsx`：螺旋笔记本（`NotebookBg`、`Sticky`、`RedCircle` 红笔一笔圈、`FigTab`）和它的黑底孪生黑板粉笔（`ChalkBg`、`ChalkText` 逐字写出、`ChalkLine`）。
+`shared/glass.tsx`：渐变玻璃卡（粉紫蓝渐变 + 漂浮球 + 毛玻璃卡 `GlassCard` + 渐变产品块 `Tile`），产品功能和模型对比用。
+四个新套件 2026-11-10 只渲染了样张核对版式，还没有哪一期用过；第一次用时按那期的实际场景再打磨。
+
 - 讲解篇可以按内容逐场换风格：先给每场 2–4 个候选画面让用户挑，再按挑中的组合写场景，每场一个文件按风格分组（见 agent-manager/scenes）。
 - 配乐跟着画风换编曲：agent-manager/music.py 按 `STYLE` 表给每种风格一套写法，在每小节下垫一层很轻的弦乐 `bed`，避免鼓组空拍正好碰上句间停顿时出现近静音；script.yaml 里 `meta.bgm_db: -11`，人声比配乐高约 9 dB，听得清又不抢。
 - 战术板、案卷这类有边框的画面，最后一行字离边框至少留 24 px；印章别压在下一行要出的字上。

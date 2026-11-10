@@ -81,7 +81,7 @@
 | 5 回来的飞机 | 蓝图 |
 | 6 老鼠尾巴 | 复古半调案卷 |
 | 7 787 人猜牛 | 50 年代扁平卡通（lemo `midcentury-toon`） |
-| 8 穿大猩猩服的人 | Risograph，只做到 24 秒试片（2026-10-31），series README 还没列成集 |
+| 8 穿大猩猩服的人（**未完成**） | Risograph，只做到 24 秒试片（2026-10-31），没出成片，series README 也没列成集 |
 | 候选，未做 | 靛蓝木刻星夜（点刻月亮、青海波纹，参考 Drive 的「郊游」），还可从 lemo 库挑 `one-line`、`swiss-motion`、`pictogram-motion` |
 
 规范和起名规则在 `video/series/quiet_concept/README.md` 和 [`reference/vibe-knowledge-style.md`](reference/vibe-knowledge-style.md)。

@@ -49,6 +49,7 @@ source env.sh
 | weight-space-programming | 只改 0.016% 的权重，Qwen 数学从 7.9% 涨到 48.1%：大模型开始直接读写神经网络权重 | Drive video_from_opus/权重空间编程 |
 | weight-space-programming-shorts | （竖屏 · 非技术向）AI 给 AI 动手术：只改 0.016% 的数字，千问数学答对率 7.9% 涨到 48.1% | Drive video_from_opus/权重空间编程（竖屏） |
 | agent-manager | Claude Code 团队的 Addy Osmani：天天用 AI 写代码，你已经是个经理了 | Drive video_from_opus/AI 让你成了经理 |
+| minimax-h3-image-shorts | （竖屏 · 非技术向）MiniMax 开源生图模型：一张 4K 图十来秒 | Drive video_from_opus/MiniMax H3-Image（竖屏） |
 
 （之前的 10 期在 article-to-video 的 `projects/` 里，留在原处。）
 
@@ -131,3 +132,10 @@ source env.sh
 - 讲解篇可以按内容逐场换风格：先给每场 2–4 个候选画面让用户挑，再按挑中的组合写场景，每场一个文件按风格分组（见 agent-manager/scenes）。
 - 配乐跟着画风换编曲：agent-manager/music.py 按 `STYLE` 表给每种风格一套写法，在每小节下垫一层很轻的弦乐 `bed`，避免鼓组空拍正好碰上句间停顿时出现近静音；script.yaml 里 `meta.bgm_db: -11`，人声比配乐高约 9 dB，听得清又不抢。
 - 战术板、案卷这类有边框的画面，最后一行字离边框至少留 24 px；印章别压在下一行要出的字上。
+
+`shared/vstyles.tsx`：竖屏分场换风格，minimax-h3-image-shorts 首用。五套主题共用 popflat 的动效：展厅画廊（`GalleryStage` 聚光灯 + 浮尘，`Frame` 金边画框，`Placard` 展签）、胶片暗房（`DarkroomStage` 安全灯闪烁 + 动态颗粒，`FilmFrame` 带齿孔、`dev` 控制显影，`Grease` 油性笔圈）、杂志编辑排版（`EditorialStage` 滑动栏线 + 刊头）、数据叙事（`DataStage` 移动网格，`HBar` 按比例画的横条）、蓝图（`BlueprintStage`、`BpBox`、`BpArrow`），再加 particles 的数字粒子场。
+
+- 每个 Stage 都自带整场慢推镜和会动的底纹，长句停留不会被判静帧。
+- 官方样图配文要对照模型主页的 alt 文字核实画种（这期旁白原写「工笔花鸟、青绿山水」，alt 写的是油画鸳鸯、淡水彩园林、塔罗牌、工笔鹈鹕，渲染前改了旁白重配）。
+- `prog()` 已经带缓动，外面再套 `EASE()` 会变成两次 ease-out，开头冲得很快；快门、收缩这类要「慢起快收」的动作直接写幂函数。
+- 「某拍之后 N 帧」写成 `b[i] - N`，写成 `+ N` 会提前 N 帧出现（这期改了四处）。

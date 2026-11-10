@@ -1,0 +1,28 @@
+# MiniMax 开源生图模型：一张 4K 图十来秒（竖屏，非技术向）— see `sm --help` for the fields
+title: MiniMax 开源生图模型：一张 4K 图十来秒
+engine: narrated
+style: vstyles  # shared/vstyles.tsx per-scene mix (gallery / particle / data / blueprint / darkroom / editorial), 1080×1920
+source: https://www.minimax.cn/blog/minimax-h3-image
+deliver:
+  drive: video_from_opus/MiniMax H3-Image（竖屏）
+  files:
+  - {from: out/minimax-h3-image-shorts.mp4, as: MiniMax H3-Image_竖屏.mp4}
+  - {from: out/封面_9x16.png, as: MiniMax H3-Image_竖屏_封面_9x16.png}
+  - {from: out/封面_3x4.png, as: MiniMax H3-Image_竖屏_封面_3x4.png}
+  - {from: out/封面_6x7.png, as: MiniMax H3-Image_竖屏_封面_6x7.png}
+  - {from: out/封面B_9x16.png, as: MiniMax H3-Image_竖屏_封面B备选_9x16.png}
+  - {from: out/封面B_3x4.png, as: MiniMax H3-Image_竖屏_封面B备选_3x4.png}
+  - {from: out/封面B_6x7.png, as: MiniMax H3-Image_竖屏_封面B备选_6x7.png}
+  - {from: source/video.md, as: 介绍和文案.md}
+drive:
+  folder: video_from_opus/MiniMax H3-Image（竖屏）
+  url: https://drive.google.com/drive/folders/1kGjKJK0L1mPv26maoHceqPJbSLNjxNlS
+  files:
+  - {name: MiniMax H3-Image_竖屏.mp4, id: 1JqspPUxCeKfsBJSupu27JEyH7AGu4qNw, bytes: 120144124}
+  - {name: MiniMax H3-Image_竖屏_封面_9x16.png, id: 1J-1zX4gH99h1MRsU8dbckRNaWGKQ5Abj, bytes: 1974847}
+  - {name: MiniMax H3-Image_竖屏_封面_3x4.png, id: 1slC8BVryrLCwUBdBoS9v5zIGjAuOZMs7, bytes: 1631142}
+  - {name: MiniMax H3-Image_竖屏_封面_6x7.png, id: 1CmAFH4184x81j4Sby6xcwCO4HOQp3mmf, bytes: 1488549}
+  - {name: MiniMax H3-Image_竖屏_封面B备选_9x16.png, id: 1ZUa3SMvUqaWyfYPKb-C1NiysSPyhfkrG, bytes: 2003979}
+  - {name: MiniMax H3-Image_竖屏_封面B备选_3x4.png, id: 1tf-Gx4VQOvb3rRB3CIdR3zxtTrM-d0yW, bytes: 1669903}
+  - {name: MiniMax H3-Image_竖屏_封面B备选_6x7.png, id: 1FHmlgDWm2g2X0QjstO-TKacZnwatQTLj, bytes: 1541355}
+  - {name: 介绍和文案.md, id: 1dXzFYWqN2AbG7naZsgVItMM0tUTenGmj, bytes: 477}

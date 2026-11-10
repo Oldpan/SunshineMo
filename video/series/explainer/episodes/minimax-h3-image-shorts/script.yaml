@@ -1,0 +1,104 @@
+# MiniMax H3-Image · 竖屏版（抖音 / 小红书 / 视频号），面向没有技术背景的观众。
+# 出处只认 source/article.md：MiniMax 官方博客（2026-11-10）+ Hugging Face 模型卡（MiniMax-H3-Image、-PE）+ LICENSE。
+# 1080×1920 母版：关键画面放 y 330–1290（视频号 6:7 安全带），字幕由引擎抬到底部文案区上方。
+# 分场画风是用户在选择页里挑的：1G 2X 3V 4B 5X 6F 7G 8E 9G 10F 11E
+#   G 展厅画廊 · X 数字粒子 · V 数据叙事 · B 蓝图 · F 胶片暗房 · E 杂志编辑排版（../../shared/vstyles.tsx + particles.tsx）
+meta:
+  title: MiniMax 开源生图模型：一张 4K 图十来秒
+  topic: MiniMax H3-Image
+  source: https://www.minimax.cn/blog/minimax-h3-image
+  voice: qwen-longanhuan
+  fps: 30
+  width: 1080
+  height: 1920
+  gap: 0.08
+  scene_tail: 0.3
+  bgm: build/music/music.wav
+  bgm_db: -11
+
+readings:
+  空房: kōng
+  还原: huán
+  权重: zhòng
+
+lexicon:
+  "AI": "A I"
+  "H3-Image": "H 3 Image"
+  "H3": "H 3"
+  "4K": "4 K"
+  "1K": "1 K"
+  "Nano Banana 2.1": "Nano Banana 二点一"
+
+scenes:
+  - id: hook        # 1 G 展厅画廊
+    theme: gallery
+    beats:
+      - MiniMax 今天开源了一个画图模型，叫 H3-Image。
+      - 一张 4096 乘 4096 的图，它十来秒就能画完。
+      - 下面的图和数据，都来自 MiniMax 的官方博客和模型主页。
+
+  - id: pixels      # 2 X 数字粒子
+    theme: particle
+    beats:
+      - 平时常见的 AI 图，大多是 100 万或 400 万像素。
+      - 它直接出 1600 万像素，是 1K 图的 16 倍。
+      - 官方这张甲虫样图里，身上的水珠和花纹都看得清。
+
+  - id: speed       # 3 V 数据叙事
+    theme: data
+    beats:
+      - 官方博客给了一张出图耗时的对比。
+      - 出一张 4K 图，标准版 16 秒，极速版 10.3 秒，同档的 Nano Banana 2.1 要 50 秒。
+      - 价格是同档工具的五到七成，发布第一周，4K 图打五折。
+
+  - id: arch        # 4 B 蓝图
+    theme: blueprint
+    beats:
+      - 它是从 MiniMax 的视频模型 H3 改出来的，拿掉了生成声音的那一支。
+      - 剩下三块。第一块读题，用的是 H3 原来那个千问文本编码器。
+      - 第二块是主干，有 331 亿参数，文字和参考图排成一队，一起算。
+      - 第三块负责压缩，图先压小 16 倍再算，最后还原成图。
+
+  - id: steps       # 5 X 数字粒子
+    theme: particle
+    beats:
+      - 画图是从一团噪点开始，一步步擦干净。
+      - 它只擦 6 步，也不用额外再算一遍做对照，所以快。
+
+  - id: real        # 6 F 胶片暗房
+    theme: darkroom
+    beats:
+      - 官方最想做的，是和常见的 AI 感拉开距离。
+      - 这几张写实照片，细节多，看起来像真拍的。
+
+  - id: styles      # 7 G 展厅画廊 (official alt: oil ducks, light-watercolor garden, tarot XVIII, gongbi pelican)
+    theme: gallery
+    beats:
+      - 不只是照片。油画、水彩、塔罗牌插画、工笔画，官方样图里都有。
+
+  - id: text        # 8 E 杂志编辑排版
+    theme: editorial
+    beats:
+      - 字也能写对。
+      - 这道中文推理题，答案是它推出来，再写到板子上的。
+
+  - id: refs        # 9 G 展厅画廊
+    theme: gallery
+    beats:
+      - 它最多能参考 16 张图。
+      - 官方给了一间空房和 9 件家具，它把这些拼成了一个客厅。
+
+  - id: edit        # 10 F 胶片暗房
+    theme: darkroom
+    beats:
+      - 改图也能跨很远。
+      - 一张游戏地图，变成从红箭头那里看出去的第一人称画面。
+      - 一个没贴材质的白模，变成了月球基地的电影剧照。
+
+  - id: outro       # 11 E 杂志编辑排版 + 结尾小动画（hold 里播）
+    theme: editorial
+    hold: 3.2
+    beats:
+      - 权重已经开源，海螺和 MiniMax 开放平台上也能直接用。
+      - 要注意，许可证不覆盖欧盟、英国、韩国和美国。
+      - 我是老潘，下期再见。

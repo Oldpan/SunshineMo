@@ -14,6 +14,7 @@ source env.sh     # 云端 / Mac 自动切换
 
 ## 文档
 
+- [**风格总目录**](docs/styles.md)：有哪些风格（系列、讲透套件、分场插曲、第三方 skill）、各在哪、怎么选;做视频前先看这一页
 - [Google Drive API 使用笔记](docs/google-drive-api.md):授权流程、大文件上传脚本、踩坑记录
 - [代码生成视频](video/README.md):通用库 `video/core/`、按系列组织的风格与集数;流程和经验沉淀在 skill `.claude/skills/code-video/`
 - [视频风格 skill 索引](.claude/skills/README.md)：6 个第三方 skill，版本锁在 `skills/styles.lock`，按需拉取

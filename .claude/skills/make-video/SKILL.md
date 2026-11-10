@@ -26,7 +26,7 @@ the style skills. `third_party/article-to-video` is a private submodule: the ses
 | Vibe short, mini-drama, beat-synced MV; no voice, 60fps | an existing series, or a new one | code (`video/core`) | `.claude/skills/code-video/SKILL.md`, then the series README |
 | A look neither engine has yet | either of the above | either | `.claude/skills/README.md` (third-party style skills) |
 
-`./sm list` shows every episode. Not sure about the look? Borrow xilo-opus-video's method: three clearly different
+`./sm list` shows every episode. Which look? `docs/styles.md` lists every style we have (series, 讲透 kits, per-scene interludes, third-party skills) and the order to choose in; the user picks the look, never choose it alone. Not sure about the look? Borrow xilo-opus-video's method: three clearly different
 directions with a preview still each, and let the user pick before building.
 
 ## 3. Make it

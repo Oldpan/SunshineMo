@@ -4,6 +4,8 @@
 它们**不进 git**：版本钉在 `skills/styles.lock`，由 `sh scripts/fetch_skills.sh` 拉到 `.claude/skills/<名字>/`（云端会话开始时 hook 自动拉）。
 拉下来以后按名字点名或用 `/<skill 名>` 调用；如果本次会话没自动加载，直接读 `.claude/skills/<名字>/SKILL.md` 照做即可。
 
+所有风格（我们自己的系列和套件 + 这些第三方 skill）的总览和选择顺序在 [`docs/styles.md`](../../docs/styles.md)，先看那一页。
+
 本仓库自己的两个引擎仍是**默认做法**（入口 `./sm`，见 `make-video` skill）：讲解片走 `explainer` 系列（article-to-video），vibe 短片 / 小剧场走 `video/core`。
 下面这些 skill 主要用来**借做法**：先出方案、定画风、拆参考视频；真要用它们自己的渲染管线，只在 `video.yaml` 里写 `engine: skill:<名字>` 做一次性的片子。
 

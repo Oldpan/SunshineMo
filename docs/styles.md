@@ -121,6 +121,8 @@
 | `video/series/explainer/README.md` | 讲透系列流程和每个套件的注意事项 |
 | `video/series/explainer/shared/scene-styles.yaml` | 分场候选清单，出候选板时读 |
 
+**参考截图**（看风格最直接）：项目文件夹 `风格参考截图/`，`按视频/` 每条参考视频一张 16 帧总览，`按风格/` 每种风格一张带出处的关键帧图。出候选板、做新场景前先对着看。
+
 视频、封面、样张不进 git：成片在 Drive `video_from_opus/`，样张在项目文件夹。Drive `reference/` 是我们拆过的参考视频。
 
 ## 怎么登记新风格

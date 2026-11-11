@@ -29,6 +29,8 @@ video/
 
 ## 系列
 
+所有风格的总览和选择顺序见 [docs/styles.md](../docs/styles.md)。
+
 | 系列 | 风格 | 集数 |
 |---|---|---|
 | [neon_science](series/neon_science/README.md) | 霓虹星云科普 vibe：电子乐卡点、无配音、字幕驱动 | 1 |

@@ -1,0 +1,155 @@
+# Per-scene style catalogue for 讲透 / 讲解 episodes (2026-11-10).
+# Read by whoever builds the per-scene candidate board (记忆 per-scene-style-mix): for each scene give the user three
+# candidates (母版 + the best `uses` match + one fallback), recommended one pre-ticked, and let the user decide.
+# Looks come from the Drive reference set described in docs/reference/ai-news-explainer-style.md.
+#
+# kit      : file under shared/ (or the engine's own style) that draws it today
+# status   : ready = a kit exists and is used by an episode | new = kit added 2026-11-10, rendered as stills only
+#            | engine = the narrated renderer's built-in style | todo = documented, not built
+# uses     : what the scene is about, in the words the script uses
+# avoid    : when it reads wrong
+# max_run_s: longest a single run of this look should last
+# bg_moves : how the background keeps moving (every look must, or long sentences trip freezedetect)
+
+master:
+  id: prodpage
+  name_zh: 产品页舞台（母版）
+  kit: shared/prodpage.tsx
+  status: new
+  palette: {bg: '#F1EEE7', card: '#FCFBFA', ink: '#1B1B1B', accent: '#E2603F'}
+  uses: [产品介绍, 流程, 对比, 步骤清单, 数字结论, 开场, 结尾来源]
+  avoid: [纯情绪段, 需要大场面的段落]
+  bg_moves: 点阵底纹缓慢漂移 + 卡片逐块长出
+  share: 60-70% of the video
+
+interludes:
+  - id: pixel
+    name_zh: 像素游戏关卡
+    kit: shared/pixelplay.tsx
+    status: ready
+    palette: {bg: '#1E1838', floor: '#3B2F6B', cream: '#FFFCF4', accent: '#F0566A'}
+    uses: [循环和迭代次数, 规则逐条解锁, 额度和限制, 多个角色接力, 前后对比结果]
+    avoid: [严肃的安全 / 合规结论, 需要精确读数的长表格]
+    max_run_s: 40
+    bg_moves: 星点闪烁 + 天际线小窗灯 + 角色待机晃动
+  - id: comic
+    name_zh: 美漫波普
+    kit: shared/comicpop.tsx
+    status: new
+    palette: {dots: '#35C5F1', panel: '#FEF5E1', ink: '#2C3243', burst: '#FFD23F', red: '#E8412F'}
+    uses: [痛点和崩溃时刻, 社区吐槽, 产品突然出现, 问题就在这]
+    avoid: [数据密集的段落, 超过 15 秒的平铺直叙]
+    max_run_s: 15
+    bg_moves: 半调圆点缓慢斜移 + 星爆轻微旋转
+  - id: notebook
+    name_zh: 螺旋笔记本
+    kit: shared/notebook.tsx
+    status: new
+    palette: {desk: '#3A3F46', paper: '#F4F5F0', grid: 'rgba(60,90,120,0.14)', pen: '#D93A2B', sticky: '#BDEBD3'}
+    uses: [引用原文里的图表和实验数据, 作者怎么说, 需要圈出的数字]
+    avoid: [没有数据可圈的纯概念段]
+    max_run_s: 35
+    bg_moves: 桌面暗角缓慢推近 + 红笔圈一笔画出
+  - id: blueprint
+    name_zh: 蓝图
+    kit: shared/stylemix.tsx   # BlueprintBg / BpBox / Draw
+    status: ready
+    palette: {bg: '#0F4C8A', line: 'rgba(232,242,255,0.92)', red: '#FF9B8A'}
+    uses: [规格和 API 参数, 安全设计图, 步骤, 曲线图坐标说明]
+    avoid: [情绪段]
+    max_run_s: 40
+    bg_moves: 网格缓慢爬行 + 线条逐笔画出
+  - id: console
+    name_zh: 暗色控制台 / LED 记分牌
+    kit: shared/console.tsx    # also stylemix.tsx TermBg / TermWin
+    status: ready
+    palette: {bg: '#1B1823', ink: '#D6D4CC', hi: '#F2C46D', ok: '#6FCF97', err: '#EF7D6D'}
+    uses: [代码和日志, 实时监控, 占比和排名, 工程师反馈引用]
+    avoid: [面向非技术观众的竖屏版]
+    max_run_s: 40
+    bg_moves: 光标闪烁 + 日志逐行滚入 + 扫描线
+  - id: chalk
+    name_zh: 黑板粉笔
+    kit: shared/notebook.tsx   # ChalkBg / ChalkText
+    status: new
+    palette: {board: '#2B2E2C', wood: '#5B4126', chalk: '#EDEBE3', pink: '#F2A1A1', yellow: '#F5D97A'}
+    uses: [概念从零推导, 层层追问, 先看它是做什么的]
+    avoid: [数据图表]
+    max_run_s: 30
+    bg_moves: 粉笔字逐笔写出 + 黑板尘雾缓慢飘
+  - id: kraft
+    name_zh: 牛皮纸 / 软木板拼贴
+    kit: shared/stylemix.tsx   # CorkBg / Note / Stamp / DossierBg
+    status: ready
+    palette: {bg: '#DED4C6', cork: '#C9A77C', paper: '#F7F1E3', stamp: '#B52A1C'}
+    uses: [证据板, 一组案例, 成绩单, 三条经验]
+    avoid: [需要读长段文字的场景]
+    max_run_s: 35
+    bg_moves: 纸片轻微落位旋转 + 慢推镜
+  - id: glass
+    name_zh: 渐变玻璃卡
+    kit: shared/glass.tsx
+    status: new
+    palette: {from: '#F9C9DD', via: '#CDB8F7', to: '#9CC6FB', card: 'rgba(255,255,255,0.62)'}
+    uses: [产品功能, 模型对比, 版本和档位, 两个新模型并列介绍]
+    avoid: [暗色大数据]
+    max_run_s: 35
+    bg_moves: 渐变光斑缓慢漂移 + 浮球上下
+  - id: poster
+    name_zh: 电影感大字海报
+    kit: shared/prodpage.tsx   # Poster
+    status: new
+    palette: {bg: '#10131C', ink: '#F4F1EA', accent: '#E2603F'}
+    uses: [开场, 章节首页, 一个数字撑起一页]
+    avoid: [信息密集的内容页]
+    max_run_s: 8
+    bg_moves: 氛围图慢推 + 光斑
+  - id: mascot
+    name_zh: 角色陪看
+    kit: shared/pixelplay.tsx  # Mascot / shared/gameshow.tsx Bean
+    status: ready
+    uses: [贯穿全片的引路人, 疑问 / 结论的情绪点缀]
+    avoid: [使用别人品牌的角色]
+    max_run_s: 0   # an overlay, lives in a corner across scenes
+    bg_moves: 角色待机呼吸 + 表情切换
+  - id: crayon
+    name_zh: 蜡笔手绘
+    kit: engine   # style: crayon
+    status: engine
+    uses: [温情的人情场景, 把冷技术拉回生活]
+    avoid: [数据]
+    max_run_s: 20
+    bg_moves: 蜡笔笔触逐笔涂出
+  - id: datajournal
+    name_zh: 数据新闻图表
+    kit: shared/stylemix.tsx   # DataBg; numbers: claudeblog.tsx
+    status: ready
+    palette: {bg: '#EBE6DA', red: '#E2603F', blue: '#2F6FEB', green: '#2F9E6A'}
+    uses: [报告里的曲线, 占比, 前后变化]
+    avoid: [情绪段]
+    max_run_s: 40
+    bg_moves: 折线逐段画出 + 数字滚动
+  - id: iso
+    name_zh: 等距 / 线路图
+    kit: shared/iso/
+    status: ready
+    uses: [系统架构, 数据流, 并行线程]
+    avoid: [没有空间关系的概念]
+    max_run_s: 40
+    bg_moves: 推镜 + 上滑 + 点阵漂移
+  - id: ranking
+    name_zh: 倒数榜单
+    kit: shared/prodpage.tsx   # RankBadge
+    status: new
+    uses: ['N 个用法 / 案例 / 坑', 一条一页悬念]
+    avoid: [少于 5 条的清单]
+    max_run_s: 0   # a whole-video structure, not a scene
+    bg_moves: 名次徽章弹出 + 背景色逐名更换
+
+# Look-only candidates for the code engine (一帧一理 series): user picks the style before each episode.
+code_engine_candidates:
+  - id: woodcut_night
+    name_zh: 靛蓝木刻星夜
+    status: todo
+    palette: {night: '#121A4F', moon: '#E2D0AB', sepia: '#2C2117'}
+    notes: 点刻（stipple）月面、青海波纹、扫描线纸面、细密排线；一个黑色小圆团子一路旅行，每 2–3 秒一景，溶解转场。参考：Drive reference/Kimi_K3.1_Pro_小红书笔记.mp4（25 秒，纯管弦乐）。

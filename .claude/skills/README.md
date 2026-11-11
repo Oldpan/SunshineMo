@@ -4,6 +4,8 @@
 它们**不进 git**：版本钉在 `skills/styles.lock`，由 `sh scripts/fetch_skills.sh` 拉到 `.claude/skills/<名字>/`（云端会话开始时 hook 自动拉）。
 拉下来以后按名字点名或用 `/<skill 名>` 调用；如果本次会话没自动加载，直接读 `.claude/skills/<名字>/SKILL.md` 照做即可。
 
+所有风格（我们自己的系列和套件 + 这些第三方 skill）的总览和选择顺序在 [`docs/styles.md`](../../docs/styles.md)，先看那一页。
+
 本仓库自己的两个引擎仍是**默认做法**（入口 `./sm`，见 `make-video` skill）：讲解片走 `explainer` 系列（article-to-video），vibe 短片 / 小剧场走 `video/core`。
 下面这些 skill 主要用来**借做法**：先出方案、定画风、拆参考视频；真要用它们自己的渲染管线，只在 `video.yaml` 里写 `engine: skill:<名字>` 做一次性的片子。
 
@@ -19,6 +21,7 @@
 | 带角色表演的卡通短片、音乐 MV、歌词 MV（卡拉 OK 字幕） | `painted-animation` | `animate`（cut-paper） |
 | 作品集 showreel、产品发布片头、动感大字排版 | `kinetic-reel` | `xilo-opus-video`（界面动效方案） |
 | 还没想好风格，想先看几个方案再定 | `xilo-opus-video`（三个方案 + 预览帧，确认后再做） | `lemo-opuscar`（帮你挑风格） |
+| AI 产品更新 / 新闻的中文讲解，想让画风随内容切换（母版 + 像素游戏、美漫、笔记本、蓝图等插曲） | `explainer` 系列 + `shared/scene-styles.yaml` 分场候选，拆解见 `docs/reference/ai-news-explainer-style.md` | `huashu-art-motion`（解说动画语法） |
 | 无配音的「Vibe 知识」概念短片（深色底、字幕 + 电子乐，像比特新语） | 系列 `video/series/quiet_concept`（一帧一理，`engine: code`），风格说明见 `docs/reference/vibe-knowledge-style.md` | `huashu-art-motion`（动态排版语法） |
 | 照着一条参考视频复刻手法 | `xilo-opus-video` / `huashu-art-motion`（拆解复刻） | `animate`（从参考图提炼新风格） |
 | 已有 AI 生成的绿幕人物，要用代码搭场景 | `xilo-opus-video` | — |

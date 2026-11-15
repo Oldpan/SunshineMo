@@ -1,7 +1,7 @@
 # 风格总目录
 
 这一页只做一件事：想做一条视频时，告诉你**有哪些风格、各在哪、怎么选**。每种风格的细节在它自己的文档或代码里，这里不重复。
-2026-11-10 整理。新吸收一种风格，按文末「怎么登记新风格」在这里加一行。
+2026-11-10 整理，2026-11-14 补竖版。新吸收一种风格，按文末「怎么登记新风格」在这里加一行。
 
 ## 开工前的顺序
 
@@ -9,7 +9,8 @@
 2. **选系列和引擎**（见下表）。有配音的讲解走 `explainer`，无配音的 vibe 短片走 `video/core`。
 3. **问风格，不自己定**：
    - 一帧一理：每集开工前给 3–4 个画风让用户选，先出 20 秒测试再出整集。
-   - 讲解篇：先出整片风格预选；再把脚本拆成场景，每个场景给 2–3 个候选（母版 + 最合适的插曲 + 备选，加上用户已批准的风格），做成选择页，用户逐场景定。候选清单读 `video/series/explainer/shared/scene-styles.yaml`。
+   - 讲解篇：先出整片风格预选；再把脚本拆成场景，每个场景给 2–3 个候选（母版 + 最合适的插曲 + 备选，加上用户已批准的风格），做成选择页，用户逐场景定。候选清单读 `video/series/explainer/shared/scene-styles.yaml`：横版用 `master` / `interludes`，竖版用 `vertical`（见第三节之后的「竖版短篇」）。
+   - 选择页**默认勾好推荐项**，页面顶上写明「不改就按推荐做」，用户只改不满意的场景。
 4. 需要借第三方 skill 的做法时，查文末「第三方 skill 怎么选」。
 5. 做完交付：Drive `video_from_opus/<名>/`，Notion 发布话题总表加一行。
 
@@ -17,7 +18,7 @@
 
 | 系列 | 引擎 | 是什么 | 画风怎么定 | 已做 |
 |---|---|---|---|---|
-| `explainer` 讲透 | narrated（article-to-video） | 把文章、论文、产品更新讲清楚，Qwen 配音，1080p30 | **按内容、按场景切**：下面的套件和插曲 | 15 期（含 3 个竖屏） |
+| `explainer` 讲透 | narrated（article-to-video） | 把文章、论文、产品更新讲清楚，Qwen 配音，1080p30 | **按内容、按场景切**：下面的套件和插曲 | 16 期（含 4 个竖屏） |
 | `quiet_concept` 一帧一理（**2026-11-10 起暂停，不再新做**） | code（video/core） | 无配音概念短片，lo-fi + 衬线字幕，深色底一束光，一个锚物件，约 150 s，60fps | **每集用户选**：水墨 / 蓝图 / 半调案卷 / 扁平卡通…… | 7 集 |
 | `pixel_theater` 像素小剧场 | code | 用小故事讲 AI 知识，演绎七讲解三 | **每集换画风**：星夜小屏、雨夜侦探…… | 2 集 |
 | `warm_journal` 暖光手帐 | code | 生活话题的情绪科普，纸张 lo-fi | 固定：暖色纸张、手写字 | 1 集 |
@@ -44,6 +45,7 @@
 | `pixelplay` | 像素游戏关卡（竖屏） | 竖版、小白向 | kling-origin-shorts |
 | `popflat` | 电光蓝扁平动态图形（竖屏） | 竖版、冲击感 | claude-code-diet-shorts |
 | `particles` | 数字粒子（竖屏） | 竖版、非技术向 | weight-space-programming-shorts |
+| `vstyles` | 竖屏分场五套：展厅画廊、胶片暗房、杂志编辑排版、数据叙事、蓝图（共用 popflat 动效） | 竖版分场换风格 | minimax-h3-image-shorts |
 | `comicpop`（新） | 美漫波普：半调圆点、星爆、气泡 | 痛点、吐槽、产品突然出现 | 未用 |
 | `notebook`（新） | 螺旋笔记本；黑板粉笔 | 引用原文数据；从零推导概念 | 未用 |
 | `glass`（新） | 渐变玻璃卡 | 产品功能、模型对比、档位 | 未用 |
@@ -71,6 +73,24 @@
 | 温情、人的一面 | `crayon` | `mascot` + 母版 | 引擎 crayon |
 
 规矩：同一种插曲不连着用两次；每个插曲 12–40 秒；底纹要持续微动（过 freezedetect）。
+
+## 三点五、竖版短篇（9:16，非技术观众）
+
+和横版一样：一个母版占大头，插曲只从固定的池子里挑，每场景 2–3 个候选。清单在 `scene-styles.yaml` 的 `vertical` 段。
+
+| 用途 | 风格 id | 套件 | 首次使用 |
+|---|---|---|---|
+| **母版**（60–70%）：开场钩子、一句话结论、清单、前后对比、结尾 | `popflat` | popflat | claude-code-diet-shorts |
+| 循环、规则解锁、小故事 | `pixel` | pixelplay | kling-origin-shorts |
+| 看不见的东西（权重、数字）、揭晓时刻 | `particles` | particles | weight-space-programming-shorts |
+| 展示生成的图 / 作品、样张对比 | `gallery` | vstyles | minimax-h3-image-shorts |
+| 跑分、速度、价格、大数字 | `data`（= 横版 `datajournal`） | vstyles | minimax-h3-image-shorts |
+| 结构、流程、参数 | `blueprint`（= 横版 `blueprint`） | vstyles | minimax-h3-image-shorts |
+| 备用，默认不进候选：胶片暗房 `darkroom`、杂志排版 `editorial` | | vstyles | minimax-h3-image-shorts |
+
+横版的 `console`、`iso`、`chalk`、`notebook` 不进竖版候选（小白看不懂或字太密）。
+
+**同一种画风只有一个 id。** 蓝图、数据叙事、编辑排版在横版（stylemix）和竖版（vstyles）各有一份代码，是因为画幅和安全区不同；目录里它们是同一个 id，`same_as` 指向横版那条。不要再写第三份：要改样子，改这两份之一。
 
 ## 四、一帧一理的画风（系列已暂停，留作资料）
 
@@ -127,10 +147,12 @@
 
 ## 怎么登记新风格
 
+**先查目录，能用就不新建套件。** 只有 `scene-styles.yaml` 里没有任何一个 id 适合这个场景，才做新画法；新画法优先加进已有套件（同画幅的那个），登记成一个新 id，而不是新开一个 `.tsx`。
+
 吸收或做出一种新风格时，按这个顺序落地，别只留在聊天里：
 
 1. 拆解和配方写成 `docs/reference/<名>.md`（样子、用在什么时候、配方、不要照搬的地方）。
 2. 套件代码放 `video/series/<系列>/shared/`（讲解）或系列的 `style.py`（代码引擎）。
-3. 讲解用的风格在 `shared/scene-styles.yaml` 登记一条（用途、不适合、最长多久、底纹怎么动、套件、状态）。
+3. 讲解用的风格在 `shared/scene-styles.yaml` 登记一条（用途、不适合、最长多久、底纹怎么动、套件、状态）；竖版的登记在 `vertical` 段，和横版是同一种画风时写 `same_as`。
 4. 在**本页**加一行（套件表或系列画风表），并把参考文档加进「参考资料索引」。
 5. 第一次用到的那期，把「首次使用」填上，状态从 `new` 改成 `ready`。

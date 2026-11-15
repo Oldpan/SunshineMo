@@ -1,5 +1,5 @@
 # Per-scene style catalogue for 讲透 / 讲解 episodes (2026-11-10).
-# Read by whoever builds the per-scene candidate board (记忆 per-scene-style-mix): for each scene give the user three
+# Read by whoever builds the per-scene candidate board (记忆 per-scene-style-mix): for each scene give the user 2–3
 # candidates (母版 + the best `uses` match + one fallback), recommended one pre-ticked, and let the user decide.
 # Looks come from the Drive reference set described in docs/reference/ai-news-explainer-style.md.
 #
@@ -145,6 +145,69 @@ interludes:
     avoid: [少于 5 条的清单]
     max_run_s: 0   # a whole-video structure, not a scene
     bg_moves: 名次徽章弹出 + 背景色逐名更换
+
+# ---------------------------------------------------------------------------------------------------------------
+# 竖版短篇 (9:16 master, key content inside SAFE x 100–960 / y 330–1290; 非技术观众). Added 2026-11-14.
+# Same idea as 横版: one master for most of the video, a small fixed pool of interludes, 2–3 candidates per scene.
+# A look that exists in both orientations keeps ONE id: `same_as` names the 横版 entry above, `kit` is the 9:16 build.
+# Do not build a new vertical kit when one of these fits; a new look goes into an existing kit as a new id.
+vertical:
+  master:
+    id: popflat
+    name_zh: 扁平动态图形（竖版母版）
+    kit: shared/popflat.tsx   # Stage / Card / Pill / Burst / Ring / slam
+    status: ready             # claude-code-diet-shorts; its motion helpers also drive vstyles and particles
+    palette: {bg: '#1F2EF5', ray: '#2A39FF', ink: '#1A1F5C', white: '#FFFFFF', yellow: '#FFD23F', coral: '#FF6B4A'}
+    uses: [开场钩子, 一句话结论, 三件事清单, 前后对比, 结尾]
+    avoid: [需要细看原图的段落]
+    bg_moves: 放射光缓慢旋转 + 碎片漂浮 + 卡点震屏
+    share: 60-70% of the video
+  interludes:
+    - id: pixel
+      same_as: pixel
+      kit: shared/pixelplay.tsx
+      status: ready             # kling-origin-shorts
+      uses: [循环和次数, 规则逐条解锁, 小故事, 角色接力]
+      max_run_s: 40
+    - id: particles
+      name_zh: 数字粒子
+      kit: shared/particles.tsx
+      status: ready             # weight-space-programming-shorts
+      uses: [看不见的东西（权重、数字、信号）, 一个数字拼出来, 揭晓时刻]
+      avoid: [需要读字的长段落]
+      max_run_s: 30
+      bg_moves: 数字雨下落 + 粒子聚形
+    - id: gallery
+      name_zh: 展厅画廊
+      kit: shared/vstyles.tsx   # GalleryStage / Frame / Placard
+      status: ready             # minimax-h3-image-shorts
+      uses: [展示生成的图 / 视频作品, 官方样张, 前后对比的两张图]
+      avoid: [没有图可挂的段落]
+      max_run_s: 30
+      bg_moves: 聚光灯呼吸 + 浮尘 + 画框慢推
+    - id: data
+      same_as: datajournal
+      kit: shared/vstyles.tsx   # DataStage / HBar
+      status: ready             # minimax-h3-image-shorts
+      uses: [跑分, 速度和价格, 一个大数字, 按比例的横条]
+      max_run_s: 30
+    - id: blueprint
+      same_as: blueprint
+      kit: shared/vstyles.tsx   # BlueprintStage / BpBox / BpArrow
+      status: ready             # minimax-h3-image-shorts
+      uses: [结构和流程, 参数规格, 它是怎么做到的]
+      max_run_s: 30
+  # Built once, kept for when a scene clearly needs them; not offered by default on the candidate board.
+  reserve:
+    - id: darkroom
+      name_zh: 胶片暗房
+      kit: shared/vstyles.tsx   # DarkroomStage / FilmFrame / Grease
+      uses: [逐张审片, 圈出图里的问题]
+    - id: editorial
+      name_zh: 杂志编辑排版
+      kit: shared/vstyles.tsx   # EditorialStage   (横版同款：stylemix.tsx EditBg)
+      uses: [引用原话, 官方声明]
+  # 横版 looks that read wrong on 9:16 for 非技术观众: console (see its avoid), iso, chalk, notebook.
 
 # Look-only candidates for the code engine (一帧一理 series): user picks the style before each episode.
 code_engine_candidates:
